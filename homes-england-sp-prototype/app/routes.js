@@ -95,6 +95,43 @@ router.get('/site-units-forecast-build-analysis', function (req, res) {
 })
 
 // =============================================================================
+// Overview — programme dashboard
+// =============================================================================
+
+/**
+ * GET /overview
+ *
+ * Renders the Overview page. dataState controls which data display is shown:
+ * 'mvp' (default), 'growing' (first chart tab), 'mature' (all four tabs).
+ */
+router.get('/overview', function (req, res) {
+  res.render('overview/index', {
+    dataState: req.session.data['dataState'] || 'mvp'
+  })
+})
+
+/**
+ * POST /overview/set-state
+ *
+ * Prototype control — switches between mvp / growing / mature data states.
+ * Remove before handoff to development.
+ */
+router.post('/overview/set-state', function (req, res) {
+  req.session.data['dataState'] = req.body['dataState']
+  res.redirect('/overview')
+})
+
+/**
+ * GET /overview/build-analysis
+ *
+ * Documents GDS alignment, custom departures and accessibility predictions
+ * for the Overview page. Modelled on the Site home forecasts build analysis.
+ */
+router.get('/overview/build-analysis', function (req, res) {
+  res.render('overview/build-analysis')
+})
+
+// =============================================================================
 // Component Library — GET routes
 // =============================================================================
 

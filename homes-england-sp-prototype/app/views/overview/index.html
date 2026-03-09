@@ -1,0 +1,209 @@
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+{% set pageName = "Overview" %}
+
+{% block content %}
+
+{# ── 1. Page heading ────────────────────────────────────────────────────── #}
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body-l {% if dataState == 'mvp' %}govuk-!-margin-bottom-8{% else %}govuk-!-margin-bottom-4{% endif %}">Manage your Affordable Homes Programme. Track completions, submit forecasts and monitor your sites.</p>
+  </div>
+</div>
+
+{# ── 2. Key information ─────────────────────────────────────────────────── #}
+{% if dataState != "mvp" %}
+<h2 class="govuk-heading-l govuk-!-margin-top-8">Key information</h2>
+{% endif %}
+
+{% if dataState == "mvp" %}
+  {# MVP: no Key information section — nav sections lead the page #}
+{% else %}
+  <!-- Custom component: stat card (metric card).
+       No GDS equivalent exists. Built from GDS design tokens only.
+       Trend badges use shape + colour + aria-label — never colour alone
+       (WCAG 1.4.1). See CLAUDE.md "Stat card" section.
+       Layout: full-width 2×3 CSS grid (changed from one-third sidebar
+       following design iteration). -->
+  <div class="stat-card-grid">
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Homes started this quarter</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-1">1,782</p>
+      <span class="trend-badge trend-badge--down" role="img"
+        aria-label="Decrease of 12% versus last quarter">
+        <span aria-hidden="true">&#9660;</span> 12% vs last quarter
+      </span>
+    </div>
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Homes completed this quarter</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-1">5,841</p>
+      <span class="trend-badge trend-badge--up" role="img"
+        aria-label="Increase of 14% versus last quarter">
+        <span aria-hidden="true">&#9650;</span> 14% vs last quarter
+      </span>
+    </div>
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Total homes left to fulfil</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-0">18,112</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Active sites</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-1">15</p>
+      <p class="govuk-body-s govuk-!-colour-secondary govuk-!-margin-bottom-0">Across your portfolio</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Inactive sites</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-1">28</p>
+      <p class="govuk-body-s govuk-!-colour-secondary govuk-!-margin-bottom-0">Across your portfolio</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Current quarter</p>
+      <p class="govuk-heading-l govuk-!-margin-bottom-1">3</p>
+      <p class="govuk-body-s govuk-!-colour-secondary govuk-!-margin-bottom-0">September 1 to November 30</p>
+    </div>
+
+  </div>
+{% endif %}
+
+{# ── 3. Navigation sections ────────────────────────────────────────────── #}
+{% if dataState != "mvp" %}
+  <h2 class="govuk-heading-l govuk-!-margin-top-9">Your programme</h2>
+{% endif %}
+
+<!-- Navigation sections in a two-column CSS grid. Full width.
+     Changed from two-thirds sidebar layout following design iteration —
+     halves vertical length and matches how the GDS Design System groups
+     related content in its own documentation. -->
+<div class="nav-section-grid govuk-!-margin-bottom-8">
+
+  <div class="nav-section">
+    <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
+      <li><a class="govuk-link" href="#">Grant rates</a></li>
+      <li><a class="govuk-link" href="#">Homes by tenure and region</a></li>
+      <li><a class="govuk-link" href="#">Nil grant homes</a></li>
+      <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
+    </ul>
+  </div>
+
+  <div class="nav-section">
+    <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="#">Add a new site</a></li>
+      <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+      <li><a class="govuk-link" href="#">Completions</a></li>
+      <li><a class="govuk-link" href="#">Manage home types</a></li>
+    </ul>
+  </div>
+
+  <div class="nav-section">
+    <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
+    <p class="govuk-body">Submit your Quarterly Development Expenditure.</p>
+  </div>
+
+  <div class="nav-section">
+    <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
+    <p class="govuk-body">Submit your cash and home forecasts.</p>
+  </div>
+
+  <div class="nav-section">
+    <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
+    <p class="govuk-body">Request and track your grant payments.</p>
+  </div>
+
+</div>
+
+{# ── 4. Data insights (Mature only) ────────────────────────────────── #}
+{% if dataState == "mature" %}
+  <h2 class="govuk-heading-l govuk-!-margin-top-8">Data insights</h2>
+
+  <!-- GDS govuk-tabs component — unmodified. All four chart panels rendered.
+       Each panel contains a data table first in DOM, then an aria-hidden SVG
+       chart. See CLAUDE.md "Charts" section. -->
+  <div class="govuk-tabs" data-module="govuk-tabs">
+    <h3 class="govuk-tabs__title">Data insights</h3>
+    <ul class="govuk-tabs__list">
+      <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+        <a class="govuk-tabs__tab" href="#homes-completed">Homes completed</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#active-sites">Active sites</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#housing-outputs">Housing outputs</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#forecast-actual">Forecast vs Actual</a>
+      </li>
+    </ul>
+
+    <div class="govuk-tabs__panel" id="homes-completed">
+      {% include "overview/_insight-homes-completed.html" %}
+    </div>
+
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="active-sites">
+      {% include "overview/_insight-active-sites.html" %}
+    </div>
+
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="housing-outputs">
+      {% include "overview/_insight-housing-outputs.html" %}
+    </div>
+
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="forecast-actual">
+      {% include "overview/_insight-forecast-actual.html" %}
+    </div>
+  </div>
+
+{% endif %}
+
+{% endblock %}
+
+{# ── Prototype controls in footer ────────────────────────────────────── #}
+<!-- Prototype control — remove before handoff to development.
+     Allows researchers to switch between MVP, Growing and Mature data
+     states during user research sessions. Placed in footer to keep
+     it out of the main content area. -->
+{% block footerStart %}
+  <!-- Prototype tools: build analysis button + data state controls.
+       Flex layout places button and details toggle on the same line. -->
+  <div class="govuk-width-container govuk-!-padding-top-4 govuk-!-padding-bottom-4 prototype-tools">
+    {{ govukButton({
+      text: "View build analysis",
+      href: "/overview/build-analysis",
+      classes: "govuk-button--secondary govuk-!-margin-bottom-0"
+    }) }}
+    {% call govukDetails({ summaryText: "Prototype controls" }) %}
+      <form method="post" action="/overview/set-state">
+        <label class="govuk-label" for="dataState">Data state</label>
+        {{ govukSelect({
+          id: "dataState",
+          name: "dataState",
+          items: [
+            { value: "mvp", text: "MVP (no data)", selected: true if dataState == "mvp" },
+            { value: "mature", text: "Mature (full data)", selected: true if dataState == "mature" }
+          ]
+        }) }}
+        {{ govukButton({
+          text: "Apply",
+          classes: "govuk-button--secondary"
+        }) }}
+      </form>
+    {% endcall %}
+  </div>
+{% endblock %}

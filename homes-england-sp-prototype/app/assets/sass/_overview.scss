@@ -1,0 +1,139 @@
+// =============================================================================
+// Overview page — stat cards, trend badges, grids, insight blocks
+// =============================================================================
+
+// ── Stat card ────────────────────────────────────────────────────────────────
+// Custom component — no GDS equivalent.
+// Bordered card displaying a single metric with optional trend indicator
+// and coloured top border. Uses GDS design tokens only.
+// =============================================================================
+.stat-card {
+  border: 1px solid $govuk-border-colour;
+  border-top: 4px solid govuk-colour("blue");
+  padding: govuk-spacing(4);
+
+  // Remove default margins from child paragraphs inside the card
+  // to keep the card compact
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  &--alert {
+    border-top-color: govuk-colour("red");
+  }
+}
+
+// ── Trend badge ──────────────────────────────────────────────────────────────
+// Plain text indicator showing direction of change.
+// Always uses shape (▲/▼) + colour + text — never colour alone (WCAG 1.4.1).
+// No background colour — avoids resembling govukTag().
+// =============================================================================
+.trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: $govuk-font-family;
+  font-size: 13px;
+  font-weight: bold;
+
+  &--up {
+    color: govuk-colour("green");
+  }
+
+  &--down {
+    color: govuk-colour("red");
+  }
+}
+
+// ── Stat card grid ───────────────────────────────────────────────────────────
+// Full-width 2×3 grid for key information stat cards.
+// =============================================================================
+.stat-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: govuk-spacing(3);
+  // padding-bottom avoids margin collapse with the heading below,
+  // giving a visually larger gap than margin-bottom alone would
+  padding-bottom: govuk-spacing(4);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Navigation section grid ─────────────────────────────────────────────────
+// Two-column grid for "What you can do" navigation sections.
+// =============================================================================
+.nav-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: govuk-spacing(6);
+  margin-bottom: govuk-spacing(6);
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.nav-section {
+  margin-bottom: 0;
+}
+
+// ── Insight block ────────────────────────────────────────────────────────────
+// Chart + data table side-by-side. Table is first in DOM (accessibility),
+// chart is aria-hidden. Visual layout via CSS grid only.
+// =============================================================================
+.insight-block {
+  margin-bottom: govuk-spacing(8);
+
+  &__inner {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: govuk-spacing(6);
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__table {
+    padding: 0;
+
+    // Override govuk-table margin inside the block
+    .govuk-table {
+      margin-bottom: 0;
+    }
+  }
+
+  &__chart {
+    margin: 0;
+    padding: govuk-spacing(4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+// ── Prototype tools (footer) ────────────────────────────────────────────────
+// Build analysis button + prototype controls side-by-side.
+// =============================================================================
+.prototype-tools {
+  display: flex;
+  align-items: baseline;
+  gap: govuk-spacing(4);
+  flex-wrap: wrap;
+}
+
+// ── Windows High Contrast Mode ───────────────────────────────────────────────
+// Restore visibility of stat-card borders and trend badges when OS
+// overrides background-color. GDS focus ring handled in _component-library.scss.
+// =============================================================================
+@media (forced-colors: active) {
+  .stat-card {
+    border-top: 4px solid ButtonText;
+  }
+
+  .trend-badge {
+    border: 1px solid ButtonText;
+  }
+}

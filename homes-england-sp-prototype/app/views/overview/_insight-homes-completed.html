@@ -1,0 +1,76 @@
+{# Insight block: Homes completed over time
+   Custom component — inline SVG + data table.
+   Table is first in DOM for screen readers; SVG is aria-hidden.
+   Single series — no legend or figcaption needed; tab label provides context.
+   See CLAUDE.md "Charts" section. #}
+
+<div class="insight-block">
+  <div class="insight-block__inner">
+
+    <!-- TABLE FIRST IN DOM — screen readers encounter structured data first.
+         Caption is visually-hidden because the tab label already provides
+         the visible heading context. Caption kept for AT and JS-off fallback. -->
+    <div class="insight-block__table">
+      {{ govukTable({
+        caption: "Homes completed per quarter",
+        captionClasses: "govuk-visually-hidden",
+        head: [
+          { text: "Quarter" },
+          { text: "Homes completed", format: "numeric" }
+        ],
+        rows: [
+          [{ text: "2026 Q1" }, { text: "800", format: "numeric" }],
+          [{ text: "2026 Q2" }, { text: "2,050", format: "numeric" }],
+          [{ text: "2026 Q3" }, { text: "2,350", format: "numeric" }],
+          [{ text: "2026 Q4" }, { text: "3,400", format: "numeric" }],
+          [{ text: "2027 Q1" }, { text: "5,000", format: "numeric" }],
+          [{ text: "2027 Q2" }, { text: "5,250", format: "numeric" }],
+          [{ text: "2027 Q3" }, { text: "5,300", format: "numeric" }]
+        ]
+      }) }}
+    </div>
+
+    <!-- CHART SECOND IN DOM — purely decorative, hidden from AT.
+         Single series — no legend needed. -->
+    <figure class="insight-block__chart" aria-hidden="true">
+      <svg viewBox="0 0 400 200" focusable="false">
+        <!-- Y axis gridlines -->
+        <line x1="40" y1="20" x2="380" y2="20" stroke="#b1b4b6" stroke-dasharray="3,3" />
+        <line x1="40" y1="55" x2="380" y2="55" stroke="#b1b4b6" stroke-dasharray="3,3" />
+        <line x1="40" y1="90" x2="380" y2="90" stroke="#b1b4b6" stroke-dasharray="3,3" />
+        <line x1="40" y1="125" x2="380" y2="125" stroke="#b1b4b6" stroke-dasharray="3,3" />
+        <line x1="40" y1="160" x2="380" y2="160" stroke="#b1b4b6" stroke-dasharray="3,3" />
+
+        <!-- Y axis labels -->
+        <text x="35" y="24" text-anchor="end" font-size="10" fill="#505a5f">6,000</text>
+        <text x="35" y="59" text-anchor="end" font-size="10" fill="#505a5f">4,500</text>
+        <text x="35" y="94" text-anchor="end" font-size="10" fill="#505a5f">3,000</text>
+        <text x="35" y="129" text-anchor="end" font-size="10" fill="#505a5f">1,500</text>
+        <text x="35" y="164" text-anchor="end" font-size="10" fill="#505a5f">0</text>
+
+        <!-- X axis labels -->
+        <text x="80" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q1 26</text>
+        <text x="130" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q2</text>
+        <text x="180" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q3</text>
+        <text x="230" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q4</text>
+        <text x="280" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q1 27</text>
+        <text x="330" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q2</text>
+        <text x="380" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q3</text>
+
+        <!-- Line chart (teal #28a197, 3.2:1 on white — passes WCAG 1.4.11) -->
+        <!-- Scale: 0=160, 6000=20 → 140px range -->
+        <polyline
+          points="80,141 130,112 180,105 230,81 280,43 330,38 380,36"
+          fill="none" stroke="#28a197" stroke-width="2.5" />
+        <circle cx="80" cy="141" r="4" fill="#28a197" />
+        <circle cx="130" cy="112" r="4" fill="#28a197" />
+        <circle cx="180" cy="105" r="4" fill="#28a197" />
+        <circle cx="230" cy="81" r="4" fill="#28a197" />
+        <circle cx="280" cy="43" r="4" fill="#28a197" />
+        <circle cx="330" cy="38" r="4" fill="#28a197" />
+        <circle cx="380" cy="36" r="4" fill="#28a197" />
+      </svg>
+    </figure>
+
+  </div>
+</div>

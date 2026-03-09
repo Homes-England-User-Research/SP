@@ -437,33 +437,27 @@ users scanning programme health quickly.
   include ▲/▼ shape and an aria-label describing direction in words
 - Alert state (red top border) reserved for actionable blockers only, 
   e.g. Payment blocked — not for general negative trends
-- Cards sit in the one-third column of the 2/3 + 1/3 grid 
-  (govuk-grid-column-one-third) on the Overview page
+- Cards sit in a full-width 2×3 CSS grid (`.stat-card-grid`) on the
+  Overview page
 - Do not add hover states or make cards clickable unless the card has a 
   clear, single destination — if clickable, the entire card must be a 
   valid focus target with a visible focus ring
 
-  ## Customise your view (role selector)
+### Overview page (Phase 3 redesign)
+- Role selector (Customise your view) removed — single-role view simplifies
+  the page; role-based personalisation can be revisited post-user-research
+- Notification banner removed — no longer needed without role save confirmation
+- Quick actions removed — nav sections with child links already provide direct
+  task access with more context; removed to avoid duplication and reduce page length
+- Layout changed from 2/3 + 1/3 grid to full-width — stat cards in a 2×3 CSS grid
+  (`.stat-card-grid`), nav sections in a 2-column CSS grid (`.nav-section-grid`)
+- Data insights use GDS `govuk-tabs` with 4 chart panels (Homes completed, Active
+  sites, Housing outputs, Forecast vs Actual) — tabs auto-initialised by govuk-frontend
+- Three data states: MVP (no data), Growing (first chart only), Mature (all four tabs)
+- Inline SVG charts used instead of Chart.js — simpler, no external dependency,
+  `aria-hidden="true"` with `focusable="false"`; data table always first in DOM
 
-Uses standard GDS `govuk-inset-text` component visually.
-
-### What it is
-A role personalisation control allowing users to select their role and save 
-their preference, persisting a tailored view of quick actions, key information 
-and data insights.
-
-### GDS compliance
-The grey background and blue left border are the `govuk-inset-text` pattern — 
-a fully documented GDS component. The deviation is using it as a container for 
-an interactive control (select + button) rather than static content. This is a 
-considered extension, not a custom visual treatment.
-
-### Usage rules for Claude Code
-- select must use govuk-select classes in the prototype kit
-- button must use govuk-button classes
-- Role preference saves to session, not URL params — avoids role leaking 
-  into shared links
-- aria-live="polite" confirmation message required on save so screen reader 
-  users know their selection applied
-- Label must be a real <label> with a for attribute matching the select id — 
-  never a <p> or <span> acting as a label
+  - Nav section heading is conditional on data state. MVP: no heading — 
+  nav sections lead the page and are self-evident. Growing/Mature: 
+  "Your programme" — provides a clear break between the Key information 
+  metric grid above and the navigation sections below.
