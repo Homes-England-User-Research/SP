@@ -8,12 +8,13 @@
 //
 // GDS explicitly permits widening: "you can make it wider if your content
 // requires it." SP professional users work with data-dense tables on desktop.
-// 1100px gives editable table columns adequate space without horizontal scroll,
-// while remaining comfortable within a standard 1280px desktop viewport.
+// 1100px gives editable table columns and the SP programme navigation adequate
+// space without horizontal scroll, while remaining comfortable within a
+// standard 1280px desktop viewport.
 // All form inputs remain constrained by their own GDS width modifiers.
 // =============================================================================
 .govuk-width-container {
-  max-width: 1020px;
+  max-width: 1100px;
 }
 
 // SP (Strategic Partnerships) editable table pattern

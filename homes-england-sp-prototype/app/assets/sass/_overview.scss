@@ -114,6 +114,21 @@
   }
 }
 
+// ── Overview service navigation ────────────────────────────────────────────────
+// Forces service name and nav links onto the same line, matching the likely
+// production layout. Default govuk-service-navigation stacks them vertically.
+// =============================================================================
+.overview-service-nav {
+  .govuk-service-navigation__container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .govuk-service-navigation__service-name {
+    margin-right: govuk-spacing(4);
+  }
+}
+
 // ── Prototype tools (footer) ────────────────────────────────────────────────
 // Build analysis button + prototype controls side-by-side.
 // =============================================================================
