@@ -29,81 +29,168 @@ pages at design-system.service.gov.uk/components/
 ---
 
 ## Tech stack
-- GOV.UK Prototype Kit (latest)
+- GOV.UK Prototype Kit 13.19.1
+- GOV.UK Frontend 6.1.0
 - Nunjucks templating (.html extension as per kit convention)
 - Vanilla JavaScript only — no jQuery, no frameworks
-- Chart.js via CDN (https://cdn.jsdelivr.net/npm/chart.js) for all data visualisation
+- Chart.js via CDN (https://cdn.jsdelivr.net/npm/chart.js@4) for all data visualisation
 - Sass for all custom styles — no inline styles ever
 - No build tools beyond what the prototype kit provides
+- Deployed on Railway via `railway.json` at repo root
 
 ---
 
-## Project structure
+## Current project structure (as built)
+
 ```
 homes-england-sp-prototype/
-├── CLAUDE.md
+├── claude.md
+├── package.json
 ├── app/
-│   ├── routes.js                          ← all routes
+│   ├── config.json                          ← serviceName: "Homes England", rebrand: true
+│   ├── routes.js                            ← all GET/POST routes
 │   ├── views/
 │   │   ├── layouts/
-│   │   │   └── homes-england.html         ← shared layout with primary nav
+│   │   │   └── main.html                    ← extends govuk-branded.njk; overrides
+│   │   │                                       govukServiceNavigation block for custom nav
 │   │   ├── components/
-│   │   │   ├── index.html                 ← component library index page
-│   │   │   ├── [component-name].html      ← one detail page per component
-│   │   │   ├── statCard.html              ← Nunjucks macro
-│   │   │   ├── accessibleChart.html       ← Nunjucks macro
-│   │   │   ├── editableTable.html         ← Nunjucks macro
-│   │   │   ├── yearTabs.html              ← Nunjucks macro
-│   │   │   ├── importantBanner.html       ← Nunjucks macro
-│   │   │   └── roleSwitcher.html          ← Nunjucks macro
-│   │   ├── overview.html
-│   │   ├── add-new-site-step-1.html
-│   │   ├── add-new-site-step-2.html
-│   │   ├── site-home-forecasts.html
-│   │   └── forecasting.html
+│   │   │   ├── index.html                   ← component library index (8-card grid)
+│   │   │   ├── accessible-chart.html        ← detail page
+│   │   │   ├── date-picker.html             ← detail page
+│   │   │   ├── editable-table.html          ← detail page (kebab, NOT the macro)
+│   │   │   ├── editableTable.html           ← Nunjucks macro (camelCase — coexists safely)
+│   │   │   ├── important-notification-banner.html
+│   │   │   ├── multi-column-form.html
+│   │   │   ├── role-switcher.html
+│   │   │   ├── stat-card.html
+│   │   │   └── year-tabs.html
+│   │   ├── index.html                       ← home/prototype index page
+│   │   ├── site-units-forecast.html         ← SP editable table page (main deliverable)
+│   │   ├── site-units-forecast-confirmation.html
+│   │   └── site-units-forecast-build-analysis.html ← GDS alignment + accessibility audit
 │   ├── assets/
 │   │   ├── javascripts/
-│   │   │   ├── editable-table.js          ← table calculations and aria-live updates
-│   │   │   ├── cash-forecasts.js          ← variance and yearly total calculations
-│   │   │   ├── tabs.js                    ← ARIA APG tab pattern implementation
-│   │   │   ├── charts.js                  ← Chart.js initialisation
-│   │   │   └── role-switcher.js           ← overview role switching
+│   │   │   ├── application.js               ← kit default
+│   │   │   ├── editable-table.js            ← auto-calculation: remaining = forecast - actual
+│   │   │   ├── year-tabs.js                 ← WAI-ARIA APG tab pattern
+│   │   │   └── date-picker.js               ← calendar enhancement for date inputs
 │   │   └── sass/
-│   │       ├── application.scss           ← imports all partials
-│   │       ├── _custom.scss               ← all custom component styles
-│   │       └── _component-library.scss    ← component library page styles
-│   └── docs/
-│       └── accessibility-notes.md         ← rationale for every custom component
+│   │       ├── application.scss             ← imports partials; sets max-width: 1020px
+│   │       ├── _editable-table.scss         ← .sp-* styles for editable table pattern
+│   │       └── _component-library.scss      ← .cl-* styles for library docs + SP components
 ```
 
 ---
 
-## Navigation (all pages)
-Overview | Agreed provider profile | Sites | Forecasting |
-Quarterly Expenditure | Payments | Components | Sign out
+## Navigation (current)
+Home | Components
 
-Service name shown bold left: **Homes England**
-Active nav item: bottom border underline in GDS blue (#1d70b8)
-Mobile: collapses using govuk-header pattern
+Active state controlled via `res.locals.currentPath` middleware in routes.js.
+`"/components" in currentPath` (Nunjucks `in` operator) matches all /components/* pages.
 
 ---
 
-## Key routes
-| Route | Description |
-|---|---|
-| GET /overview | Dashboard — role switcher controls view (default: Administrator) |
-| POST /overview/save-role | Saves chosen role to session, redirects to /overview |
-| GET /components | Component library index |
-| GET /components/[name] | Individual component detail page |
-| GET /add-new-site-step-1 | Step 1 of add new site flow |
-| POST /add-new-site-step-1 | Save step 1 data, redirect to step 2 |
-| GET /add-new-site-step-2 | Step 2 of add new site flow |
-| POST /add-new-site-step-2 | Save step 2 data, redirect to confirmation |
-| GET /site-home-forecasts | Editable tier forecast table |
-| POST /site-home-forecasts | Save forecast data, redirect to confirmation |
-| GET /forecasting | Cash forecasts with year tabs |
+## Current routes
+| Method | Route | Handler |
+|---|---|---|
+| GET | `/` | kit default → `index.html` |
+| GET | `/site-units-forecast` | seeds mock session data, renders forecast page |
+| POST | `/site-units-forecast` | kit auto-saves POST body to session, redirects to confirmation |
+| GET | `/site-units-forecast-confirmation` | kit default render |
+| GET | `/site-units-forecast-build-analysis` | renders build analysis page |
+| GET | `/components` | renders component library index |
+| GET | `/components/accessible-chart` | |
+| GET | `/components/date-picker` | |
+| GET | `/components/editable-table` | seeds mock data so example table has values |
+| GET | `/components/important-notification-banner` | |
+| GET | `/components/multi-column-form` | |
+| GET | `/components/role-switcher` | |
+| GET | `/components/stat-card` | |
+| GET | `/components/year-tabs` | |
 
 Routes follow REST conventions: GET to render, POST to save, always redirect after POST.
+
+---
+
+## What has been built (progress to date)
+
+### Site home forecasts page (`/site-units-forecast`)
+The main prototype deliverable. An editable table page for SP users to enter home
+completion forecasts per tenure type across two funding tiers.
+
+**Structure:**
+- Breadcrumbs (Sites > Site summary)
+- Caption "Site 1234" + H1 "Site home forecasts"
+- Tier 1 forecast table — 6 tenure rows × 4 columns
+- Tier 2 forecast table — 6 tenure rows × 4 columns (same column config, different row IDs)
+- Total homes forecasted — pure read-only `govuk-table` with `aria-labelledby`
+- Further forecast details — community-led homes + MMC homes inputs
+- Button group: Save (primary) + Build analysis (secondary)
+
+**Columns (shared between both tier tables):**
+| Column | Type | editable | calculated |
+|---|---|---|---|
+| Tenure type | Row header | — | — |
+| Homes current forecast | Input | yes | no |
+| Actual home completions | Read-only span | no | no (seeded from IMS) |
+| Homes remaining | Read-only span | no | yes (forecast − actual) |
+
+**Tenure rows (both tiers, suffixed -t1 / -t2):**
+Social Rent, Affordable Rent, Specialist and supported housing for rent,
+Rent to Buy, Shared Ownership, Older Persons Shared Ownership
+
+**Tables rendered via** `editableTable` Nunjucks macro in `app/views/components/editableTable.html`
+
+**JavaScript:** `editable-table.js` — listens on `input`/`change`, calls `recalculateRow(rowId)`
+and `recalculateTotals()`. Also runs on page load. Updates `.sp-units-remaining[data-row]`
+spans and `.sp-total-forecast`, `.sp-total-actual`, `.sp-total-remaining` in totals table.
+
+### Build analysis page (`/site-units-forecast-build-analysis`)
+Documents the build for accessibility review and design critique. Sections:
+1. Overview
+2. GDS alignment (12 items, all linked to GDS design system)
+3. Custom departure (single: editable inline table pattern)
+4. Implementation details (3 items flowing from the table pattern)
+5. Recommended accessibility tests (12-row table: tool, what to check, predicted outcome,
+   actual result — blank column for populating after real testing)
+
+### Component library (`/components` + 8 detail pages)
+8 SP custom components documented to GDS design system standard:
+Accessible chart, Date picker, Editable table, Important notification banner,
+Multi-column form, Role switcher, Stat card, Year tabs.
+
+Each detail page: description, when to use, when not to use, GDS relationship,
+live example, "Show HTML" details block, in-context link, accessibility notes, research.
+
+---
+
+## Key Sass classes
+
+### `.sp-*` — editable table pattern (in `_editable-table.scss`)
+- `.sp-table-wrapper` — `overflow-x: auto` horizontal scroll container
+- `.sp-editable-table` — table root; sets `vertical-align: bottom` on `thead th`
+- `.sp-tenure-type-header` — `min-width: 260px; vertical-align: middle`
+- `.sp-input-cell` — `vertical-align: middle`
+- `.sp-calculated-cell` — `vertical-align: middle`
+- `.sp-table-input.govuk-input` — `margin-bottom: 0` (removes default stacked-form spacing)
+- `.sp-units-remaining` — target for JS recalculation; has `aria-live="polite"`
+- `.sp-deficit-tag` — `margin-left: govuk-spacing(1); vertical-align: middle`
+- `.sp-total-forecast` / `.sp-total-actual` / `.sp-total-remaining` — totals table targets
+
+### `.cl-*` — component library docs (in `_component-library.scss`)
+- `.cl-example` — bordered/padded live example block
+- `.cl-code-block pre` — dark code block for HTML source display
+- `.cl-card` / `.cl-card:hover` — component index cards
+- `.cl-thumbnail` — clipped live preview in index cards
+- `.cl-context-example` — blue-tinted in-context example block
+
+---
+
+## Key data attributes (used by editable-table.js)
+- `data-row="[row-id]"` — on inputs and calculated spans; links input to its row
+- `data-col="forecast"` / `data-col="actual"` — on inputs and read-only spans
+- `class="sp-units-remaining"` + `data-row` — calculated remaining span per row
+- `class="sp-total-forecast"` / `sp-total-actual` / `sp-total-remaining` — totals
 
 ---
 
@@ -135,14 +222,20 @@ Routes follow REST conventions: GET to render, POST to save, always redirect aft
 **Tables**
 - `<th scope="col">` for column headers
 - `<th scope="row">` for row headers (tenure types etc.)
-- Summary/total rows must be marked with appropriate scope or headers attribute
+- Use `<caption class="govuk-table__caption govuk-table__caption--m">` instead of an
+  external `<h2>` — captions are programmatically associated with the table (WCAG 1.3.1)
+- For tables that need an external heading: use `aria-labelledby` pointing to the heading's `id`
+- Do NOT add `aria-label` to read-only `<span>` cells inside scoped tables — it overrides
+  the natural row+column context announced by NVDA/JAWS table navigation
 
 **Editable tables**
-- Every input inside a table cell: `aria-label="[Row header], [Column header]"`
-  e.g. `aria-label="Shared Ownership, Homes Current Forecast"`
+- Every input inside a table cell: `aria-label="[Row header] - [Column header]"`
+  e.g. `aria-label="Shared Ownership - Homes current forecast"`
 - Auto-calculated cells: `aria-live="polite"` so screen readers announce changes
-- Deficit/negative indicators: use `govuk-tag--red` with visible text ("Deficit"),
-  never colour alone
+- Deficit/negative indicators: use `govuk-tag--red` inside `<strong>` with visible
+  text "Deficit" — tag sits inside the aria-live span so screen reader announces
+  e.g. "−5 Deficit" naturally. No aria-hidden or visually-hidden text needed.
+- `type="text" inputmode="numeric"` — NEVER `type="number"` (causes JAWS "spin button")
 
 **Charts**
 - `<canvas>` element must have `aria-hidden="true"`
@@ -209,7 +302,7 @@ what's visible on screen. Rules:
   ```
 - Chart colours will be overridden — the accompanying data table becomes the only
   usable version of chart data in this mode. This is expected and acceptable.
-- Add this media query to `_custom.scss` globally, not per-component
+- Add this media query to `_component-library.scss` globally, not per-component
 
 ---
 
@@ -271,22 +364,42 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
    relationship, isolated example, in-context example, accessibility, research)
 4. Add route in `app/routes.js`
 5. Add card entry to component index at `app/views/components/index.html`
-6. Document accessibility behaviour and test results in `app/docs/accessibility-notes.md`
-7. Run axe DevTools and Lighthouse — record scores in accessibility-notes.md
-8. Add entry to "Decisions made" section below
+6. Run axe DevTools and Lighthouse — record any issues
+7. Add entry to "Decisions made" section below
 
 ---
 
 ## Decisions made
+
+### Architecture
 - Chart.js chosen over D3 — better accessibility/speed tradeoff for this team's context
 - Tier tables use client-side auto-calculation, not server-side — reduces round trips
   for data-entry-heavy SP workflows
 - Role switcher saves to session not URL params — avoids role leaking into shared URLs
 - Multi-column form layout used for Add new site — SP user research showed single-column
   increased task time significantly vs IMS. DOM order maintained for WCAG 1.3.2.
-- Simultaneous chart + data table layout used on Programme Manager overview — showing
-  both at once is a deliberate accessibility enhancement, not a deviation
 - Dragon-compatible aria-labels adopted as standard across all components — labels mirror
   visible text rather than using programmatic identifiers
-- forced-colors media query added globally — not per-component, to ensure consistent
-  High Contrast Mode support across all interactive elements
+
+### Site home forecasts page specifically
+- `govuk-table__caption--m` used instead of external `<h2>` for Tier 1/2 tables —
+  captions are programmatically associated with their table; standalone headings are not
+- Totals table uses `aria-labelledby` pointing to an external `<h2 id>` — correct
+  pattern when the heading must remain outside the table element
+- `aria-label` removed from all read-only `<span>` cells — overrides table scope
+  navigation in NVDA/JAWS. Table `scope` headers provide context natively.
+- `govuk-tag--red` inside `<strong>` for deficit — sits inside `aria-live` span so
+  screen readers announce e.g. "−5 Deficit" naturally. No extra hidden text needed.
+- `type="text" inputmode="numeric"` throughout — `type="number"` causes JAWS "spin button"
+- `margin-bottom: 0` on `.sp-table-input.govuk-input` — default margin designed for
+  stacked form layouts creates unintended row height inside table cells
+- `vertical-align: bottom` on `thead .govuk-table__header` — ensures all column headers
+  sit flush to the table body regardless of line count. GDS does not set this, so additive.
+- `govuk-!-margin-top-6` on Tier 1 grid row — separates H1 from first table
+- Page width kept at GDS default 1020px — no custom departure claimed
+
+### Deployment
+- Railway deployment uses `railway.json` at repo root with `rootDirectory: "homes-england-sp-prototype"`
+- Inner prototype `.git` folder removed to flatten into outer repo so Railway can
+  access all files when cloning from GitHub
+- `.claude/` folder excluded via `.gitignore` at repo root
