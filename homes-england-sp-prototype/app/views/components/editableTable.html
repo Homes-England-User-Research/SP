@@ -1,0 +1,119 @@
+{#
+  Reusable editable table macro for Strategic Partnerships pages.
+
+  SP users are accustomed to IMS (Investment Management System) which displays
+  dense, data-rich tables with editable inline inputs — not GDS one-question-per-page
+  patterns. This macro supports that pattern while maintaining WCAG 2.1 AA compliance.
+
+  Parameters:
+    rows       - required  - array of objects: { id, tenureType }
+    columns    - required  - array of objects: { label, name, editable (bool), readOnly (bool) }
+    caption    - optional  - string shown as a <caption> element
+    sessionData - optional - object of key/value pairs used to pre-populate inputs
+    colWidths  - optional  - array of CSS width strings (e.g. ["40%", "15%", "15%", "15%", "15%"])
+                             When provided, renders a <colgroup> so the browser distributes column
+                             widths proportionally rather than defaulting to equal widths.
+                             The tenure type column should generally be the widest to accommodate
+                             long names without excessive wrapping.
+
+  Each input gets an aria-label combining tenureType + column label for screen readers.
+  Auto-calculated cells use aria-live="polite" (WCAG 4.1.3).
+#}
+
+{% macro editableTable(rows, columns, caption, sessionData, colWidths) %}
+<table class="govuk-table sp-editable-table">
+  {% if caption %}
+    {#
+      govuk-table__caption--m matches govuk-heading-m size, replacing the
+      separate <h2> that would otherwise sit outside the table element and
+      have no programmatic association with it.
+    #}
+    <caption class="govuk-table__caption govuk-table__caption--m">{{ caption }}</caption>
+  {% endif %}
+
+  {# Optional column widths — prevents browser defaulting to equal-width columns #}
+  {% if colWidths %}
+    <colgroup>
+      {% for width in colWidths %}
+        <col style="width: {{ width }}">
+      {% endfor %}
+    </colgroup>
+  {% endif %}
+
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      {% for column in columns %}
+        <th scope="col" class="govuk-table__header{% if column.numeric %} govuk-table__header--numeric{% endif %}">{{ column.labelHtml | safe if column.labelHtml else column.label }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody class="govuk-table__body">
+    {% for row in rows %}
+      <tr class="govuk-table__row" data-row-id="{{ row.id }}">
+        {% for column in columns %}
+          {% if loop.first %}
+            {# First column is the tenure type label — row header for accessibility #}
+            <th scope="row" class="govuk-table__header sp-tenure-type-header">
+              {{ row.tenureType }}
+            </th>
+          {% elif column.readOnly and column.calculated %}
+            {#
+              Auto-calculated read-only cell — Homes Remaining.
+              No aria-label: table scope headers provide row+column context
+              via standard table navigation. aria-live="polite" announces
+              the updated value to screen readers when it changes (WCAG 4.1.3).
+              The deficit tag text "Deficit" is announced naturally as part
+              of the live region content — no aria-hidden needed.
+            #}
+            <td class="govuk-table__cell sp-calculated-cell{% if column.numeric %} govuk-table__cell--numeric{% endif %}">
+              <span
+                class="sp-units-remaining"
+                data-row="{{ row.id }}"
+                aria-live="polite"
+              >
+                {%- set forecastVal = sessionData[row.id + '-forecast'] | int(0) -%}
+                {%- set actualVal = sessionData[row.id + '-actual'] | int(0) -%}
+                {%- set remaining = forecastVal - actualVal -%}
+                {{ remaining }}
+                {% if remaining < 0 %}
+                  <strong class="govuk-tag govuk-tag--red sp-deficit-tag">Deficit</strong>
+                {% endif %}
+              </span>
+            </td>
+          {% elif column.readOnly %}
+            {#
+              Read-only cell. No aria-label on the span — the table's
+              scope="col" and scope="row" headers already provide the
+              row+column context to screen readers via standard table
+              navigation. An aria-label here would override that
+              relationship and break table navigation in NVDA/JAWS.
+            #}
+            <td class="govuk-table__cell{% if column.numeric %} govuk-table__cell--numeric{% endif %}">
+              <span
+                data-col="{{ column.name }}"
+                data-row="{{ row.id }}"
+              >{{ sessionData[row.id + '-' + column.name] or '0' }}</span>
+            </td>
+          {% else %}
+            {# Editable input cell #}
+            <td class="govuk-table__cell sp-input-cell{% if column.numeric %} govuk-table__cell--numeric{% endif %}">
+              <input
+                class="govuk-input sp-table-input"
+                type="text"
+                inputmode="numeric"
+                id="{{ row.id }}-{{ column.name }}"
+                name="{{ row.id }}-{{ column.name }}"
+                value="{{ sessionData[row.id + '-' + column.name] if sessionData else '' }}"
+                aria-label="{{ row.tenureType }} - {{ column.label }}"
+                data-row="{{ row.id }}"
+                data-col="{{ column.name }}"
+              >
+            </td>
+          {% endif %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}

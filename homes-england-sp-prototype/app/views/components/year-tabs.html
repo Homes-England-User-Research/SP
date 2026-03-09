@@ -1,0 +1,245 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Year tabs" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Year tabs" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Year tabs</h1>
+    <p class="govuk-body-l">
+      A tab component for navigating between financial year panels, built to the
+      WAI-ARIA Authoring Practices Guide tab pattern. All panels remain visible
+      without JavaScript.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the year tabs component when the same data structure repeats across
+      multiple financial years and users need to switch between them frequently —
+      for example, comparing quarterly expenditure across programme years.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      Do not use tabs for general page navigation — use
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">breadcrumbs</a>
+      or a
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/contents-list/">contents list</a>
+      instead. Do not use tabs to hide information that users will frequently need
+      to compare — consider a table or stacked sections instead.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      The GOV.UK Design System does not currently include a tab component. This
+      component follows the
+      <a class="govuk-link" href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/">WAI-ARIA APG tab pattern</a>
+      using <code>role="tablist"</code>, <code>role="tab"</code>,
+      <code>role="tabpanel"</code>, <code>aria-selected</code>,
+      <code>aria-controls</code> and <code>aria-labelledby</code>.
+      It degrades gracefully — all panels are visible in the no-JavaScript state.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Year tabs component.
+        JavaScript (year-tabs.js) targets [data-module="year-tabs"].
+        Without JS: all three panels render as stacked sections.
+        With JS: panels are shown/hidden; tab keyboard navigation is applied.
+      #}
+      <div data-module="year-tabs" class="sp-year-tabs">
+        <ul role="tablist" aria-label="Financial years" class="sp-year-tabs__list">
+          <li role="presentation">
+            <button role="tab"
+                    id="tab-2025"
+                    aria-controls="panel-2025"
+                    aria-selected="true"
+                    tabindex="0"
+                    class="sp-year-tabs__tab">
+              2024–25
+            </button>
+          </li>
+          <li role="presentation">
+            <button role="tab"
+                    id="tab-2024"
+                    aria-controls="panel-2024"
+                    aria-selected="false"
+                    tabindex="-1"
+                    class="sp-year-tabs__tab">
+              2023–24
+            </button>
+          </li>
+          <li role="presentation">
+            <button role="tab"
+                    id="tab-2023"
+                    aria-controls="panel-2023"
+                    aria-selected="false"
+                    tabindex="-1"
+                    class="sp-year-tabs__tab">
+              2022–23
+            </button>
+          </li>
+        </ul>
+
+        <div role="tabpanel" id="panel-2025" aria-labelledby="tab-2025" class="sp-year-tabs__panel">
+          <h3 class="govuk-heading-m">2024–25 data</h3>
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q1 Units completed</dt>
+              <dd class="govuk-summary-list__value">45</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q2 Units completed</dt>
+              <dd class="govuk-summary-list__value">62</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q3 Units completed</dt>
+              <dd class="govuk-summary-list__value">58</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div role="tabpanel" id="panel-2024" aria-labelledby="tab-2024" class="sp-year-tabs__panel">
+          <h3 class="govuk-heading-m">2023–24 data</h3>
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q1 Units completed</dt>
+              <dd class="govuk-summary-list__value">38</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q2 Units completed</dt>
+              <dd class="govuk-summary-list__value">55</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q3 Units completed</dt>
+              <dd class="govuk-summary-list__value">49</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div role="tabpanel" id="panel-2023" aria-labelledby="tab-2023" class="sp-year-tabs__panel">
+          <h3 class="govuk-heading-m">2022–23 data</h3>
+          <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q1 Units completed</dt>
+              <dd class="govuk-summary-list__value">29</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q2 Units completed</dt>
+              <dd class="govuk-summary-list__value">41</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Q3 Units completed</dt>
+              <dd class="govuk-summary-list__value">37</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;div data-module="year-tabs"&gt;
+  &lt;ul role="tablist" aria-label="Financial years"&gt;
+    &lt;li role="presentation"&gt;
+      &lt;button role="tab"
+              id="tab-2025"
+              aria-controls="panel-2025"
+              aria-selected="true"
+              tabindex="0"&gt;
+        2024&ndash;25
+      &lt;/button&gt;
+    &lt;/li&gt;
+    &lt;!-- more tabs... --&gt;
+  &lt;/ul&gt;
+
+  &lt;div role="tabpanel"
+       id="panel-2025"
+       aria-labelledby="tab-2025"&gt;
+    &lt;!-- panel content --&gt;
+  &lt;/div&gt;
+  &lt;!-- more panels... --&gt;
+&lt;/div&gt;
+
+&lt;script src="/public/javascripts/year-tabs.js"&gt;&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        Year tabs are typically placed on programme overview or quarterly reporting
+        pages where the same data structure exists for each financial year.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/site-units-forecast">See the Site Units Forecast page →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WAI-ARIA tab pattern</strong>: uses <code>role="tablist"</code>,
+        <code>role="tab"</code> and <code>role="tabpanel"</code> with correct
+        <code>aria-controls</code> / <code>aria-labelledby</code> relationships.
+      </li>
+      <li>
+        <strong>Keyboard — tab selection</strong>: Left and Right arrow keys move
+        focus between tabs and activate them. Home and End jump to first and last
+        tabs. Enter and Space are handled natively by the <code>&lt;button&gt;</code>.
+      </li>
+      <li>
+        <strong>Roving tabindex</strong>: the selected tab has
+        <code>tabindex="0"</code>; all others have <code>tabindex="-1"</code>.
+        Tab key moves into and out of the tablist as a single stop.
+      </li>
+      <li>
+        <strong>Graceful degradation</strong>: without JavaScript all panels are
+        visible as stacked sections. No content is hidden from users without JS.
+      </li>
+      <li>
+        <strong>WCAG 1.3.1 Info and Relationships</strong>: the programmatic
+        relationship between each tab and its panel is expressed via
+        <code>aria-controls</code> and <code>aria-labelledby</code>, not just
+        visual proximity.
+      </li>
+      <li>
+        <strong>Tested with</strong>: NVDA + Chrome (Windows). [Further testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      SP users frequently need to compare data across multiple financial years
+      without leaving the current page. Navigating to separate pages for each
+      year was identified as a friction point during IMS usage. Year tabs provide
+      fast in-page switching while keeping the current year prominent.
+      [Research to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/year-tabs.js"></script>
+{% endblock %}

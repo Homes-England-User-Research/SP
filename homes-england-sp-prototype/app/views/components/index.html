@@ -1,0 +1,229 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Component library" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Components</h1>
+    <p class="govuk-body-l">
+      The following components extend the GOV.UK Design System for use in Homes England
+      Strategic Partnerships. Each component follows WCAG 2.1 AA as a minimum, is keyboard
+      navigable, and has been tested with screen readers. Where a component deviates from
+      or extends a standard GDS pattern, the rationale is documented.
+    </p>
+  </div>
+</div>
+
+{#
+  Two-column card grid mirroring the GOV.UK Design System components index.
+  Each card shows the component name (link), a one-line description, and a
+  live mini-thumbnail preview (real HTML, clipped by CSS — not a screenshot).
+  pointer-events: none on .cl-thumbnail prevents interaction with the preview.
+#}
+<div class="govuk-grid-row">
+
+  {# ── 1. Accessible chart ─────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/accessible-chart">Accessible chart</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Display data visually with a Chart.js visualisation paired with an always-present data table.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div style="display:flex;gap:4px;align-items:flex-end;padding:8px;height:80px;">
+          <div style="width:20px;height:60%;background:#1d70b8;"></div>
+          <div style="width:20px;height:80%;background:#1d70b8;"></div>
+          <div style="width:20px;height:45%;background:#1d70b8;"></div>
+          <div style="width:20px;height:90%;background:#1d70b8;"></div>
+          <div style="width:20px;height:55%;background:#1d70b8;"></div>
+          <div style="width:20px;height:70%;background:#1d70b8;"></div>
+        </div>
+        <p class="govuk-body-s" style="padding:4px 8px;margin:0;font-size:12px;">Units completed by quarter</p>
+      </div>
+    </div>
+  </div>
+
+  {# ── 2. Date picker ──────────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/date-picker">Date picker</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Enhanced date input with optional visual calendar picker. Progressive enhancement of the GDS date input.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div style="padding:8px;">
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <input class="govuk-input govuk-input--width-2" type="text" value="15" readonly style="pointer-events:none;">
+            <input class="govuk-input govuk-input--width-2" type="text" value="03" readonly style="pointer-events:none;">
+            <input class="govuk-input govuk-input--width-4" type="text" value="2025" readonly style="pointer-events:none;">
+            <button class="govuk-button govuk-button--secondary" style="padding:5px 8px;pointer-events:none;">&#128197;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── 3. Editable table ───────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/editable-table">Editable table</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Enter and update data inline within a GOV.UK-styled table without navigating away from the page.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <table class="govuk-table" style="font-size:11px;margin:0;">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header">Tenure</th>
+              <th class="govuk-table__header">Forecast</th>
+              <th class="govuk-table__header">Remaining</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">Shared Ownership</td>
+              <td class="govuk-table__cell"><input class="govuk-input govuk-input--width-2" type="number" value="5" style="pointer-events:none;"></td>
+              <td class="govuk-table__cell">5</td>
+            </tr>
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">Affordable Rent</td>
+              <td class="govuk-table__cell"><input class="govuk-input govuk-input--width-2" type="number" value="" style="pointer-events:none;"></td>
+              <td class="govuk-table__cell">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {# ── 4. Important notification banner ────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/important-notification-banner">Important notification banner</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Highlight time-sensitive actions with an inline call-to-action link.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div class="govuk-notification-banner govuk-notification-banner--success" style="margin:8px;font-size:12px;">
+          <div class="govuk-notification-banner__header">
+            <h3 class="govuk-notification-banner__title" style="font-size:13px;">Important</h3>
+          </div>
+          <div class="govuk-notification-banner__content">
+            <p class="govuk-body-s" style="margin:0;">Your quarterly return is due in <strong>3 days</strong>. <a href="#" class="govuk-link">Submit now</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── 5. Multi-column form ────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/multi-column-form">Multi-column form</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Lay out related form fields side by side for data-dense entry by professional users.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;font-size:12px;">
+          <div>
+            <label class="govuk-label" style="font-size:11px;">Start date</label>
+            <input class="govuk-input" type="text" value="01/04/2024" style="pointer-events:none;font-size:11px;">
+          </div>
+          <div>
+            <label class="govuk-label" style="font-size:11px;">End date</label>
+            <input class="govuk-input" type="text" value="31/03/2025" style="pointer-events:none;font-size:11px;">
+          </div>
+          <div>
+            <label class="govuk-label" style="font-size:11px;">Units agreed</label>
+            <input class="govuk-input govuk-input--width-5" type="text" value="120" style="pointer-events:none;font-size:11px;">
+          </div>
+          <div>
+            <label class="govuk-label" style="font-size:11px;">Units forecast</label>
+            <input class="govuk-input govuk-input--width-5" type="text" value="115" style="pointer-events:none;font-size:11px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── 6. Role switcher ────────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/role-switcher">Role switcher</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Change dashboard view based on user role without altering account-level access controls.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div style="padding:8px;font-size:12px;">
+          <label class="govuk-label" style="font-size:11px;">Viewing as</label>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <select class="govuk-select" style="font-size:11px;pointer-events:none;">
+              <option selected>Programme Manager</option>
+              <option>Finance Officer</option>
+              <option>Administrator</option>
+            </select>
+            <button class="govuk-button" style="margin:0;padding:5px 8px;font-size:11px;pointer-events:none;">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── 7. Stat card ────────────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/stat-card">Stat card</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Display a key metric with a label, value, optional trend indicator and supporting text.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <article style="border:2px solid #1d70b8;padding:12px 16px;font-family:inherit;">
+          <p style="margin:0 0 4px;font-size:12px;color:#505a5f;">Units completed this year</p>
+          <p style="margin:0 0 4px;font-size:28px;font-weight:bold;color:#0b0c0c;">247</p>
+          <p style="margin:0;font-size:12px;color:#00703c;">&#8679; 12% above target</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  {# ── 8. Year tabs ────────────────────────────────────────────── #}
+  <div class="govuk-grid-column-one-half">
+    <div class="cl-card">
+      <h2 class="govuk-heading-m">
+        <a class="govuk-link cl-card__link" href="/components/year-tabs">Year tabs</a>
+      </h2>
+      <p class="govuk-body cl-card__description">
+        Navigate between financial year panels using an accessible WAI-ARIA tab pattern.
+      </p>
+      <div class="cl-thumbnail" aria-hidden="true">
+        <div style="padding:8px;font-size:12px;">
+          <ul style="list-style:none;margin:0 0 4px;padding:0;display:flex;gap:0;border-bottom:2px solid #b1b4b6;">
+            <li style="background:#1d70b8;color:#fff;padding:4px 10px;font-size:11px;font-weight:bold;">2024–25</li>
+            <li style="padding:4px 10px;font-size:11px;border:1px solid #b1b4b6;">2023–24</li>
+            <li style="padding:4px 10px;font-size:11px;border:1px solid #b1b4b6;">2022–23</li>
+          </ul>
+          <div style="padding:6px 0;font-size:11px;">Q1: 45 units &nbsp; Q2: 62 units</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+// =============================================================================
+// _editable-table.scss
+//
+// Styles for SP (Strategic Partnerships) editable table pattern.
+//
+// SP users are accustomed to IMS (Investment Management System) which presents
+// dense, data-rich tables with compact rows — similar to a spreadsheet view.
+// We reduce input padding slightly to achieve this density without removing
+// the GOV.UK focus styles required for WCAG 2.1 AA compliance.
+// =============================================================================
+
+// Table wrapper — allows horizontal scrolling on narrow viewports
+.sp-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: govuk-spacing(6);
+}
+
+// The editable table itself
+.sp-editable-table {
+  width: 100%;
+
+  // Base-align column headers so all headers sit flush to the table body
+  // regardless of whether they wrap to one or two lines.
+  // GDS does not set vertical-align on th elements, so this is a permitted addition.
+  thead .govuk-table__header {
+    vertical-align: bottom;
+  }
+
+  // Tenure-type row header — GDS default bold weight preserved.
+  .sp-tenure-type-header {
+    min-width: 260px; // Prevent long tenure names from becoming too narrow on narrow viewports
+    vertical-align: middle;
+  }
+
+  // Cells that contain inputs
+  .sp-input-cell {
+    vertical-align: middle;
+    // white-space: nowrap removed — caused horizontal overflow at high zoom
+    // levels, risking WCAG 1.4.10 Reflow failure at 400% zoom
+  }
+
+  // Cells that display calculated read-only values
+  .sp-calculated-cell {
+    vertical-align: middle;
+  }
+
+  // Inputs inside table cells — GDS default padding preserved.
+  // margin-bottom: 0 removes the default bottom margin so inputs sit flush
+  // within the table cell without creating extra row height.
+  .sp-table-input.govuk-input {
+    margin-bottom: 0;
+  }
+
+  // Right-align numbers in numeric input cells to match GDS numeric table pattern
+  .govuk-table__cell--numeric .sp-table-input.govuk-input {
+    text-align: right;
+  }
+}
+
+// Deficit tag — sits inline next to the remaining units value
+.sp-deficit-tag {
+  margin-left: govuk-spacing(1);
+  vertical-align: middle;
+}
+

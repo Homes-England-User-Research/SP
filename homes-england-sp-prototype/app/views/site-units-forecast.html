@@ -1,0 +1,219 @@
+{% extends "layouts/main.html" %}
+
+{% from "components/editableTable.html" import editableTable %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% set pageName = "Site home forecasts" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Sites", href: "#" },
+      { text: "Site summary", href: "#" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{#
+  SP (Strategic Partnerships) page pattern — intentionally departs from GDS
+  one-question-per-page convention. SP users are accustomed to the IMS
+  (Investment Management System) which presents dense, data-rich forms with
+  multiple editable fields on a single page. This layout replicates that
+  experience while remaining WCAG 2.1 AA compliant.
+#}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <span class="govuk-caption-l">Site 1234</span>
+    <h1 class="govuk-heading-l">Site home forecasts</h1>
+
+  </div>
+</div>
+
+<form method="post" action="/site-units-forecast">
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+  {#
+    Shared column and colgroup configuration for both tier tables.
+    3 numeric columns after the Tenure type row header:
+      40% — Tenure type (long names need the most space)
+      20% × 3 — numeric columns (wider to keep headers to 2 lines)
+    numeric: true applies govuk-table__header--numeric / govuk-table__cell--numeric
+    for right-aligned headers and cells — matching GDS numeric table guidance.
+  #}
+  {% set tierColumns = [
+    { label: "Tenure type",             name: "tenure",   editable: false, readOnly: false, isHeader: true },
+    { label: "Homes current forecast",  name: "forecast", editable: true,  readOnly: false, numeric: true },
+    { label: "Actual home completions", name: "actual",   editable: false, readOnly: true,  calculated: false, numeric: true },
+    { label: "Homes remaining",         name: "remaining",editable: false, readOnly: true,  calculated: true,  numeric: true }
+  ] %}
+
+  {% set tierColWidths = ["40%", "20%", "20%", "20%"] %}
+
+  {# ── Tier 1 forecast ──────────────────────────────────────────────────────── govuk-!-margin-top-6 adds 30px above the first table, separating it from the H1 #}
+  {#
+    Caption replaces the separate <h2> so the table heading is programmatically
+    associated with the table element — screen readers announce the caption
+    when entering the table. A standalone <h2> outside the table has no
+    native association with it (WCAG 1.3.1 Info and Relationships).
+  #}
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-full">
+
+      {% set tier1Rows = [
+        { id: "social-rent-t1",        tenureType: "Social Rent" },
+        { id: "affordable-rent-t1",    tenureType: "Affordable Rent" },
+        { id: "specialist-housing-t1", tenureType: "Specialist and supported housing for rent" },
+        { id: "rent-to-buy-t1",        tenureType: "Rent to Buy" },
+        { id: "shared-ownership-t1",   tenureType: "Shared Ownership" },
+        { id: "older-persons-so-t1",   tenureType: "Older Persons Shared Ownership" }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(tier1Rows, tierColumns, "Tier 1 forecast", data, tierColWidths) }}
+      </div>
+
+    </div>
+  </div>
+  {# ── end Tier 1 ───────────────────────────────────────────────────────────── #}
+
+  {# ── Tier 2 forecast ──────────────────────────────────────────────────────── #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set tier2Rows = [
+        { id: "social-rent-t2",        tenureType: "Social Rent" },
+        { id: "affordable-rent-t2",    tenureType: "Affordable Rent" },
+        { id: "specialist-housing-t2", tenureType: "Specialist and supported housing for rent" },
+        { id: "rent-to-buy-t2",        tenureType: "Rent to Buy" },
+        { id: "shared-ownership-t2",   tenureType: "Shared Ownership" },
+        { id: "older-persons-so-t2",   tenureType: "Older Persons Shared Ownership" }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(tier2Rows, tierColumns, "Tier 2 forecast", data, tierColWidths) }}
+      </div>
+
+    </div>
+  </div>
+  {# ── end Tier 2 ───────────────────────────────────────────────────────────── #}
+
+  {# ── Total homes forecasted ───────────────────────────────────────────────── #}
+  {#
+    Read-only summary row. Values are calculated by editable-table.js by
+    summing all forecast inputs and actual/remaining cells across both tiers.
+    aria-live="polite" on each total span so screen readers announce updates.
+  #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {#
+        aria-labelledby associates the table with its visible <h2> heading —
+        the same accessible name pattern as using a caption, but avoids
+        duplicating the heading text inside the table element.
+      #}
+      <h2 class="govuk-heading-m" id="total-homes-heading">Total homes forecasted</h2>
+
+      <div class="sp-table-wrapper">
+        <table class="govuk-table" aria-labelledby="total-homes-heading">
+          <colgroup>
+            <col style="width: 40%">
+            <col style="width: 20%">
+            <col style="width: 20%">
+            <col style="width: 20%">
+          </colgroup>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Homes Current Forecast</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Actual Home Completions</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Homes Remaining</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header sp-tenure-type-header">Total homes (grant funded)</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-forecast" aria-live="polite">0</span>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-actual">0</span>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-remaining" aria-live="polite">0</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  {# ── end totals ───────────────────────────────────────────────────────────── #}
+
+  {# ── Further forecast details ─────────────────────────────────────────────── #}
+  {#
+    Standard GDS single-column form layout — one question per group,
+    stacked vertically per GDS question page guidance.
+  #}
+  <div class="govuk-grid-row govuk-!-margin-top-2">
+    <div class="govuk-grid-column-two-thirds">
+
+      <h2 class="govuk-heading-m">Further forecast details</h2>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="community-led-homes">
+          Number of homes provided by community-led organisations
+        </label>
+        <input
+          class="govuk-input govuk-input--width-10"
+          type="text"
+          inputmode="numeric"
+          id="community-led-homes"
+          name="community-led-homes"
+          value="{{ data['community-led-homes'] }}"
+        >
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="mmc-homes">
+          Number of homes which will utilise at least one category of MMC
+        </label>
+        <input
+          class="govuk-input govuk-input--width-10"
+          type="text"
+          inputmode="numeric"
+          id="mmc-homes"
+          name="mmc-homes"
+          value="{{ data['mmc-homes'] }}"
+        >
+      </div>
+
+    </div>
+  </div>
+  {# ── end further details ──────────────────────────────────────────────────── #}
+
+  {# ── Save button ──────────────────────────────────────────────────────────── #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-button-group">
+        <button class="govuk-button" type="submit" data-module="govuk-button">
+          Save
+        </button>
+        <a class="govuk-button govuk-button--secondary" href="/site-units-forecast-build-analysis">
+          Build analysis
+        </a>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/editable-table.js"></script>
+{% endblock %}

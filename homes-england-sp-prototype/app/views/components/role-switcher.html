@@ -1,0 +1,166 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Role switcher" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Role switcher" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Role switcher</h1>
+    <p class="govuk-body-l">
+      A select dropdown and save button that changes the content of a dashboard page
+      based on the user's chosen role view. This is a view preference, not an access
+      control mechanism.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the role switcher on overview pages that serve multiple user types —
+      for example, programme managers, finance officers and administrators — who
+      each need different KPIs and actions from the same page.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      Do not use the role switcher for access control. If different users genuinely
+      should not see certain data, implement proper role-based access control at
+      the service level. The role switcher is a prototype pattern for testing
+      different dashboard views, not a production security mechanism.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      This is a new pattern not in the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/">GOV.UK Design System</a>.
+      It uses the standard
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">govuk-select</a>
+      and
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">govuk-button</a>
+      components. The combined select-and-save control pattern does not currently
+      appear in GDS.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Role switcher component.
+        Standard GDS select + button pattern.
+        Label is explicitly associated via for/id.
+        On form submit, the page reloads with the selected role in session.
+        In this prototype example the form posts to /role-switcher-demo (not a real route).
+      #}
+      <form method="post" action="/role-switcher-demo" class="sp-role-switcher">
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="role-view">
+            Viewing as
+          </label>
+          <div class="sp-role-switcher__controls">
+            <select class="govuk-select" id="role-view" name="role-view">
+              <option value="programme-manager" selected>Programme Manager</option>
+              <option value="finance-officer">Finance Officer</option>
+              <option value="administrator">Administrator</option>
+              <option value="delivery-partner">Delivery Partner</option>
+            </select>
+            <button class="govuk-button govuk-button--secondary sp-role-switcher__submit"
+                    type="submit">
+              Apply role view
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;form method="post" action="/role-switcher-demo"&gt;
+  &lt;div class="govuk-form-group"&gt;
+    &lt;label class="govuk-label" for="role-view"&gt;
+      Viewing as
+    &lt;/label&gt;
+    &lt;div class="sp-role-switcher__controls"&gt;
+      &lt;select class="govuk-select" id="role-view" name="role-view"&gt;
+        &lt;option value="programme-manager"&gt;Programme Manager&lt;/option&gt;
+        &lt;option value="finance-officer"&gt;Finance Officer&lt;/option&gt;
+        &lt;option value="administrator"&gt;Administrator&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;button class="govuk-button govuk-button--secondary"
+              type="submit"&gt;
+        Apply role view
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        The role switcher sits in the top section of the dashboard overview page,
+        above the stat cards and programme data. After applying a role view the page
+        reloads and content is filtered to match the selected role.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/">Return to prototype home →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WCAG 1.3.1 Info and Relationships</strong>: the <code>&lt;label&gt;</code>
+        is explicitly associated with the <code>&lt;select&gt;</code> via matching
+        <code>for</code> and <code>id</code> attributes.
+      </li>
+      <li>
+        <strong>WCAG 2.4.6 Headings and Labels</strong>: the label "Viewing as"
+        clearly describes the purpose of the control.
+      </li>
+      <li>
+        <strong>Keyboard</strong>: the select is fully keyboard-operable using
+        standard browser behaviour (Tab to focus, arrow keys to choose, Enter to confirm).
+        The Apply button is reached by Tab and activated by Enter or Space.
+      </li>
+      <li>
+        <strong>On submit</strong>: the page reloads with focus managed to the main
+        content heading so screen reader users are oriented after the role change.
+      </li>
+      <li>
+        <strong>WCAG 3.2.2 On Input</strong>: the role view does not change
+        automatically on select — the user must press "Apply role view". This
+        avoids unexpected context changes.
+      </li>
+      <li>
+        <strong>Tested with</strong>: [Testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      During prototype testing, SP users with multiple responsibilities (e.g. both
+      programme management and finance duties) wanted to view the same programme data
+      through different lenses without logging out and back in. The role switcher
+      was prototyped to test whether a view preference pattern could meet this need
+      without requiring separate user accounts. [Research to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}

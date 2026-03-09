@@ -1,0 +1,9 @@
+{
+  "serviceName": "Homes England",
+  "useServiceNavigation": true,
+  "plugins": {
+    "govuk-frontend": {
+      "rebrand": true
+    }
+  }
+}

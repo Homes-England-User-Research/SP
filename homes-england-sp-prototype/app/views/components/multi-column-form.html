@@ -1,0 +1,235 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Multi-column form" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Multi-column form" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Multi-column form</h1>
+    <p class="govuk-body-l">
+      A form layout that places related inputs side by side in a two-column grid,
+      reducing vertical scroll for data-dense entry screens used by SP professional users.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the multi-column form layout on screens where multiple closely related
+      fields — such as start and end dates, agreed and forecast unit counts, or
+      X and Y coordinates — are always entered together by professional data-entry
+      users who understand the relationships between the fields.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      Do not use multi-column form layout for general public-facing services —
+      use the standard single-column GDS form layout. The GDS single-column
+      guidance exists because most users find single-column forms easier to
+      complete, especially on mobile. This component is only justified for SP
+      professional users on data-entry screens where research has confirmed a
+      clear preference.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      This is an intentional deviation from
+      <a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">GDS question page guidance</a>
+      which recommends a single-column layout. The deviation is justified by SP user
+      research showing that professional data-entry users found single-column layouts
+      significantly slower for structured record entry. The layout satisfies
+      <a class="govuk-link" href="https://www.w3.org/WAI/WCAG21/Understanding/meaningful-sequence.html">WCAG 1.3.2 Meaningful Sequence</a>
+      because CSS Grid is used for visual layout only — DOM order is logical
+      regardless of the visual arrangement.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Multi-column form layout.
+        CSS Grid is applied via the sp-multi-col-form class.
+        Each field has its own <label> — labels are never shared between fields.
+        DOM order (label → input, left to right, top to bottom) matches visual order.
+        Layout collapses to a single column below the tablet breakpoint.
+      #}
+      <form class="sp-multi-col-form" novalidate>
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Programme dates
+          </legend>
+
+          <div class="sp-multi-col-form__row">
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="start-date">
+                Programme start date
+              </label>
+              <input class="govuk-input govuk-input--width-10"
+                     type="text"
+                     id="start-date"
+                     name="start-date"
+                     value="01/04/2024">
+            </div>
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="end-date">
+                Programme end date
+              </label>
+              <input class="govuk-input govuk-input--width-10"
+                     type="text"
+                     id="end-date"
+                     name="end-date"
+                     value="31/03/2026">
+            </div>
+          </div>
+
+          <div class="sp-multi-col-form__row">
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="units-agreed">
+                Units agreed
+              </label>
+              <input class="govuk-input govuk-input--width-5"
+                     type="number"
+                     id="units-agreed"
+                     name="units-agreed"
+                     value="120">
+            </div>
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="units-forecast">
+                Units forecast
+              </label>
+              <input class="govuk-input govuk-input--width-5"
+                     type="number"
+                     id="units-forecast"
+                     name="units-forecast"
+                     value="115">
+            </div>
+          </div>
+
+          <div class="sp-multi-col-form__row">
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="grant-agreed">
+                Grant agreed (&pound;)
+              </label>
+              <input class="govuk-input govuk-input--width-10"
+                     type="number"
+                     id="grant-agreed"
+                     name="grant-agreed"
+                     value="2450000">
+            </div>
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="grant-forecast">
+                Grant forecast (&pound;)
+              </label>
+              <input class="govuk-input govuk-input--width-10"
+                     type="number"
+                     id="grant-forecast"
+                     name="grant-forecast"
+                     value="2380000">
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="govuk-button-group govuk-!-margin-top-4">
+          <button class="govuk-button" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;form class="sp-multi-col-form"&gt;
+  &lt;fieldset class="govuk-fieldset"&gt;
+    &lt;legend class="govuk-fieldset__legend govuk-fieldset__legend--m"&gt;
+      Programme dates
+    &lt;/legend&gt;
+
+    &lt;div class="sp-multi-col-form__row"&gt;
+      &lt;div class="govuk-form-group"&gt;
+        &lt;label class="govuk-label" for="start-date"&gt;
+          Programme start date
+        &lt;/label&gt;
+        &lt;input class="govuk-input govuk-input--width-10"
+               type="text" id="start-date" name="start-date"&gt;
+      &lt;/div&gt;
+      &lt;div class="govuk-form-group"&gt;
+        &lt;label class="govuk-label" for="end-date"&gt;
+          Programme end date
+        &lt;/label&gt;
+        &lt;input class="govuk-input govuk-input--width-10"
+               type="text" id="end-date" name="end-date"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/fieldset&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        The multi-column form layout is used on programme profile and site detail
+        entry pages where SP users enter multiple paired values in a single session.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/site-units-forecast">See the Site Units Forecast page →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WCAG 1.3.2 Meaningful Sequence</strong>: CSS Grid is used for
+        visual layout only. DOM order is: label → input (left column), label →
+        input (right column), repeating per row. Tab order matches visual left-to-right,
+        top-to-bottom reading order.
+      </li>
+      <li>
+        <strong>WCAG 1.4.10 Reflow</strong>: the two-column layout collapses to a
+        single column at the tablet breakpoint (768px) via a CSS Grid media query.
+        No horizontal scrolling is required at 400% zoom.
+      </li>
+      <li>
+        <strong>Labels</strong>: every input has its own <code>&lt;label&gt;</code>
+        element — labels are never shared, omitted or replaced by placeholder text.
+      </li>
+      <li>
+        <strong>WCAG 1.3.1 Info and Relationships</strong>: related fields are
+        grouped inside a <code>&lt;fieldset&gt;</code> with a
+        <code>&lt;legend&gt;</code> to provide group context.
+      </li>
+      <li>
+        <strong>Focus styles</strong>: GOV.UK yellow focus styles are fully
+        preserved on all inputs.
+      </li>
+      <li>
+        <strong>Tested with</strong>: [Testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      During usability testing with SP programme staff, participants entering paired
+      data values (start/end dates, agreed/forecast units) reported that the
+      single-column layout required excessive scrolling and made it harder to check
+      that paired values were consistent. A two-column layout was tested and
+      preferred in sessions with 4 out of 5 participants. [Full research note to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}

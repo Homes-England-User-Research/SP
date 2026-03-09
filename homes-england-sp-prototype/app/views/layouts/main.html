@@ -1,0 +1,45 @@
+{#
+  For guidance on how to use layouts see:
+  https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
+#}
+
+{% extends "govuk-prototype-kit/layouts/govuk-branded.njk" %}
+
+{#
+  Import the service navigation macro so we can override the default navigation
+  and inject the "Components" link for the SP component library.
+#}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
+{#
+  Override the govukServiceNavigation block from govuk/template.njk.
+
+  Inheritance chain:
+    page → layouts/main.html → govuk-branded.njk → govuk/template.njk
+
+  govuk-branded.njk calls super() in its header block for govuk-frontend >= 6,
+  which activates the govukServiceNavigation block from govuk/template.njk.
+  Overriding that block here is the correct interception point.
+
+  currentPath is set on res.locals by middleware in routes.js so it is available
+  in all templates. We use the Nunjucks "in" operator to detect /components/*
+  pages since "starts with" is not standard Nunjucks syntax.
+#}
+{% block govukServiceNavigation %}
+  {{ govukServiceNavigation({
+    serviceName: serviceName,
+    serviceUrl: "/",
+    navigation: [
+      {
+        text: "Home",
+        href: "/",
+        current: true if currentPath == "/" else false
+      },
+      {
+        text: "Components",
+        href: "/components",
+        current: true if "/components" in currentPath else false
+      }
+    ]
+  }) }}
+{% endblock %}

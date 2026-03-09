@@ -1,0 +1,258 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Accessible chart" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Accessible chart" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Accessible chart</h1>
+    <p class="govuk-body-l">
+      Renders a Chart.js data visualisation paired with a visible data table,
+      ensuring all chart data is accessible to screen reader users and users who
+      cannot perceive colour.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the accessible chart on any page that presents trend data, comparisons
+      or distributions visually. It is particularly suited to quarterly
+      expenditure and units completion tracking in the SP service.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      For a single key metric, use a
+      <a class="govuk-link" href="/components/stat-card">stat card</a> instead.
+      Do not use a chart to display data that is better expressed as a single
+      sentence or as a
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/summary-list/">summary list</a>.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      The GOV.UK Design System does not currently include a chart component. This
+      pattern follows the
+      <a class="govuk-link" href="https://www.w3.org/WAI/tutorials/images/complex/">W3C guidance on complex images</a>
+      and uses Chart.js for rendering. The canvas element is always paired with a
+      data table so no information is conveyed by the chart alone.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Accessible chart pattern:
+        - <figure> with role="figure" and aria-labelledby provides a labelled region
+        - <canvas> is aria-hidden — the chart is purely visual
+        - The data table below is always present in the DOM, not hidden
+        - Screen readers encounter the table first (it precedes the canvas in DOM order)
+      #}
+      <figure role="figure" aria-labelledby="chart-title-1" class="sp-chart-figure">
+        <figcaption id="chart-title-1" class="govuk-heading-s">
+          Units completed by quarter (2024–25)
+        </figcaption>
+
+        <canvas id="units-chart"
+                aria-hidden="true"
+                width="600" height="300"
+                style="max-width:100%;height:auto;">
+        </canvas>
+
+        <details class="govuk-details govuk-!-margin-top-3">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">View data table</span>
+          </summary>
+          <div class="govuk-details__text">
+            <table class="govuk-table">
+              <caption class="govuk-table__caption govuk-visually-hidden">
+                Units completed by quarter (2024–25)
+              </caption>
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">Quarter</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Units completed</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">Q1 (Apr–Jun 2024)</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">45</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">Q2 (Jul–Sep 2024)</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">62</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">Q3 (Oct–Dec 2024)</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">58</td>
+                </tr>
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">Q4 (Jan–Mar 2025)</td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">82</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </figure>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;figure role="figure" aria-labelledby="chart-title-1"&gt;
+  &lt;figcaption id="chart-title-1" class="govuk-heading-s"&gt;
+    Units completed by quarter
+  &lt;/figcaption&gt;
+
+  &lt;!-- canvas is aria-hidden: chart is purely visual --&gt;
+  &lt;canvas id="my-chart" aria-hidden="true"
+          width="600" height="300"&gt;&lt;/canvas&gt;
+
+  &lt;!-- Data table is always in the DOM --&gt;
+  &lt;table class="govuk-table"&gt;
+    &lt;caption class="govuk-visually-hidden"&gt;
+      Units completed by quarter
+    &lt;/caption&gt;
+    &lt;thead class="govuk-table__head"&gt;...&lt;/thead&gt;
+    &lt;tbody class="govuk-table__body"&gt;...&lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/figure&gt;
+
+&lt;script&gt;
+new Chart(document.getElementById('my-chart'), {
+  type: 'bar',
+  data: {
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    datasets: [{
+      label: 'Units completed',
+      data: [45, 62, 58, 82],
+      backgroundColor: '#1d70b8'
+    }]
+  },
+  options: {
+    animation: { duration: window.matchMedia(
+      '(prefers-reduced-motion: reduce)').matches ? 0 : 400
+    }
+  }
+});
+&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        Charts are typically placed on quarterly expenditure or programme overview
+        pages to visualise trend data alongside the detailed data table.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/site-units-forecast">See the Site Units Forecast page →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WCAG 1.1.1 Non-text Content</strong>: the <code>&lt;canvas&gt;</code>
+        element is <code>aria-hidden="true"</code>. All data is present in the
+        accompanying table which screen readers encounter directly.
+      </li>
+      <li>
+        <strong>WCAG 1.4.1 Use of Colour</strong>: chart bars use a single GDS blue
+        (#1d70b8). Data differences are expressed in the table, not by colour alone.
+        For multi-series charts, patterns or textures should supplement colour.
+      </li>
+      <li>
+        <strong>WCAG 1.4.11 Non-text Contrast</strong>: GDS blue (#1d70b8) on white
+        achieves a 4.6:1 contrast ratio for graphical elements, exceeding the 3:1 minimum.
+      </li>
+      <li>
+        <strong>WCAG 2.3.3 Animation from Interactions</strong>: Chart.js animation
+        duration is set to 0 when <code>prefers-reduced-motion: reduce</code> is active.
+      </li>
+      <li>
+        <strong>Screen reader behaviour</strong>: the <code>&lt;figure&gt;</code> element
+        with <code>role="figure"</code> and <code>aria-labelledby</code> provides a
+        labelled landmark. The data table is the primary data source.
+      </li>
+      <li>
+        <strong>Keyboard</strong>: no interactive controls on the chart itself.
+        The "View data table" disclosure is keyboard operable via the
+        native <code>&lt;details&gt;</code> element.
+      </li>
+      <li>
+        <strong>Tested with</strong>: [Testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      SP users review expenditure and unit completion trends across multiple
+      quarters. Visualising this data as a chart was identified as a way to
+      surface trends quickly, but only if accompanied by a data table so the
+      information remains available to all users. This pattern demonstrates that
+      accessible charts do not require significant additional development effort.
+      [Research to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script>
+    (function () {
+      var canvas = document.getElementById('units-chart');
+      if (!canvas) { return; }
+
+      var reducedMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: ['Q1 Apr–Jun', 'Q2 Jul–Sep', 'Q3 Oct–Dec', 'Q4 Jan–Mar'],
+          datasets: [{
+            label: 'Units completed',
+            data: [45, 62, 58, 82],
+            backgroundColor: '#1d70b8',
+            borderColor: '#1d70b8',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          animation: { duration: reducedMotion ? 0 : 400 },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Units' }
+            }
+          }
+        }
+      });
+    }());
+  </script>
+{% endblock %}

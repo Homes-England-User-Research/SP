@@ -1,0 +1,226 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Date picker" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Date picker" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Date picker</h1>
+    <p class="govuk-body-l">
+      The standard GOV.UK date input (day/month/year fields) with a supplementary
+      calendar button that reveals a visual month grid. The calendar is a progressive
+      enhancement — the base date input works fully without JavaScript.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the date picker on date fields where users may not know the exact date
+      and benefit from a visual calendar to orientate themselves — for example,
+      selecting a programme milestone date or a site visit date relative to a known
+      week.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      For well-known dates (such as date of birth, or a date the user has in front
+      of them), use the standard
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">GDS date input</a>
+      without the calendar enhancement. The calendar adds cognitive overhead that
+      is not needed when users already know the date they want to enter.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      This component is a progressive enhancement of the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">GOV.UK date input component</a>.
+      The base component is the standard GDS date input and works fully without the
+      calendar enhancement. The calendar is supplementary only. This follows the
+      <a class="govuk-link" href="https://www.gov.uk/service-manual/technology/using-progressive-enhancement">GDS progressive enhancement guidance</a>.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Date picker component.
+        JavaScript (date-picker.js) targets [data-module="date-picker"].
+        Without JS: the standard GDS date input renders and works normally.
+        With JS: a calendar toggle button is injected next to the date inputs,
+        opening a role="grid" calendar popup.
+
+        The id on the wrapper is used by date-picker.js to construct the calendar
+        popup id and the toggle button aria-controls value.
+      #}
+      <div data-module="date-picker" id="milestone-date-picker">
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset" role="group"
+                    aria-describedby="milestone-date-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              Programme milestone date
+            </legend>
+            <div id="milestone-date-hint" class="govuk-hint">
+              For example, 15 3 2025. You can also use the calendar button to
+              choose a date.
+            </div>
+            <div class="govuk-date-input">
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="milestone-date-day">
+                    Day
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                         type="text"
+                         id="milestone-date-picker-day"
+                         name="milestone-date-day"
+                         inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="milestone-date-month">
+                    Month
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-2"
+                         type="text"
+                         id="milestone-date-picker-month"
+                         name="milestone-date-month"
+                         inputmode="numeric">
+                </div>
+              </div>
+              <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                  <label class="govuk-label govuk-date-input__label" for="milestone-date-year">
+                    Year
+                  </label>
+                  <input class="govuk-input govuk-date-input__input govuk-input--width-4"
+                         type="text"
+                         id="milestone-date-picker-year"
+                         name="milestone-date-year"
+                         inputmode="numeric">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      {# JavaScript will inject the calendar toggle button and popup here #}
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;!-- Wrapper: data-module targets date-picker.js; id used for calendar popup --&gt;
+&lt;div data-module="date-picker" id="my-date-picker"&gt;
+  &lt;div class="govuk-form-group"&gt;
+    &lt;fieldset class="govuk-fieldset" role="group"&gt;
+      &lt;legend class="govuk-fieldset__legend"&gt;Date field label&lt;/legend&gt;
+      &lt;div class="govuk-date-input"&gt;
+        &lt;div class="govuk-date-input__item"&gt;
+          &lt;label class="govuk-label" for="my-date-picker-day"&gt;Day&lt;/label&gt;
+          &lt;input class="govuk-input govuk-input--width-2"
+                 type="text" id="my-date-picker-day"
+                 inputmode="numeric"&gt;
+        &lt;/div&gt;
+        &lt;div class="govuk-date-input__item"&gt;
+          &lt;label class="govuk-label" for="my-date-picker-month"&gt;Month&lt;/label&gt;
+          &lt;input class="govuk-input govuk-input--width-2"
+                 type="text" id="my-date-picker-month"
+                 inputmode="numeric"&gt;
+        &lt;/div&gt;
+        &lt;div class="govuk-date-input__item"&gt;
+          &lt;label class="govuk-label" for="my-date-picker-year"&gt;Year&lt;/label&gt;
+          &lt;input class="govuk-input govuk-input--width-4"
+                 type="text" id="my-date-picker-year"
+                 inputmode="numeric"&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/fieldset&gt;
+  &lt;/div&gt;
+  &lt;!-- JavaScript injects toggle button and calendar popup here --&gt;
+&lt;/div&gt;
+
+&lt;script src="/public/javascripts/date-picker.js"&gt;&lt;/script&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        The date picker is used on site detail and milestone entry forms where
+        users need to select dates relative to a programme calendar rather than
+        entering a date they already know.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/">Return to prototype home →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>Progressive enhancement</strong>: the standard GDS date input
+        (day/month/year fields) works fully without JavaScript. Users who disable
+        JS or whose JS fails see the standard input with no degradation.
+      </li>
+      <li>
+        <strong>Calendar toggle button</strong>: <code>aria-label="Open date picker"</code>,
+        <code>aria-expanded</code> reflects open/closed state,
+        <code>aria-controls</code> references the calendar popup id.
+      </li>
+      <li>
+        <strong>Calendar grid</strong>: uses <code>role="dialog"</code> with
+        <code>aria-modal="true"</code> and <code>aria-label</code>. Day buttons
+        have descriptive <code>aria-label</code> values ("15 March 2025").
+        <code>aria-selected="true"</code> marks the currently selected date.
+      </li>
+      <li>
+        <strong>Keyboard — calendar navigation</strong>: Arrow keys move between
+        dates. Enter or Space selects the focused date and populates the inputs.
+        Escape closes the calendar and returns focus to the toggle button.
+        Tab moves focus naturally out of the calendar, closing it.
+      </li>
+      <li>
+        <strong>WCAG 2.3.3 Animation</strong>: calendar open/close transition
+        is suppressed when <code>prefers-reduced-motion: reduce</code> is active.
+      </li>
+      <li>
+        <strong>WCAG 1.4.3 Contrast</strong>: today's date and selected date
+        indicators use GDS colour tokens that meet 4.5:1 contrast on white.
+      </li>
+      <li>
+        <strong>Tested with</strong>: [Testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      SP users entering milestone dates for sites needed to know which dates
+      fell within a reporting quarter. A plain date input required them to switch
+      to a calendar application to find the relevant date. The visual calendar
+      enhancement was prototyped to test whether it could eliminate this context
+      switch. [Research to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/date-picker.js"></script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Site Units Forecast saved" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {# GDS success panel pattern #}
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        Site Units Forecast saved
+      </h1>
+      <div class="govuk-panel__body">
+        Strategic Partnerships - 2021-2026<br>
+        25083-Example site 1
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-6">Submitted data summary</h2>
+
+    <dl class="govuk-summary-list">
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Forecast development expenditure relating to affordable units only
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if data['forecast-dev-expenditure'] %}
+            &pound;{{ data['forecast-dev-expenditure'] }}
+          {% else %}
+            <span class="govuk-hint">Not entered</span>
+          {% endif %}
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Forecast gross development value relating to affordable units only
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {% if data['forecast-gross-dev-value'] %}
+            &pound;{{ data['forecast-gross-dev-value'] }}
+          {% else %}
+            <span class="govuk-hint">Not entered</span>
+          {% endif %}
+        </dd>
+      </div>
+
+    </dl>
+
+    {#
+      Tenure-type rows summary.
+      We list each tenure type with its start, forecast and actual values.
+      Units Remaining is recalculated here server-side for accuracy.
+    #}
+
+    <h2 class="govuk-heading-m">Units by tenure type</h2>
+
+    {% set tenureRows = [
+      { id: "shared-ownership-1",  label: "Shared Ownership (including Older Person Shared Ownership)" },
+      { id: "affordable-rent-1",   label: "Affordable Rent (including Social Rent outside areas of high affordability pressure)" },
+      { id: "social-rent-1",       label: "Social Rent (in areas of high affordability pressure)" },
+      { id: "rent-to-buy-1",       label: "Rent to Buy" },
+      { id: "supported-housing-1", label: "Supported housing for rent" },
+      { id: "shared-ownership-2",  label: "Shared Ownership 2 (including Older Person Shared Ownership)" },
+      { id: "affordable-rent-2",   label: "Affordable Rent 2 (including Social Rent outside areas of high affordability pressure)" },
+      { id: "social-rent-2",       label: "Social Rent 2 (in areas of high affordability pressure)" },
+      { id: "rent-to-buy-2",       label: "Rent to Buy 2" },
+      { id: "supported-housing-2", label: "Supported housing for rent 2" }
+    ] %}
+
+    <dl class="govuk-summary-list">
+      {% for row in tenureRows %}
+        {% set startVal    = data[row.id + '-start']    | int(0) %}
+        {% set forecastVal = data[row.id + '-forecast'] | int(0) %}
+        {% set actualVal   = data[row.id + '-actual']   | int(0) %}
+        {% set remaining   = forecastVal - actualVal %}
+
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ row.label }}</dt>
+          <dd class="govuk-summary-list__value">
+            <ul class="govuk-list govuk-list--bullet">
+              <li>Start on Site: {{ startVal }}</li>
+              <li>Current Forecast: {{ forecastVal }}</li>
+              <li>Actual Completions: {{ actualVal }}</li>
+              <li>
+                Units Remaining: {{ remaining }}
+                {% if remaining < 0 %}
+                  <strong class="govuk-tag govuk-tag--red">Deficit</strong>
+                {% endif %}
+              </li>
+            </ul>
+          </dd>
+        </div>
+      {% endfor %}
+    </dl>
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="/site-units-forecast">Return to Site Units Forecast</a>
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

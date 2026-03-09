@@ -1,0 +1,23 @@
+//
+// For guidance on how to add CSS and SCSS see:
+// https://prototype-kit.service.gov.uk/docs/adding-css-javascript-and-images
+// 
+
+// =============================================================================
+// SP page width — intentional departure from GDS 960px default
+//
+// GDS explicitly permits widening: "you can make it wider if your content
+// requires it." SP professional users work with data-dense tables on desktop.
+// 1100px gives editable table columns adequate space without horizontal scroll,
+// while remaining comfortable within a standard 1280px desktop viewport.
+// All form inputs remain constrained by their own GDS width modifiers.
+// =============================================================================
+.govuk-width-container {
+  max-width: 1020px;
+}
+
+// SP (Strategic Partnerships) editable table pattern
+@import 'editable-table';
+
+// Component library documentation styles
+@import 'component-library';

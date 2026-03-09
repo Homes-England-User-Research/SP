@@ -1,0 +1,192 @@
+{% extends "layouts/main.html" %}
+
+{#
+  NOTE: This is the component DETAIL PAGE (editable-table.html, kebab-case).
+  The reusable Nunjucks MACRO lives in editableTable.html (camelCase) in the
+  same directory. The two files coexist safely — different filenames.
+#}
+
+{% set pageName = "Editable table" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "components/editableTable.html" import editableTable %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Editable table" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <h1 class="govuk-heading-xl">Editable table</h1>
+    <p class="govuk-body-l">
+      A GOV.UK-styled table where specified cells contain inputs, allowing users to
+      enter or update multiple related values simultaneously without navigating away
+      from the page.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the editable table on data-entry screens where users need to update multiple
+      related values in a single session — particularly where users are accustomed to
+      an IMS-style (Investment Management System) workflow. It works best for structured
+      datasets such as units by tenure type or quarterly expenditure by category.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      For single-value data entry, use a standard
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/text-input/">GOV.UK text input</a>
+      on its own page following the GDS one-thing-per-page pattern. The editable table
+      is an intentional deviation from that pattern, justified only for SP professional
+      data-entry users. Do not use it in public-facing flows.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      The editable table extends the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">GOV.UK table component</a>
+      by placing <code>govuk-input</code> elements inside <code>&lt;td&gt;</code> cells.
+      This pattern is not in the GDS component library. It is an intentional departure
+      from GDS one-question-per-page guidance, justified by SP user research showing
+      that data-entry users found single-column page-per-question patterns significantly
+      slower for multi-row structured record entry.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Mini 3-row version of the editable table for the component example.
+        Uses the same editableTable macro as the full Site Units Forecast page.
+        Auto-calculation (Units Remaining = Forecast - Actual) is driven by
+        editable-table.js loaded via pageScripts below.
+      #}
+      {% set exampleColumns = [
+        { label: "Tenure Type",             name: "tenure",   editable: false, readOnly: false, isHeader: true },
+        { label: "Units at Start on Site",  name: "start",    editable: true,  readOnly: false },
+        { label: "Units Current Forecast",  name: "forecast", editable: true,  readOnly: false },
+        { label: "Actual Completions",      name: "actual",   editable: false, readOnly: true,  calculated: false },
+        { label: "Units Remaining",         name: "remaining",editable: false, readOnly: true,  calculated: true }
+      ] %}
+
+      {% set exampleRows = [
+        { id: "shared-ownership-1", tenureType: "Shared Ownership (including Older Person Shared Ownership)" },
+        { id: "affordable-rent-1",  tenureType: "Affordable Rent (including Social Rent outside areas of high affordability pressure)" },
+        { id: "rent-to-buy-1",      tenureType: "Rent to Buy" }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(exampleRows, exampleColumns, null, data) }}
+      </div>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;table class="govuk-table sp-editable-table"&gt;
+  &lt;thead class="govuk-table__head"&gt;
+    &lt;tr class="govuk-table__row"&gt;
+      &lt;th scope="col" class="govuk-table__header"&gt;Tenure Type&lt;/th&gt;
+      &lt;th scope="col" class="govuk-table__header"&gt;Units at Start on Site&lt;/th&gt;
+      &lt;th scope="col" class="govuk-table__header"&gt;Units Current Forecast&lt;/th&gt;
+      &lt;th scope="col" class="govuk-table__header"&gt;Actual Completions&lt;/th&gt;
+      &lt;th scope="col" class="govuk-table__header"&gt;Units Remaining&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody class="govuk-table__body"&gt;
+    &lt;tr class="govuk-table__row" data-row-id="shared-ownership-1"&gt;
+      &lt;th scope="row" class="govuk-table__header"&gt;Shared Ownership&lt;/th&gt;
+      &lt;td class="govuk-table__cell sp-input-cell"&gt;
+        &lt;input class="govuk-input govuk-input--width-5 sp-table-input"
+               type="number"
+               id="shared-ownership-1-start"
+               name="shared-ownership-1-start"
+               aria-label="Shared Ownership - Units at Start on Site"
+               data-row="shared-ownership-1"
+               data-col="start"&gt;
+      &lt;/td&gt;
+      &lt;!-- repeat for forecast, actual, remaining... --&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        The full 10-row version of the editable table is used on the Site Units
+        Forecast page, including the auto-calculation of Units Remaining and the
+        currency input fields above the table.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/site-units-forecast">See full page example — Site Units Forecast →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WCAG 1.3.1 Info and Relationships</strong>: every input has an
+        <code>aria-label</code> combining the row header and column header, e.g.
+        "Shared Ownership - Units at Start on Site". Screen readers announce
+        the full context of each cell.
+      </li>
+      <li>
+        <strong>Table structure</strong>: <code>&lt;th scope="col"&gt;</code> on
+        all column headers; <code>&lt;th scope="row"&gt;</code> on tenure type
+        row headers. This creates the correct programmatic relationship between
+        headers and data cells.
+      </li>
+      <li>
+        <strong>WCAG 4.1.3 Status Messages</strong>: auto-calculated "Units
+        Remaining" cells carry <code>aria-live="polite"</code> so screen readers
+        announce recalculated values when they change without moving focus.
+      </li>
+      <li>
+        <strong>WCAG 1.4.1 Use of Colour</strong>: deficit values show a
+        <code>govuk-tag--red</code> tag with the text "Deficit" — colour is not
+        the sole indicator of the deficit state.
+      </li>
+      <li>
+        <strong>Focus styles</strong>: GOV.UK yellow focus outline is preserved
+        on all inputs. Padding is reduced (not removed) to maintain compact rows.
+      </li>
+      <li>
+        <strong>Keyboard</strong>: Tab moves between inputs in DOM order (left to
+        right, top to bottom), which matches the visual reading order.
+      </li>
+      <li>
+        <strong>Tested with</strong>: NVDA + Chrome (Windows). [Further testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      SP users previously entered unit data into IMS, which presented all tenure
+      types on a single dense screen. When a single-question-per-page prototype
+      was tested, SP users found it significantly slower and expressed a strong
+      preference for seeing all tenure types simultaneously. The editable table
+      pattern was introduced to replicate the IMS workflow while maintaining
+      GDS component standards and WCAG 2.1 AA compliance.
+      [Quantitative research data to be added]
+    </p>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/editable-table.js"></script>
+{% endblock %}

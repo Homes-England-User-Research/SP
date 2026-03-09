@@ -1,0 +1,175 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Stat card" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Components", href: "/components" },
+      { text: "Stat card" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Stat card</h1>
+    <p class="govuk-body-l">
+      Displays a single key metric with a label, value, optional trend indicator
+      and optional supporting text. Used on overview and dashboard pages.
+    </p>
+
+    <h2 class="govuk-heading-l">When to use this component</h2>
+    <p class="govuk-body">
+      Use the stat card on overview and dashboard pages where users need to scan
+      multiple key performance indicators quickly. It works best when you have
+      between 2 and 6 metrics to display and each metric has a single headline value.
+    </p>
+
+    <h2 class="govuk-heading-l">When not to use this component</h2>
+    <p class="govuk-body">
+      Do not use the stat card where a single piece of information is better
+      expressed inline in a paragraph or in a
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/summary-list/">summary list</a>.
+      For general public-facing services, prefer the standard GDS summary list or
+      inset text patterns.
+    </p>
+
+    <h2 class="govuk-heading-l">Relationship to the GOV.UK Design System</h2>
+    <p class="govuk-body">
+      The stat card is a new pattern with no direct equivalent in the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/">GOV.UK Design System</a>.
+      It extends the visual language of
+      <a class="govuk-link" href="https://design-system.service.gov.uk/components/panel/">govuk-panel</a>
+      to create a scannable KPI tile. The trend indicator uses GOV.UK colour tokens
+      (green for positive, red for negative) but always pairs colour with a text label
+      and directional symbol to satisfy
+      <a class="govuk-link" href="https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html">WCAG 1.4.1 Use of Colour</a>.
+    </p>
+
+    <h2 class="govuk-heading-l">Example</h2>
+
+    <div class="cl-example">
+      {#
+        Stat card component.
+        <article> wraps the metric with a combined aria-label so screen readers
+        announce the full meaning in one statement rather than reading
+        disjointed spans.
+        Trend icons are aria-hidden — the text equivalent is provided via
+        govuk-visually-hidden spans.
+      #}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <article class="sp-stat-card" aria-label="Units completed this year: 247, 12 percent above target">
+            <p class="govuk-body-s sp-stat-card__label">Units completed this year</p>
+            <p class="sp-stat-card__value">247</p>
+            <p class="sp-stat-card__trend sp-stat-card__trend--up">
+              <span aria-hidden="true">&#8679;</span>
+              <span class="govuk-visually-hidden">Up</span>
+              12% above target
+            </p>
+          </article>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <article class="sp-stat-card" aria-label="Units forecast: 310, on track">
+            <p class="govuk-body-s sp-stat-card__label">Units forecast</p>
+            <p class="sp-stat-card__value">310</p>
+            <p class="sp-stat-card__trend sp-stat-card__trend--neutral">
+              On track
+            </p>
+          </article>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <article class="sp-stat-card" aria-label="Units behind schedule: 18, 6 percent below target">
+            <p class="govuk-body-s sp-stat-card__label">Units behind schedule</p>
+            <p class="sp-stat-card__value">18</p>
+            <p class="sp-stat-card__trend sp-stat-card__trend--down">
+              <span aria-hidden="true">&#8681;</span>
+              <span class="govuk-visually-hidden">Down</span>
+              6% below target
+            </p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <details class="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Show HTML</span>
+      </summary>
+      <div class="govuk-details__text">
+        <div class="cl-code-block">
+<pre><code>&lt;article class="sp-stat-card"
+         aria-label="Units completed this year: 247, 12 percent above target"&gt;
+  &lt;p class="govuk-body-s sp-stat-card__label"&gt;Units completed this year&lt;/p&gt;
+  &lt;p class="sp-stat-card__value"&gt;247&lt;/p&gt;
+  &lt;p class="sp-stat-card__trend sp-stat-card__trend--up"&gt;
+    &lt;span aria-hidden="true"&gt;&amp;#8679;&lt;/span&gt;
+    &lt;span class="govuk-visually-hidden"&gt;Up&lt;/span&gt;
+    12% above target
+  &lt;/p&gt;
+&lt;/article&gt;</code></pre>
+        </div>
+      </div>
+    </details>
+
+    <h2 class="govuk-heading-l">How it looks in context</h2>
+    <div class="cl-context-example">
+      <p class="govuk-body">
+        Stat cards are typically displayed at the top of a Strategic Partnerships
+        overview page, above detailed programme data.
+      </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="/site-units-forecast">See the Site Units Forecast page →</a>
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-l">Accessibility</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>
+        <strong>WCAG 1.4.1 Use of Colour</strong>: trend direction is conveyed
+        by a directional arrow symbol (&#8679; / &#8681;) and a text percentage,
+        not colour alone. The colour modifier (green/red) reinforces meaning but
+        is not the sole indicator.
+      </li>
+      <li>
+        <strong>Screen reader label</strong>: the <code>&lt;article&gt;</code> element
+        carries a combined <code>aria-label</code> of the form
+        "[Label]: [Value], [Trend]" so screen readers announce the full stat in
+        one statement.
+      </li>
+      <li>
+        <strong>Trend icons</strong>: arrow characters are wrapped in
+        <code>aria-hidden="true"</code> spans. Screen reader text equivalents
+        ("Up" / "Down") are provided via <code>govuk-visually-hidden</code> spans.
+      </li>
+      <li>
+        <strong>Keyboard</strong>: no interactive controls; the card is
+        display-only. Focus passes through naturally.
+      </li>
+      <li>
+        <strong>Colour contrast</strong>: value text (#0b0c0c on #ffffff) exceeds
+        WCAG AA 7:1. Trend text uses GDS green (#00703c) and red (#d4351c) which
+        pass WCAG AA 4.5:1 against white.
+      </li>
+      <li>
+        <strong>Tested with</strong>: NVDA + Chrome (Windows). [Further testing to be added]
+      </li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Research</h2>
+    <p class="govuk-body">
+      SP programme managers reviewed multiple screens of tabular data in IMS to
+      understand overall programme performance. Dashboard-style metric tiles were
+      identified as a faster scanning pattern for headline KPIs. The stat card
+      was built to reduce the time needed to orientate on an overview page.
+      [Research to be added — user testing sessions planned Q2 2025]
+    </p>
+
+  </div>
+</div>
+{% endblock %}
