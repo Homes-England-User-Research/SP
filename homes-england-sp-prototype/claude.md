@@ -403,3 +403,67 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
 - Inner prototype `.git` folder removed to flatten into outer repo so Railway can
   access all files when cloning from GitHub
 - `.claude/` folder excluded via `.gitignore` at repo root
+
+## Stat card (metric card) component
+
+Custom component — no GDS equivalent exists.
+
+### What it is
+A bordered card displaying a single metric with an optional label, supporting 
+text, trend indicator and coloured top border. Used in the Key information 
+section of the Overview page.
+
+### Why it's custom
+The GDS Design System has no stat card or metric card component. The closest 
+official pattern is `govuk-summary-list`, which is designed for key-value pairs 
+in form review screens — not at-a-glance dashboard metrics. Using a summary list 
+here would be technically compliant but a significant usability regression for 
+users scanning programme health quickly.
+
+### Justification for GDS review
+- Built entirely from GDS design tokens (colour, typography, spacing)
+- Coloured top border convention is used across HMRC and ONS dashboard 
+  implementations, though not formally documented in the Design System
+- Meets WCAG 2.1 AA — trend indicators use shape + colour + aria-label, 
+  never colour alone (WCAG 1.4.1)
+- Aligns with GDS Design Principle 4 (do the hard work to make it simple) 
+  and Principle 6 (this is for everyone) — the card pattern serves users 
+  better than the available alternative
+- Should be submitted to the GDS community as a candidate component once 
+  user research has been completed on the Overview page
+
+### Usage rules for Claude Code
+- Never use colour as the only differentiator on trend badges — always 
+  include ▲/▼ shape and an aria-label describing direction in words
+- Alert state (red top border) reserved for actionable blockers only, 
+  e.g. Payment blocked — not for general negative trends
+- Cards sit in the one-third column of the 2/3 + 1/3 grid 
+  (govuk-grid-column-one-third) on the Overview page
+- Do not add hover states or make cards clickable unless the card has a 
+  clear, single destination — if clickable, the entire card must be a 
+  valid focus target with a visible focus ring
+
+  ## Customise your view (role selector)
+
+Uses standard GDS `govuk-inset-text` component visually.
+
+### What it is
+A role personalisation control allowing users to select their role and save 
+their preference, persisting a tailored view of quick actions, key information 
+and data insights.
+
+### GDS compliance
+The grey background and blue left border are the `govuk-inset-text` pattern — 
+a fully documented GDS component. The deviation is using it as a container for 
+an interactive control (select + button) rather than static content. This is a 
+considered extension, not a custom visual treatment.
+
+### Usage rules for Claude Code
+- select must use govuk-select classes in the prototype kit
+- button must use govuk-button classes
+- Role preference saves to session, not URL params — avoids role leaking 
+  into shared links
+- aria-live="polite" confirmation message required on save so screen reader 
+  users know their selection applied
+- Label must be a real <label> with a for attribute matching the select id — 
+  never a <p> or <span> acting as a label

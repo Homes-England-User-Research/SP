@@ -375,3 +375,11 @@
 .cl-back-link-container {
   margin-bottom: govuk-spacing(4);
 }
+
+// ── Landing page — spaced list ─────────────────────────────────────────────
+// Increases vertical gap between numbered list items on the prototype index
+// page for better scannability. Uses govuk-spacing(4) (20px) which sits
+// comfortably within the GDS spacing scale.
+.sp-spaced-list > li {
+  margin-bottom: govuk-spacing(4);
+}
