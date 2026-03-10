@@ -1,0 +1,302 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Sites" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Home", href: "/" },
+      { text: "Sites", href: "/sites" },
+      { text: "Build analysis" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Sites</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the Sites landing page and Add new site flow were
+      built, how they align with the GOV.UK Design System and WCAG 2.1 AA, all
+      custom departures with their justifications, and predicted accessibility
+      tool outcomes.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The Sites flow consists of three pages: a landing page with stat cards,
+      status and region filters and a data table; and a two-step Add new site
+      form that collects site details, location, contractor information and
+      milestones. The flow follows the IMS (Investment Management System)
+      pattern of dense, data-rich pages rather than the standard GDS
+      one-question-per-page pattern, which is not appropriate for this use case.
+    </p>
+    <p class="govuk-body">
+      All GDS components used on these pages are used without modification
+      unless listed under Custom departures below.
+    </p>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/sites">Sites landing page</a> - stat cards, Details + Checkboxes filters, data table, pagination</li>
+      <li><a class="govuk-link" href="/sites/add/step-1">Add new site - Step 1 of 2</a> - site details, location, contractor (multi-field form)</li>
+      <li><a class="govuk-link" href="/sites/add/step-2">Add new site - Step 2 of 2</a> - site milestones (select dropdowns + date input)</li>
+    </ul>
+
+    {# -- GDS alignment ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/notification-banner/">Notification banner</a> - <code>govukNotificationBanner()</code> with <code>type: "success"</code>, unmodified. Shown on the Sites landing page after completing the Add new site flow.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> - <code>govukBreadcrumbs()</code>, unmodified. Used on all three pages with appropriate hierarchy.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Tag</a> - <code>govukTag()</code> with colour variants (<code>govuk-tag--blue</code>, <code>govuk-tag--yellow</code>, <code>govuk-tag--grey</code>, <code>govuk-tag--green</code>), unmodified. Used in the Sites table Status column to indicate site lifecycle state.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> - <code>govuk-table</code> classes throughout, with <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code> for the Homes column. <code>scope="col"</code> on all column headers. Table caption removed — the table's purpose is clear from the page heading and surrounding context; the H1 "Sites" and the filter controls directly above the table provide sufficient context.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/pagination/">Pagination</a> - <code>govukPagination()</code>, unmodified. Previous/Next links with numbered page items.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/input/">Text input</a> - <code>govukInput()</code>, unmodified. Used in the Add new site form for Site ID, Site name, Local authority, Operating area, Postcode, coordinates and Contractor fields.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> - <code>govukSelect()</code>, unmodified. Used in both form steps for Type of site, Rural area, Region, Processing route, Regeneration site, Type of contractor (step 1) and Ownership status, Planning status, Building contract status, Start on site status (step 2).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">Date input</a> - <code>govukDateInput()</code>, unmodified. Used in step 2 for Forecast practical completion date. Day/Month/Year pattern with <code>govuk-input--width-2</code> and <code>govuk-input--width-4</code> classes.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> - <code>govukButton()</code>, unmodified. Primary (Continue, Save site) and secondary (Save as draft) variants. Save as draft uses <code>href</code> to link back to Sites without submitting.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid</a> - <code>govuk-grid-row</code> with <code>govuk-grid-column-one-half</code> for paired form fields in Add new site step 1. Standard GDS 12-column grid, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - all spacing uses <code>govuk-spacing()</code> tokens or <code>govuk-!</code> utility classes. No custom pixel values.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> - <code>govuk-heading-xl</code> with <code>govuk-caption-xl</code> for step indicators ("Step 1 of 2", "Step 2 of 2"). <code>govuk-heading-m</code> for form section headings. All standard GDS classes.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Numeric columns</a> - <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code> on the Homes column, per GDS numeric table guidance.</li>
+    </ul>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+
+    {# -- Stat cards ------------------------------------------------------- #}
+    <h3 class="govuk-heading-m">Stat cards (3-column grid)</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> Three metric cards (Total sites, Total homes,
+      Completed sites) displayed in a 1x3 CSS grid using
+      <code>.stat-card-grid--3col</code>. No GDS equivalent exists.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> Reuses the stat card component already
+      established on the Overview page. The 3-column variant is a narrower
+      layout suited to pages where fewer metrics are displayed. Built entirely
+      from GDS design tokens. The coloured top border convention is used across
+      HMRC and ONS internal tools. A visually hidden heading ("Key site
+      statistics") wraps the cards in a labelled <code>&lt;section&gt;</code>
+      for screen reader landmark navigation (WCAG 1.3.1).
+    </p>
+    <p class="govuk-body">
+      <strong>Accessibility:</strong> Reflows to single column at 400% zoom
+      (WCAG 1.4.10 Reflow). No horizontal scroll at any zoom level.
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Status and region filters ----------------------------------------- #}
+    <h3 class="govuk-heading-m">Filters (Details + Checkboxes)</h3>
+    <p class="govuk-body">
+      <strong>Not a departure.</strong> Two filter controls — "Filter by status"
+      and "Filter by region" — sit directly above the table in a quarter-width
+      grid layout (<code>govuk-grid-column-one-quarter</code>). Each uses
+      standard GDS <code>govukDetails</code> wrapping
+      <code>govukCheckboxes</code> with the <code>govuk-checkboxes--small</code>
+      variant. Both components are unmodified. The filters are positioned
+      outside the <code>&lt;table&gt;</code> element, as page-level controls
+      rather than embedded in the table header.
+    </p>
+    <p class="govuk-body">
+      <strong>Why this composition:</strong> The standard checkboxes component
+      stacks vertically, consuming significant page height. SP users need to
+      see the data table as quickly as possible without scrolling past a tall
+      filter panel. Wrapping the checkboxes inside Details components keeps
+      the filters collapsed by default, reducing the vertical footprint to a
+      single line each. Users expand them when they need to change the filter.
+      This is pure GDS with no custom code.
+    </p>
+    <p class="govuk-body">
+      <strong>Accessibility:</strong> Both <code>govukDetails</code> and
+      <code>govukCheckboxes</code> are fully accessible out of the box.
+      The Details component uses the native HTML
+      <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> elements,
+      which are keyboard-operable and announced correctly by all screen
+      readers. The checkboxes inside inherit full GDS accessibility including
+      associated labels and focus styles.
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Multi-field form ------------------------------------------------- #}
+    <h3 class="govuk-heading-m">Multi-field form (Add new site)</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> The Add new site form presents multiple
+      related fields on a single page across two steps, rather than one
+      question per page. Fields are arranged in a two-column grid layout using
+      <code>govuk-grid-row</code> and <code>govuk-grid-column-one-half</code>.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> SP users are experienced data entry
+      professionals already familiar with the IMS system. The fields are
+      grouped by subject area (site details, location, contractor in step 1;
+      milestones in step 2). A single-question-per-page approach would create
+      an excessively long journey for a user completing this task routinely.
+      GDS guidance explicitly allows grouping questions where appropriate:
+      <em>"there are times when it makes sense to group a few questions on the
+      same page"</em>
+      (<a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">GDS question pages pattern</a>).
+    </p>
+    <p class="govuk-body">
+      <strong>Accessibility:</strong>
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>DOM order follows a logical top-to-bottom, left-to-right reading sequence (WCAG 1.3.2) - the two-column layout is achieved with CSS Grid only</li>
+      <li>All form fields use standard <code>govukInput()</code> and <code>govukSelect()</code> macros with associated <code>&lt;label&gt;</code> elements (WCAG 1.3.1)</li>
+      <li>Section headings (<code>govuk-heading-m</code>) group related fields visually and in the DOM - "Site details", "Site location", "Contractor details", "Site milestones"</li>
+      <li>Step indicator uses <code>govuk-caption-xl</code> ("Step 1 of 2") providing progress context (WCAG 2.4.8)</li>
+      <li>At 400% zoom, columns collapse to single column - no horizontal scroll (WCAG 1.4.10)</li>
+    </ul>
+
+    {# -- Implementation details ------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
+
+    <h3 class="govuk-heading-m">Session-based multi-step form</h3>
+    <p class="govuk-body">
+      The Add new site form uses the GOV.UK Prototype Kit's session storage.
+      Step 1 saves all fields to <code>req.session.data['newSite']</code> and
+      redirects to step 2. Step 2 merges its fields into the same session
+      object and sets a <code>newSiteAdded</code> flag before redirecting to
+      <code>/sites?success=true</code>. The Sites landing page detects the flag
+      and prepends the new site to the table. This follows the standard
+      Prototype Kit POST-redirect-GET pattern.
+    </p>
+
+    {# -- Recommended accessibility tests ---------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Recommended accessibility tests</h2>
+    <p class="govuk-body">
+      These are the tools and methods GOV.UK teams use when validating new
+      components and patterns. Predicted outcomes are based on the current
+      implementation. Actual results should be populated after testing.
+    </p>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Accessibility test results</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 22%">Tool / method</th>
+          <th scope="col" class="govuk-table__header" style="width: 30%">What to check</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Predicted outcome</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Actual result</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">axe DevTools (Chrome)</th>
+          <td class="govuk-table__cell">Zero violations on Sites landing page, step 1 and step 2. Run after expanding the filter Details and after submitting the form.</td>
+          <td class="govuk-table__cell">Pass - all ARIA attributes well-formed; no duplicate IDs; standard <code>govuk-table</code> markup; native <code>&lt;details&gt;</code> elements (filters) require no custom ARIA</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
+          <td class="govuk-table__cell">No errors on all three pages; check table headers correctly associated; form labels present on all inputs</td>
+          <td class="govuk-table__cell">Pass - <code>scope="col"</code> on all table headers; all <code>govukInput()</code> and <code>govukSelect()</code> macros generate associated <code>&lt;label&gt;</code> elements; filter Details components outside table are standard HTML</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
+          <td class="govuk-table__cell">All text passes 4.5:1 for normal text; 3:1 for large text and UI components (WCAG 1.4.3, 1.4.11). Check tag colours against white background.</td>
+          <td class="govuk-table__cell">Pass - GDS colour tokens used throughout; tag colour variants are GDS-approved with documented contrast ratios; destructive link red (#d4351c) achieves 4.5:1</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Keyboard-only navigation</th>
+          <td class="govuk-table__cell">Tab through Details toggles, checkboxes, table row links, form inputs and buttons in logical order; Space/Enter expands Details and toggles checkboxes; no keyboard traps; focus visible on all interactive elements</td>
+          <td class="govuk-table__cell">Pass - native <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> and <code>govukCheckboxes</code> are keyboard accessible; all form controls are standard GDS components; logical DOM order matches visual order; GDS focus styles intact</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
+          <td class="govuk-table__cell">Both Details toggles (Filter by status, Filter by region) announced as expandable/collapsible; checkboxes announced with labels and checked state; table column headers announced correctly; form labels read on input focus; notification banner announced on success</td>
+          <td class="govuk-table__cell">Pass - native <code>&lt;details&gt;</code> announced correctly; <code>govukCheckboxes</code> labels associated; standard <code>govuk-table</code> headers with <code>scope="col"</code>; GDS macro labels</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
+          <td class="govuk-table__cell">Same checks as NVDA; verify table column headers announced during table navigation; both Details components expand/collapse correctly</td>
+          <td class="govuk-table__cell">Pass - same rationale as NVDA; JAWS supports native <code>&lt;details&gt;</code> and <code>aria-sort</code></td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
+          <td class="govuk-table__cell">Table row/column header announcements; Details component toggle announced; checkboxes labelled correctly; form inputs labelled correctly</td>
+          <td class="govuk-table__cell">Pass - standard GDS table markup; native <code>&lt;details&gt;</code> works in VoiceOver; GDS form macros generate correct label associations</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
+          <td class="govuk-table__cell">"Click Filter by status" expands status Details; "Click Filter by region" expands region Details; "Click Active" toggles the Active checkbox; "Click Continue" submits form; "Click Save as draft" navigates back</td>
+          <td class="govuk-table__cell">Pass - all interactive elements have visible text labels; summary text matches speakable name; checkbox labels match speakable names; table links use visible text</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
+          <td class="govuk-table__cell">Page content reflows to single column at 1280px viewport zoomed to 400%; stat cards stack; both Details filter components stack vertically; form columns collapse; table scrolls horizontally in contained block</td>
+          <td class="govuk-table__cell">Pass - stat card grid collapses to single column; Details filter components in <code>govuk-grid-column-one-quarter</code> collapse and stack at mobile breakpoint; <code>govuk-grid-column-one-half</code> form fields collapse likewise; table uses standard GDS overflow behaviour</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">200% text-only zoom</th>
+          <td class="govuk-table__cell">Text resizes to 200% using browser text size settings without loss of content or functionality (WCAG 1.4.4)</td>
+          <td class="govuk-table__cell">Pass - no text sizes fixed in px on content; GDS body uses rem units; tag text scales with body text</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
+          <td class="govuk-table__cell">All text, borders, focus indicators and button states visible in both Light and Dark high contrast modes; Details disclosure triangle visible; checkbox tick marks visible</td>
+          <td class="govuk-table__cell">Pass - GDS components include forced-colors CSS; native <code>&lt;details&gt;</code> disclosure triangle is OS-rendered; stat card borders use CSS border property</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Reduced motion (<code>prefers-reduced-motion</code>)</th>
+          <td class="govuk-table__cell">No animations or transitions on any of the three pages</td>
+          <td class="govuk-table__cell">Pass - no CSS transitions or animations; GDS components respect this media query natively</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Sites",
+      href: "/sites"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/sites.html" %}
 
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
@@ -16,93 +16,99 @@
   ]
 }) }}
 
-<span class="govuk-caption-xl">Step 2 of 2</span>
-<h1 class="govuk-heading-xl">Add new site</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
 
-<form method="post" action="/sites/add/step-2">
+    <span class="govuk-caption-xl">Step 2 of 2</span>
+    <h1 class="govuk-heading-xl">Add new site</h1>
 
-  {# ── Section: Site milestones ───────────────────────────────────────── #}
-  <h2 class="govuk-heading-m">Site milestones</h2>
+    <form method="post" action="/sites/add/step-2">
 
-  {{ govukSelect({
-    label: { text: "What is the ownership status of the site?" },
-    id: "ownership-status",
-    name: "ownership-status",
-    classes: "govuk-!-width-two-thirds",
-    items: [
-      { value: "", text: "---Please select---" },
-      { value: "conditional", text: "Conditional acquisition, land option or heads of terms" },
-      { value: "negotiations-underway", text: "Land purchase negotiations underway" },
-      { value: "identified", text: "Land identified but purchase negotiations not yet started" },
-      { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest has occurred or Secure Legal Interest/Qualifying Secure Legal Interest as defined in the relevant Grant Agreement" }
-    ]
-  }) }}
+      {# ── Section: Site milestones ───────────────────────────────────────── #}
+      <h2 class="govuk-heading-m">Site milestones</h2>
 
-  {{ govukSelect({
-    label: { text: "What is the planning status of the site?" },
-    id: "planning-status",
-    name: "planning-status",
-    classes: "govuk-!-width-two-thirds",
-    items: [
-      { value: "", text: "---Please select---" },
-      { value: "detailed-no-steps", text: "Detailed Planning Approval granted with no further steps required before start on site can occur" },
-      { value: "detailed-some-steps", text: "Detailed Planning Approval granted with some further steps required before start on site can occur" },
-      { value: "outline-granted", text: "Outline Planning Approval granted" },
-      { value: "outline-submitted", text: "Outline planning submitted" },
-      { value: "detailed-submitted", text: "Detailed planning submitted" },
-      { value: "discussion", text: "Planning discussion underway with planning office" },
-      { value: "no-progress", text: "No progress yet on planning application" }
-    ]
-  }) }}
+      {{ govukSelect({
+        label: { text: "What is the ownership status of the site?" },
+        id: "ownership-status",
+        name: "ownership-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "conditional", text: "Conditional acquisition, land option or heads of terms" },
+          { value: "negotiations-underway", text: "Land purchase negotiations underway" },
+          { value: "identified", text: "Land identified but purchase negotiations not yet started" },
+          { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest has occurred or Secure Legal Interest/Qualifying Secure Legal Interest as defined in the relevant Grant Agreement" }
+        ]
+      }) }}
 
-  {{ govukSelect({
-    label: { text: "Building contract status" },
-    id: "building-contract-status",
-    name: "building-contract-status",
-    classes: "govuk-!-width-two-thirds",
-    items: [
-      { value: "", text: "---Please select---" },
-      { value: "unconditional-let", text: "Unconditional works contract let" },
-      { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract" },
-      { value: "tender", text: "Tender for works contract out for competition" },
-      { value: "not-begun", text: "Works contracting process not yet begun" }
-    ]
-  }) }}
+      {{ govukSelect({
+        label: { text: "What is the planning status of the site?" },
+        id: "planning-status",
+        name: "planning-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "detailed-no-steps", text: "Detailed Planning Approval granted with no further steps required before start on site can occur" },
+          { value: "detailed-some-steps", text: "Detailed Planning Approval granted with some further steps required before start on site can occur" },
+          { value: "outline-granted", text: "Outline Planning Approval granted" },
+          { value: "outline-submitted", text: "Outline planning submitted" },
+          { value: "detailed-submitted", text: "Detailed planning submitted" },
+          { value: "discussion", text: "Planning discussion underway with planning office" },
+          { value: "no-progress", text: "No progress yet on planning application" }
+        ]
+      }) }}
 
-  {{ govukSelect({
-    label: { text: "Start on site status" },
-    id: "start-on-site-status",
-    name: "start-on-site-status",
-    classes: "govuk-!-width-two-thirds",
-    items: [
-      { value: "", text: "---Please select---" },
-      { value: "forecast", text: "Forecast" },
-      { value: "actual", text: "Actual" }
-    ]
-  }) }}
+      {{ govukSelect({
+        label: { text: "Building contract status" },
+        id: "building-contract-status",
+        name: "building-contract-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "unconditional-let", text: "Unconditional works contract let" },
+          { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract" },
+          { value: "tender", text: "Tender for works contract out for competition" },
+          { value: "not-begun", text: "Works contracting process not yet begun" }
+        ]
+      }) }}
 
-  {{ govukDateInput({
-    id: "forecast-completion-date",
-    namePrefix: "forecast-completion-date",
-    fieldset: {
-      legend: { text: "Forecast practical completion date" }
-    },
-    hint: { text: "For example, 27 3 2027" },
-    items: [
-      { name: "day",   classes: "govuk-input--width-2",  label: { text: "Day" } },
-      { name: "month", classes: "govuk-input--width-2",  label: { text: "Month" } },
-      { name: "year",  classes: "govuk-input--width-4",  label: { text: "Year" } }
-    ]
-  }) }}
+      {{ govukSelect({
+        label: { text: "Start on site status" },
+        id: "start-on-site-status",
+        name: "start-on-site-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "forecast", text: "Forecast" },
+          { value: "actual", text: "Actual" }
+        ]
+      }) }}
 
-  {# ── Buttons ────────────────────────────────────────────────────────── #}
-  {{ govukButton({ text: "Save site" }) }}
-  {{ govukButton({
-    text: "Save as draft",
-    classes: "govuk-button--secondary govuk-!-margin-left-3",
-    href: "/sites"
-  }) }}
+      {{ govukDateInput({
+        id: "forecast-completion-date",
+        namePrefix: "forecast-completion-date",
+        fieldset: {
+          legend: { text: "Forecast practical completion date" }
+        },
+        hint: { text: "For example, 27 3 2027" },
+        items: [
+          { name: "day",   classes: "govuk-input--width-2" },
+          { name: "month", classes: "govuk-input--width-2" },
+          { name: "year",  classes: "govuk-input--width-4" }
+        ]
+      }) }}
 
-</form>
+      {# ── Buttons ────────────────────────────────────────────────────────── #}
+      {{ govukButton({ text: "Save site" }) }}
+      {{ govukButton({
+        text: "Save as draft",
+        classes: "govuk-button--secondary govuk-!-margin-left-3",
+        href: "/sites"
+      }) }}
+
+    </form>
+
+  </div>
+</div>
 
 {% endblock %}

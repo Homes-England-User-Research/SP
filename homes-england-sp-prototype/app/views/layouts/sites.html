@@ -1,0 +1,48 @@
+{#
+  Sites layout - extends main.html but overrides the service navigation
+  to show the SP programme navigation (Overview, APP, Sites, etc.) with
+  Sites as the current page. Matches the overview.html layout pattern.
+#}
+
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
+{% block govukServiceNavigation %}
+  {{ govukServiceNavigation({
+    classes: "overview-service-nav",
+    serviceName: serviceName,
+    serviceUrl: "/overview",
+    navigation: [
+      {
+        text: "Overview",
+        href: "/overview"
+      },
+      {
+        text: "Agreed provider profile",
+        href: "#"
+      },
+      {
+        text: "Sites",
+        href: "/sites",
+        current: true if "/sites" in currentPath else false
+      },
+      {
+        text: "Forecasting",
+        href: "#"
+      },
+      {
+        text: "Quarterly expenditure",
+        href: "#"
+      },
+      {
+        text: "Payments",
+        href: "#"
+      },
+      {
+        text: "Sign out",
+        href: "#"
+      }
+    ]
+  }) }}
+{% endblock %}

@@ -65,7 +65,8 @@ homes-england-sp-prototype/
 │   │   │   ├── stat-card.html
 │   │   │   └── year-tabs.html
 │   │   ├── sites/
-│   │   │   ├── index.html                   ← Sites landing page (table, stat cards, filters)
+│   │   │   ├── index.html                   ← Sites landing page (table, stat cards, details filter)
+│   │   │   ├── build-analysis.html          ← GDS alignment + accessibility audit for Sites flow
 │   │   │   └── add/
 │   │   │       ├── step-1.html              ← Add new site step 1 (details, location, contractor)
 │   │   │       └── step-2.html              ← Add new site step 2 (milestones)
@@ -109,6 +110,7 @@ Active state controlled via `res.locals.currentPath` middleware in routes.js.
 | POST | `/sites/add/step-1` | saves step 1 to session, redirects to step 2 |
 | GET | `/sites/add/step-2` | renders add new site step 2 form |
 | POST | `/sites/add/step-2` | saves step 2, sets newSiteAdded, redirects to /sites?success=true |
+| GET | `/sites/build-analysis` | renders build analysis page for Sites flow |
 | GET | `/components` | renders component library index |
 | GET | `/components/accessible-chart` | |
 | GET | `/components/date-picker` | |
@@ -413,16 +415,23 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
 - Sites page: stat cards reuse the existing .stat-card custom component.
   Three cards in a row (3-column grid variant via `.stat-card-grid--3col`).
   Same justification as Overview page stat cards.
-- Sites table: sortable columns using aria-sort on th elements. No GDS
-  sort component exists. Pattern follows MoJ Design System sortable table
-  approach. Table remains fully usable without JavaScript via query
-  parameter sort on page reload.
+- Sites table: standard GDS table with plain text column headers.
+  No sort controls — all columns use standard govuk-table__header class.
 - Add new site: multi-field form across 2 steps rather than one question
   per page. SP users are expert users performing a routine data entry task.
   Fields are grouped by subject area (site details, location, contractor,
   milestones). One-question-per-page would create an excessively long
   journey without reducing errors for this user type. GDS guidance
   explicitly allows grouping questions where appropriate.
+
+### Sites page - status filter and build analysis
+- Status filter uses `govukDetails` wrapping `govukCheckboxes--small`.
+  Both are standard GDS components, unmodified. Details keeps the filter
+  collapsed by default, reducing vertical footprint to a single line.
+  No custom CSS or JavaScript required.
+- Build analysis page created at `/sites/build-analysis` documenting all
+  GDS alignments, custom departures (stat cards, multi-field form)
+  and 12-row accessibility test predictions table.
 
 ### Deployment
 - Railway deployment uses `railway.json` at repo root with `rootDirectory: "homes-england-sp-prototype"`

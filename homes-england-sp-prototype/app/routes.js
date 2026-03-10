@@ -161,19 +161,6 @@ const seedSites = [
 router.get('/sites', function (req, res) {
   var sites = seedSites.slice()
 
-  // Prepend newly added site if the 2-step form was completed
-  if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
-    sites.unshift({
-      siteId: req.session.data['newSite'].siteId || '—',
-      siteName: req.session.data['newSite'].siteName || 'New site',
-      status: 'Not started',
-      homes: 0,
-      statusInDeal: 'Inactive',
-      localAuthority: req.session.data['newSite'].localAuthority || '—',
-      region: req.session.data['newSite'].region || '—'
-    })
-  }
-
   res.render('sites/index', {
     success: req.query.success === 'true',
     sites: sites
@@ -237,6 +224,16 @@ router.post('/sites/add/step-2', function (req, res) {
   }
   req.session.data['newSiteAdded'] = true
   res.redirect('/sites?success=true')
+})
+
+/**
+ * GET /sites/build-analysis
+ *
+ * Documents GDS alignment, custom departures and accessibility predictions
+ * for the Sites landing page and Add new site flow.
+ */
+router.get('/sites/build-analysis', function (req, res) {
+  res.render('sites/build-analysis')
 })
 
 // =============================================================================
