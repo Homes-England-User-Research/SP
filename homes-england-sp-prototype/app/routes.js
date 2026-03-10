@@ -136,34 +136,165 @@ router.get('/overview/build-analysis', function (req, res) {
 // =============================================================================
 
 /**
- * Seed data for the sites table.
+ * Seed data for the sites table — 44 sites to match stat cards.
  * In production this would come from the IMS API.
  */
 const seedSites = [
-  { siteId: '1234', siteName: 'Belgrave Square',   status: 'Site completed', homes: 19, statusInDeal: 'Active',   localAuthority: 'Havering',    region: 'South East' },
-  { siteId: '2222', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 24, statusInDeal: 'Active',   localAuthority: 'Barnet',      region: 'London' },
-  { siteId: '2345', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 18, statusInDeal: 'Active',   localAuthority: 'Camden',      region: 'London' },
-  { siteId: '2456', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 12, statusInDeal: 'Inactive', localAuthority: 'Leeds',       region: 'Yorkshire' },
-  { siteId: '2567', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 31, statusInDeal: 'Active',   localAuthority: 'Bristol',     region: 'South West' },
-  { siteId: '2678', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 8,  statusInDeal: 'Inactive', localAuthority: 'Manchester',  region: 'North West' },
-  { siteId: '2789', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 15, statusInDeal: 'Inactive', localAuthority: 'Sheffield',   region: 'Yorkshire' },
-  { siteId: '2890', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 22, statusInDeal: 'Active',   localAuthority: 'Liverpool',   region: 'North West' },
-  { siteId: '2901', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 9,  statusInDeal: 'Inactive', localAuthority: 'Newcastle',   region: 'North East' },
-  { siteId: '3012', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 11, statusInDeal: 'Inactive', localAuthority: 'Birmingham',  region: 'Midlands' }
+  { siteId: '1001', siteName: 'Belgrave Square',       status: 'Site completed', homes: 120,  statusInDeal: 'Active',   localAuthority: 'Havering',          region: 'South East' },
+  { siteId: '1002', siteName: 'Riverside Gardens',     status: 'Site completed', homes: 85,   statusInDeal: 'Active',   localAuthority: 'Greenwich',         region: 'London' },
+  { siteId: '1003', siteName: 'Meadow Lane',           status: 'Site completed', homes: 200,  statusInDeal: 'Active',   localAuthority: 'Nottingham',        region: 'East Midlands' },
+  { siteId: '1004', siteName: 'Victoria Dock',         status: 'Site completed', homes: 340,  statusInDeal: 'Active',   localAuthority: 'Newham',            region: 'London' },
+  { siteId: '1005', siteName: 'Kingsway Park',         status: 'Site completed', homes: 150,  statusInDeal: 'Active',   localAuthority: 'Derby',             region: 'East Midlands' },
+  { siteId: '1010', siteName: 'Westfield Rise',        status: 'Active',         homes: 450,  statusInDeal: 'Active',   localAuthority: 'Barnet',            region: 'London' },
+  { siteId: '1011', siteName: 'Oakwood Place',         status: 'Active',         homes: 310,  statusInDeal: 'Active',   localAuthority: 'Camden',            region: 'London' },
+  { siteId: '1012', siteName: 'Harbour View',          status: 'Active',         homes: 275,  statusInDeal: 'Active',   localAuthority: 'Bristol',           region: 'South West' },
+  { siteId: '1013', siteName: 'Station Quarter',       status: 'Active',         homes: 520,  statusInDeal: 'Active',   localAuthority: 'Leeds',             region: 'Yorkshire and the Humber' },
+  { siteId: '1014', siteName: 'Canal Basin',           status: 'Active',         homes: 180,  statusInDeal: 'Active',   localAuthority: 'Birmingham',        region: 'West Midlands' },
+  { siteId: '1015', siteName: 'Greenhill Terrace',     status: 'Active',         homes: 95,   statusInDeal: 'Active',   localAuthority: 'Sheffield',         region: 'Yorkshire and the Humber' },
+  { siteId: '1016', siteName: 'Millbrook Estate',      status: 'Active',         homes: 400,  statusInDeal: 'Active',   localAuthority: 'Southampton',       region: 'South East' },
+  { siteId: '1017', siteName: 'Northgate Crescent',    status: 'Active',         homes: 165,  statusInDeal: 'Active',   localAuthority: 'Newcastle',         region: 'North East' },
+  { siteId: '1018', siteName: 'Ashton Fields',         status: 'Active',         homes: 230,  statusInDeal: 'Active',   localAuthority: 'Manchester',        region: 'North West' },
+  { siteId: '1019', siteName: 'Elm Park',              status: 'Active',         homes: 350,  statusInDeal: 'Active',   localAuthority: 'Liverpool',         region: 'North West' },
+  { siteId: '1020', siteName: 'Priory Court',          status: 'Active',         homes: 140,  statusInDeal: 'Active',   localAuthority: 'Norwich',           region: 'East of England' },
+  { siteId: '1021', siteName: 'Birchwood Heights',     status: 'Active',         homes: 290,  statusInDeal: 'Active',   localAuthority: 'Warrington',        region: 'North West' },
+  { siteId: '1022', siteName: 'Foxglove Meadows',      status: 'Active',         homes: 185,  statusInDeal: 'Active',   localAuthority: 'Exeter',            region: 'South West' },
+  { siteId: '1023', siteName: 'Sycamore Close',        status: 'Active',         homes: 110,  statusInDeal: 'Active',   localAuthority: 'Ipswich',           region: 'East of England' },
+  { siteId: '1024', siteName: 'Thornbury Gate',        status: 'Active',         homes: 475,  statusInDeal: 'Active',   localAuthority: 'Bradford',          region: 'Yorkshire and the Humber' },
+  { siteId: '1025', siteName: 'Lakeside Avenue',       status: 'Active',         homes: 205,  statusInDeal: 'Active',   localAuthority: 'Peterborough',      region: 'East of England' },
+  { siteId: '1026', siteName: 'Windmill Lane',         status: 'Active',         homes: 330,  statusInDeal: 'Active',   localAuthority: 'Coventry',          region: 'West Midlands' },
+  { siteId: '1027', siteName: 'Hawthorn Drive',        status: 'Active',         homes: 160,  statusInDeal: 'Active',   localAuthority: 'Sunderland',        region: 'North East' },
+  { siteId: '1030', siteName: 'Orchard Way',           status: 'Pipeline',       homes: 600,  statusInDeal: 'Inactive', localAuthority: 'Lewisham',          region: 'London' },
+  { siteId: '1031', siteName: 'Chapel Street',         status: 'Pipeline',       homes: 250,  statusInDeal: 'Active',   localAuthority: 'Bolton',            region: 'North West' },
+  { siteId: '1032', siteName: 'Quarry Hill',           status: 'Pipeline',       homes: 180,  statusInDeal: 'Inactive', localAuthority: 'Wakefield',         region: 'Yorkshire and the Humber' },
+  { siteId: '1033', siteName: 'Prospect Row',          status: 'Pipeline',       homes: 420,  statusInDeal: 'Active',   localAuthority: 'Plymouth',          region: 'South West' },
+  { siteId: '1034', siteName: 'High Cross',            status: 'Pipeline',       homes: 310,  statusInDeal: 'Inactive', localAuthority: 'Leicester',         region: 'East Midlands' },
+  { siteId: '1035', siteName: 'Copperfield Park',      status: 'Pipeline',       homes: 145,  statusInDeal: 'Active',   localAuthority: 'Gateshead',         region: 'North East' },
+  { siteId: '1036', siteName: 'Sunbury Wharf',         status: 'Pipeline',       homes: 530,  statusInDeal: 'Inactive', localAuthority: 'Tower Hamlets',     region: 'London' },
+  { siteId: '1037', siteName: 'Beechwood Grove',       status: 'Pipeline',       homes: 270,  statusInDeal: 'Active',   localAuthority: 'Wolverhampton',     region: 'West Midlands' },
+  { siteId: '1038', siteName: 'Ferndale Road',         status: 'Pipeline',       homes: 195,  statusInDeal: 'Inactive', localAuthority: 'Colchester',        region: 'East of England' },
+  { siteId: '1039', siteName: 'Crestwood Chase',       status: 'Pipeline',       homes: 380,  statusInDeal: 'Active',   localAuthority: 'Salford',           region: 'North West' },
+  { siteId: '1040', siteName: 'Kingfisher Reach',      status: 'Pipeline',       homes: 225,  statusInDeal: 'Inactive', localAuthority: 'Reading',           region: 'South East' },
+  { siteId: '1041', siteName: 'Pennine View',          status: 'Pipeline',       homes: 170,  statusInDeal: 'Active',   localAuthority: 'Barnsley',          region: 'Yorkshire and the Humber' },
+  { siteId: '1050', siteName: 'Linden Walk',           status: 'Not started',    homes: 500,  statusInDeal: 'Inactive', localAuthority: 'Stoke-on-Trent',    region: 'West Midlands' },
+  { siteId: '1051', siteName: 'Chestnut Grove',        status: 'Not started',    homes: 280,  statusInDeal: 'Inactive', localAuthority: 'Doncaster',         region: 'Yorkshire and the Humber' },
+  { siteId: '1052', siteName: 'Ashfield Gardens',      status: 'Not started',    homes: 340,  statusInDeal: 'Inactive', localAuthority: 'Northampton',       region: 'East Midlands' },
+  { siteId: '1053', siteName: 'Rosemary Lane',         status: 'Not started',    homes: 190,  statusInDeal: 'Inactive', localAuthority: 'Middlesbrough',     region: 'North East' },
+  { siteId: '1054', siteName: 'Brindley Quay',         status: 'Not started',    homes: 650,  statusInDeal: 'Inactive', localAuthority: 'Hackney',           region: 'London' },
+  { siteId: '1055', siteName: 'Fielding Crescent',     status: 'Not started',    homes: 155,  statusInDeal: 'Inactive', localAuthority: 'Chelmsford',        region: 'East of England' },
+  { siteId: '1056', siteName: 'Wren Close',            status: 'Not started',    homes: 410,  statusInDeal: 'Inactive', localAuthority: 'Wigan',             region: 'North West' },
+  { siteId: '1057', siteName: 'Ivy Court',             status: 'Not started',    homes: 220,  statusInDeal: 'Inactive', localAuthority: 'Bath',              region: 'South West' },
+  { siteId: '1058', siteName: 'Bluebell Mews',         status: 'Not started',    homes: 365,  statusInDeal: 'Inactive', localAuthority: 'Brighton and Hove', region: 'South East' }
 ]
+
+/**
+ * Map from query param values to display names for status filter.
+ */
+const statusParamMap = {
+  'not-started': 'Not started',
+  'pipeline': 'Pipeline',
+  'active': 'Active',
+  'site-completed': 'Site completed'
+}
+
+/**
+ * Map from query param values to display names for region filter.
+ */
+const regionParamMap = {
+  'east-midlands': 'East Midlands',
+  'east-of-england': 'East of England',
+  'london': 'London',
+  'north-east': 'North East',
+  'north-west': 'North West',
+  'south-east': 'South East',
+  'south-west': 'South West',
+  'west-midlands': 'West Midlands',
+  'yorkshire': 'Yorkshire and the Humber'
+}
+
+var SITES_PER_PAGE = 15
 
 /**
  * GET /sites
  *
- * Renders the Sites landing page. If ?success=true is in the URL and a new
- * site has been added via session, it is prepended to the table.
+ * Server-side filtering and pagination.
+ * Query params:
+ *   status  — comma-separated status slugs (default: all)
+ *   region  — comma-separated region slugs (default: all)
+ *   page    — 1-based page number (default: 1)
+ *   success — show notification banner if 'true'
  */
 router.get('/sites', function (req, res) {
-  var sites = seedSites.slice()
+  // --- Parse filter params (default = all checked) ---
+  var activeStatusSlugs = req.query.status
+    ? req.query.status.split(',')
+    : Object.keys(statusParamMap)
+
+  var activeRegionSlugs = req.query.region
+    ? req.query.region.split(',')
+    : Object.keys(regionParamMap)
+
+  var activeStatuses = activeStatusSlugs.map(function (s) { return statusParamMap[s] }).filter(Boolean)
+  var activeRegions = activeRegionSlugs.map(function (s) { return regionParamMap[s] }).filter(Boolean)
+
+  // --- Filter ---
+  var filtered = seedSites.filter(function (site) {
+    return activeStatuses.indexOf(site.status) !== -1
+      && activeRegions.indexOf(site.region) !== -1
+  })
+
+  // --- Compute stats from filtered set ---
+  var totalSites = filtered.length
+  var totalHomes = filtered.reduce(function (sum, s) { return sum + s.homes }, 0)
+  var completedSites = filtered.filter(function (s) { return s.status === 'Site completed' }).length
+
+  // --- Paginate ---
+  var page = parseInt(req.query.page, 10) || 1
+  var totalPages = Math.max(1, Math.ceil(filtered.length / SITES_PER_PAGE))
+  if (page > totalPages) page = totalPages
+  if (page < 1) page = 1
+
+  var start = (page - 1) * SITES_PER_PAGE
+  var pageSites = filtered.slice(start, start + SITES_PER_PAGE)
+
+  // --- Build filter query string (without page) for pagination links ---
+  var filterParams = ''
+  if (req.query.status) filterParams += '&status=' + req.query.status
+  if (req.query.region) filterParams += '&region=' + req.query.region
+
+  // --- Build pagination items for govukPagination ---
+  var paginationItems = []
+  for (var i = 1; i <= totalPages; i++) {
+    paginationItems.push({
+      number: i,
+      current: i === page,
+      href: '/sites?page=' + i + filterParams
+    })
+  }
+
+  var pagination = {}
+  if (totalPages > 1) {
+    pagination.items = paginationItems
+    if (page > 1) {
+      pagination.previous = {
+        href: '/sites?page=' + (page - 1) + filterParams
+      }
+    }
+    if (page < totalPages) {
+      pagination.next = {
+        href: '/sites?page=' + (page + 1) + filterParams
+      }
+    }
+  }
 
   res.render('sites/index', {
     success: req.query.success === 'true',
-    sites: sites
+    sites: pageSites,
+    pagination: pagination,
+    totalSites: totalSites,
+    totalHomes: totalHomes,
+    completedSites: completedSites,
+    activeStatusSlugs: activeStatusSlugs,
+    activeRegionSlugs: activeRegionSlugs
   })
 })
 
