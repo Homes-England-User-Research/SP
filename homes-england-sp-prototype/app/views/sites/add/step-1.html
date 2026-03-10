@@ -1,0 +1,210 @@
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Add new site — Step 1 of 2" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [{ text: "Sites", href: "/sites" }]
+}) }}
+
+<span class="govuk-caption-xl">Step 1 of 2</span>
+<h1 class="govuk-heading-xl">Add new site</h1>
+
+<!-- Custom departure: multi-field form.
+     Multiple related fields presented on a single page across two steps,
+     rather than one question per page. SP users are experienced data entry
+     users already familiar with the IMS system. The fields are grouped by
+     subject area (site details, location, contractor). A single-question-
+     per-page approach would create an excessively long journey for a user
+     completing this task routinely. GDS guidance explicitly allows grouping
+     questions where appropriate: "there are times when it makes sense to
+     group a few questions on the same page." -->
+<form method="post" action="/sites/add/step-1">
+
+  {# ── Section: Site details ──────────────────────────────────────────── #}
+  <h2 class="govuk-heading-m">Site details</h2>
+
+  {# Row 1: Site ID + Site name #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Site ID" },
+        id: "site-id",
+        name: "site-id"
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Site name" },
+        id: "site-name",
+        name: "site-name"
+      }) }}
+    </div>
+  </div>
+
+  {# Row 2: Type of site + Rural area #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSelect({
+        label: { text: "Type of site" },
+        id: "type-of-site",
+        name: "type-of-site",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "brownfield", text: "Brownfield" },
+          { value: "greenfield", text: "Greenfield" },
+          { value: "mixed", text: "Mixed" }
+        ]
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukSelect({
+        label: { text: "Is the land in a rural area?" },
+        id: "rural-area",
+        name: "rural-area",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "yes", text: "Yes" },
+          { value: "no", text: "No" }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {# Row 3: Local authority + Operating area #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Local authority" },
+        id: "local-authority",
+        name: "local-authority"
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Operating area" },
+        id: "operating-area",
+        name: "operating-area"
+      }) }}
+    </div>
+  </div>
+
+  {# Row 4: Region + Processing route #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSelect({
+        label: { text: "Region" },
+        id: "region",
+        name: "region",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "east-midlands", text: "East Midlands" },
+          { value: "east-of-england", text: "East of England" },
+          { value: "london", text: "London" },
+          { value: "north-east", text: "North East" },
+          { value: "north-west", text: "North West" },
+          { value: "south-east", text: "South East" },
+          { value: "south-west", text: "South West" },
+          { value: "west-midlands", text: "West Midlands" },
+          { value: "yorkshire", text: "Yorkshire and the Humber" }
+        ]
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukSelect({
+        label: { text: "Processing route" },
+        id: "processing-route",
+        name: "processing-route",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "acquisition-works", text: "Acquisition & Works" },
+          { value: "works-only", text: "Works only" },
+          { value: "acquisition-only", text: "Acquisition only" }
+        ]
+      }) }}
+    </div>
+  </div>
+
+  {# Row 5: Regeneration site — full width due to long label #}
+  {{ govukSelect({
+    label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
+    id: "regeneration-site",
+    name: "regeneration-site",
+    classes: "govuk-!-width-one-half",
+    items: [
+      { value: "", text: "---Please select---" },
+      { value: "yes", text: "Yes" },
+      { value: "no", text: "No" }
+    ]
+  }) }}
+
+  {# ── Section: Site location ─────────────────────────────────────────── #}
+  <h2 class="govuk-heading-m govuk-!-margin-top-6">Site location</h2>
+
+  {{ govukInput({
+    label: { text: "Postcode (optional)" },
+    id: "postcode",
+    name: "postcode",
+    classes: "govuk-input--width-10"
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "X coordinate (optional if known)" },
+        id: "x-coordinate",
+        name: "x-coordinate"
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Y coordinate (optional if known)" },
+        id: "y-coordinate",
+        name: "y-coordinate"
+      }) }}
+    </div>
+  </div>
+
+  {# ── Section: Contractor details ────────────────────────────────────── #}
+  <h2 class="govuk-heading-m govuk-!-margin-top-6">Contractor details</h2>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      {{ govukSelect({
+        label: { text: "Type of contractor" },
+        id: "type-of-contractor",
+        name: "type-of-contractor",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "in-house", text: "In house contractor" },
+          { value: "external", text: "External contractor" },
+          { value: "mixed", text: "Mixed" }
+        ]
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-half">
+      {{ govukInput({
+        label: { text: "Contractor" },
+        id: "contractor",
+        name: "contractor"
+      }) }}
+    </div>
+  </div>
+
+  {# ── Buttons ────────────────────────────────────────────────────────── #}
+  {{ govukButton({ text: "Continue" }) }}
+  {{ govukButton({
+    text: "Save as draft",
+    classes: "govuk-button--secondary govuk-!-margin-left-3",
+    href: "/sites"
+  }) }}
+
+</form>
+
+{% endblock %}

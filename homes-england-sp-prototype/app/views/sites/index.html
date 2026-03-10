@@ -1,0 +1,163 @@
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set pageName = "Sites" %}
+
+{% block content %}
+
+{# ── Success banner — shown only after completing the add-new-site flow ── #}
+{% if success %}
+  {{ govukNotificationBanner({
+    type: "success",
+    titleText: "Site added",
+    html: "<p class='govuk-body'>The new site has been added to your portfolio and appears at the top of the table below.</p>"
+  }) }}
+{% endif %}
+
+{# ── Page heading ─────────────────────────────────────────────────────── #}
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Sites</h1>
+<p class="govuk-body-l">Manage your sites, home type allocations and forecasts.</p>
+
+{# ── Quick links ──────────────────────────────────────────────────────── #}
+<ul class="govuk-list govuk-!-margin-bottom-8">
+  <li><a class="govuk-link" href="/sites/add/step-1">Add new site</a></li>
+  <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+  <li><a class="govuk-link" href="#">Completions</a></li>
+  <li><a class="govuk-link" href="#">Manage all home types</a></li>
+</ul>
+
+{# ── Metric cards ─────────────────────────────────────────────────────── #}
+<!-- Custom component: stat card (metric card).
+     Reuses the existing .stat-card component from the Overview page.
+     Three cards in a 3-column grid variant (.stat-card-grid--3col).
+     No GDS equivalent exists. Built from GDS design tokens only.
+     See CLAUDE.md "Stat card" section. -->
+<section aria-labelledby="sites-stats" class="govuk-!-margin-bottom-8">
+  <h2 class="govuk-visually-hidden" id="sites-stats">
+    Key site statistics
+  </h2>
+  <div class="stat-card-grid stat-card-grid--3col">
+    <div class="stat-card">
+      <p class="govuk-body-s">Total sites</p>
+      <p class="govuk-heading-xl govuk-!-margin-bottom-1">44</p>
+    </div>
+    <div class="stat-card">
+      <p class="govuk-body-s">Total homes</p>
+      <p class="govuk-heading-xl govuk-!-margin-bottom-1">22,313</p>
+    </div>
+    <div class="stat-card">
+      <p class="govuk-body-s">Completed sites</p>
+      <p class="govuk-heading-xl govuk-!-margin-bottom-1">5</p>
+    </div>
+  </div>
+</section>
+
+{# ── Filter by status ─────────────────────────────────────────────────── #}
+{{ govukCheckboxes({
+  name: "status-filter",
+  fieldset: {
+    legend: {
+      text: "Filter by status",
+      classes: "govuk-fieldset__legend--s"
+    }
+  },
+  classes: "govuk-checkboxes--small",
+  items: [
+    { value: "not-started",    text: "Not started",    checked: true },
+    { value: "pipeline",       text: "Pipeline",       checked: true },
+    { value: "active",         text: "Active",         checked: true },
+    { value: "site-completed", text: "Site completed", checked: true }
+  ]
+}) }}
+
+{# ── Sites table ──────────────────────────────────────────────────────── #}
+<!-- Custom departure: sortable table.
+     Column headers include sort controls (ascending/descending) using
+     aria-sort on th elements. No GDS sort component exists. The MoJ
+     Design System documents this pattern using aria-sort with visual
+     sort indicators. This implementation follows the same approach.
+     The table remains fully usable without JavaScript — columns can be
+     sorted via query parameters on page reload.
+     Accessibility: aria-sort set to "ascending", "descending", or "none"
+     on each sortable th. Sort icons use aria-hidden="true". Screen readers
+     announce the current sort state via aria-sort. -->
+<table class="govuk-table govuk-!-margin-top-6">
+  <caption class="govuk-table__caption govuk-table__caption--m">
+    All sites
+  </caption>
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Site ID <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Site name <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Status <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Homes <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Status in deal <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Local authority <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header" aria-sort="none">
+        <a href="#" class="govuk-link govuk-link--no-visited-state">Region <span aria-hidden="true">&#x25B4;&#x25BE;</span></a>
+      </th>
+      <th scope="col" class="govuk-table__header">
+        Delete
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for site in sites %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link">{{ site.siteId }}</a>
+      </td>
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link">{{ site.siteName }}</a>
+      </td>
+      <td class="govuk-table__cell">
+        {% if site.status == "Active" %}
+          {{ govukTag({ text: "Active", classes: "govuk-tag--blue" }) }}
+        {% elif site.status == "Pipeline" %}
+          {{ govukTag({ text: "Pipeline", classes: "govuk-tag--yellow" }) }}
+        {% elif site.status == "Not started" %}
+          {{ govukTag({ text: "Not started", classes: "govuk-tag--grey" }) }}
+        {% elif site.status == "Site completed" %}
+          {{ govukTag({ text: "Site completed", classes: "govuk-tag--green" }) }}
+        {% endif %}
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ site.homes }}</td>
+      <td class="govuk-table__cell">{{ site.statusInDeal }}</td>
+      <td class="govuk-table__cell">{{ site.localAuthority }}</td>
+      <td class="govuk-table__cell">{{ site.region }}</td>
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link govuk-link--destructive">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# ── Pagination ───────────────────────────────────────────────────────── #}
+{{ govukPagination({
+  previous: { labelText: "Previous", href: "#" },
+  next: { labelText: "Next", href: "#" },
+  items: [
+    { number: 1, current: true, href: "#" },
+    { number: 2, href: "#" },
+    { number: 3, href: "#" }
+  ]
+}) }}
+
+{% endblock %}

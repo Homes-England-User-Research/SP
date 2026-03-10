@@ -25,3 +25,8 @@
 
 // Overview page — stat cards, trend badges, insight blocks
 @import 'overview';
+
+// Sites page — 3-column stat card grid variant
+.stat-card-grid--3col {
+  grid-template-columns: repeat(3, 1fr);
+}

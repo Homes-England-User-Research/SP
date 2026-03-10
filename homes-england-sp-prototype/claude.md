@@ -64,6 +64,11 @@ homes-england-sp-prototype/
 │   │   │   ├── role-switcher.html
 │   │   │   ├── stat-card.html
 │   │   │   └── year-tabs.html
+│   │   ├── sites/
+│   │   │   ├── index.html                   ← Sites landing page (table, stat cards, filters)
+│   │   │   └── add/
+│   │   │       ├── step-1.html              ← Add new site step 1 (details, location, contractor)
+│   │   │       └── step-2.html              ← Add new site step 2 (milestones)
 │   │   ├── index.html                       ← home/prototype index page
 │   │   ├── site-units-forecast.html         ← SP editable table page (main deliverable)
 │   │   ├── site-units-forecast-confirmation.html
@@ -83,10 +88,11 @@ homes-england-sp-prototype/
 ---
 
 ## Navigation (current)
-Home | Components
+Home | Overview | Sites | Components
 
 Active state controlled via `res.locals.currentPath` middleware in routes.js.
 `"/components" in currentPath` (Nunjucks `in` operator) matches all /components/* pages.
+`"/sites" in currentPath` matches all /sites/* pages including /sites/add/step-1 etc.
 
 ---
 
@@ -98,6 +104,11 @@ Active state controlled via `res.locals.currentPath` middleware in routes.js.
 | POST | `/site-units-forecast` | kit auto-saves POST body to session, redirects to confirmation |
 | GET | `/site-units-forecast-confirmation` | kit default render |
 | GET | `/site-units-forecast-build-analysis` | renders build analysis page |
+| GET | `/sites` | passes seed sites + session new site to template |
+| GET | `/sites/add/step-1` | renders add new site step 1 form |
+| POST | `/sites/add/step-1` | saves step 1 to session, redirects to step 2 |
+| GET | `/sites/add/step-2` | renders add new site step 2 form |
+| POST | `/sites/add/step-2` | saves step 2, sets newSiteAdded, redirects to /sites?success=true |
 | GET | `/components` | renders component library index |
 | GET | `/components/accessible-chart` | |
 | GET | `/components/date-picker` | |
@@ -397,6 +408,21 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
   sit flush to the table body regardless of line count. GDS does not set this, so additive.
 - `govuk-!-margin-top-6` on Tier 1 grid row — separates H1 from first table
 - Page width kept at GDS default 1020px — no custom departure claimed
+
+### Sites page and Add new site
+- Sites page: stat cards reuse the existing .stat-card custom component.
+  Three cards in a row (3-column grid variant via `.stat-card-grid--3col`).
+  Same justification as Overview page stat cards.
+- Sites table: sortable columns using aria-sort on th elements. No GDS
+  sort component exists. Pattern follows MoJ Design System sortable table
+  approach. Table remains fully usable without JavaScript via query
+  parameter sort on page reload.
+- Add new site: multi-field form across 2 steps rather than one question
+  per page. SP users are expert users performing a routine data entry task.
+  Fields are grouped by subject area (site details, location, contractor,
+  milestones). One-question-per-page would create an excessively long
+  journey without reducing errors for this user type. GDS guidance
+  explicitly allows grouping questions where appropriate.
 
 ### Deployment
 - Railway deployment uses `railway.json` at repo root with `rootDirectory: "homes-england-sp-prototype"`

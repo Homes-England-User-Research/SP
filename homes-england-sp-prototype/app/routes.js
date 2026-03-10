@@ -132,6 +132,114 @@ router.get('/overview/build-analysis', function (req, res) {
 })
 
 // =============================================================================
+// Sites — landing page + add new site (2-step form)
+// =============================================================================
+
+/**
+ * Seed data for the sites table.
+ * In production this would come from the IMS API.
+ */
+const seedSites = [
+  { siteId: '1234', siteName: 'Belgrave Square',   status: 'Site completed', homes: 19, statusInDeal: 'Active',   localAuthority: 'Havering',    region: 'South East' },
+  { siteId: '2222', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 24, statusInDeal: 'Active',   localAuthority: 'Barnet',      region: 'London' },
+  { siteId: '2345', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 18, statusInDeal: 'Active',   localAuthority: 'Camden',      region: 'London' },
+  { siteId: '2456', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 12, statusInDeal: 'Inactive', localAuthority: 'Leeds',       region: 'Yorkshire' },
+  { siteId: '2567', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 31, statusInDeal: 'Active',   localAuthority: 'Bristol',     region: 'South West' },
+  { siteId: '2678', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 8,  statusInDeal: 'Inactive', localAuthority: 'Manchester',  region: 'North West' },
+  { siteId: '2789', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 15, statusInDeal: 'Inactive', localAuthority: 'Sheffield',   region: 'Yorkshire' },
+  { siteId: '2890', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Active',         homes: 22, statusInDeal: 'Active',   localAuthority: 'Liverpool',   region: 'North West' },
+  { siteId: '2901', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Pipeline',       homes: 9,  statusInDeal: 'Inactive', localAuthority: 'Newcastle',   region: 'North East' },
+  { siteId: '3012', siteName: 'Xxx Xxxxxxxxxxx',   status: 'Not started',    homes: 11, statusInDeal: 'Inactive', localAuthority: 'Birmingham',  region: 'Midlands' }
+]
+
+/**
+ * GET /sites
+ *
+ * Renders the Sites landing page. If ?success=true is in the URL and a new
+ * site has been added via session, it is prepended to the table.
+ */
+router.get('/sites', function (req, res) {
+  var sites = seedSites.slice()
+
+  // Prepend newly added site if the 2-step form was completed
+  if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
+    sites.unshift({
+      siteId: req.session.data['newSite'].siteId || '—',
+      siteName: req.session.data['newSite'].siteName || 'New site',
+      status: 'Not started',
+      homes: 0,
+      statusInDeal: 'Inactive',
+      localAuthority: req.session.data['newSite'].localAuthority || '—',
+      region: req.session.data['newSite'].region || '—'
+    })
+  }
+
+  res.render('sites/index', {
+    success: req.query.success === 'true',
+    sites: sites
+  })
+})
+
+/**
+ * GET /sites/add/step-1
+ */
+router.get('/sites/add/step-1', function (req, res) {
+  res.render('sites/add/step-1')
+})
+
+/**
+ * POST /sites/add/step-1
+ *
+ * Saves step 1 fields to session and redirects to step 2.
+ */
+router.post('/sites/add/step-1', function (req, res) {
+  req.session.data['newSite'] = {
+    ...req.session.data['newSite'],
+    siteId: req.body['site-id'],
+    siteName: req.body['site-name'],
+    typeOfSite: req.body['type-of-site'],
+    ruralArea: req.body['rural-area'],
+    localAuthority: req.body['local-authority'],
+    operatingArea: req.body['operating-area'],
+    region: req.body['region'],
+    processingRoute: req.body['processing-route'],
+    regenerationSite: req.body['regeneration-site'],
+    postcode: req.body['postcode'],
+    xCoordinate: req.body['x-coordinate'],
+    yCoordinate: req.body['y-coordinate'],
+    typeOfContractor: req.body['type-of-contractor'],
+    contractor: req.body['contractor']
+  }
+  res.redirect('/sites/add/step-2')
+})
+
+/**
+ * GET /sites/add/step-2
+ */
+router.get('/sites/add/step-2', function (req, res) {
+  res.render('sites/add/step-2')
+})
+
+/**
+ * POST /sites/add/step-2
+ *
+ * Saves step 2 fields, marks the new site as complete, and redirects
+ * to the Sites page with a success banner.
+ */
+router.post('/sites/add/step-2', function (req, res) {
+  req.session.data['newSite'] = {
+    ...req.session.data['newSite'],
+    ownershipStatus: req.body['ownership-status'],
+    planningStatus: req.body['planning-status'],
+    buildingContractStatus: req.body['building-contract-status'],
+    startOnSiteStatus: req.body['start-on-site-status'],
+    forecastCompletionDate: req.body['forecast-completion-date']
+  }
+  req.session.data['newSiteAdded'] = true
+  res.redirect('/sites?success=true')
+})
+
+// =============================================================================
 // Component Library — GET routes
 // =============================================================================
 
