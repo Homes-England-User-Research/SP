@@ -17,7 +17,7 @@
 {% block content %}
 
 {#
-  SP (Strategic Partnerships) page pattern — intentionally departs from GDS
+  SP (Strategic Partnerships) page pattern - intentionally departs from GDS
   one-question-per-page convention. SP users are accustomed to the IMS
   (Investment Management System) which presents dense, data-rich forms with
   multiple editable fields on a single page. This layout replicates that
@@ -39,10 +39,10 @@
   {#
     Shared column and colgroup configuration for both tier tables.
     3 numeric columns after the Tenure type row header:
-      40% — Tenure type (long names need the most space)
-      20% × 3 — numeric columns (wider to keep headers to 2 lines)
+      40% - Tenure type (long names need the most space)
+      20% × 3 - numeric columns (wider to keep headers to 2 lines)
     numeric: true applies govuk-table__header--numeric / govuk-table__cell--numeric
-    for right-aligned headers and cells — matching GDS numeric table guidance.
+    for right-aligned headers and cells - matching GDS numeric table guidance.
   #}
   {% set tierColumns = [
     { label: "Tenure type",             name: "tenure",   editable: false, readOnly: false, isHeader: true },
@@ -56,7 +56,7 @@
   {# ── Tier 1 forecast ──────────────────────────────────────────────────────── govuk-!-margin-top-6 adds 30px above the first table, separating it from the H1 #}
   {#
     Caption replaces the separate <h2> so the table heading is programmatically
-    associated with the table element — screen readers announce the caption
+    associated with the table element - screen readers announce the caption
     when entering the table. A standalone <h2> outside the table has no
     native association with it (WCAG 1.3.1 Info and Relationships).
   #}
@@ -111,7 +111,7 @@
     <div class="govuk-grid-column-full">
 
       {#
-        aria-labelledby associates the table with its visible <h2> heading —
+        aria-labelledby associates the table with its visible <h2> heading -
         the same accessible name pattern as using a caption, but avoids
         duplicating the heading text inside the table element.
       #}
@@ -156,7 +156,7 @@
 
   {# ── Further forecast details ─────────────────────────────────────────────── #}
   {#
-    Standard GDS single-column form layout — one question per group,
+    Standard GDS single-column form layout - one question per group,
     stacked vertically per GDS question page guidance.
   #}
   <div class="govuk-grid-row govuk-!-margin-top-2">

@@ -1,5 +1,5 @@
 {# Insight block: Forecast vs Actual (QDE) over time
-   Custom component — inline SVG dual line chart + data table.
+   Custom component - inline SVG dual line chart + data table.
    Table is first in DOM; SVG is aria-hidden.
    Two lines distinguished by: solid vs dashed stroke (shape, WCAG 1.4.1)
    + filled vs hollow data point markers (overlap visibility). #}
@@ -7,7 +7,7 @@
 <div class="insight-block">
   <div class="insight-block__inner">
 
-    <!-- TABLE FIRST IN DOM — caption visually-hidden; tab label provides
+    <!-- TABLE FIRST IN DOM - caption visually-hidden; tab label provides
          visible heading context -->
     <div class="insight-block__table">
       {{ govukTable({
@@ -30,11 +30,11 @@
       }) }}
     </div>
 
-    <!-- CHART SECOND IN DOM — dual line chart, purely decorative.
+    <!-- CHART SECOND IN DOM - dual line chart, purely decorative.
          Lines distinguished by:
-         1. Stroke style: solid (actual) vs dashed (forecast) — WCAG 1.4.1
+         1. Stroke style: solid (actual) vs dashed (forecast) - WCAG 1.4.1
          2. Marker shape: filled circles (actual) vs hollow circles (forecast)
-            — solves overlap visibility when values are identical (e.g. Q3/Q4 2026) -->
+            - solves overlap visibility when values are identical (e.g. Q3/Q4 2026) -->
     <figure class="insight-block__chart" aria-hidden="true">
       <svg viewBox="0 0 400 200" focusable="false">
         <!-- Y axis gridlines -->
@@ -64,7 +64,7 @@
         <polyline
           points="80,120 130,130 180,80 230,60 280,30 330,60 380,70"
           fill="none" stroke="#28a197" stroke-width="2.5" />
-        <!-- Actual data point markers — filled circles -->
+        <!-- Actual data point markers - filled circles -->
         <circle cx="80" cy="120" r="4" fill="#28a197" />
         <circle cx="130" cy="130" r="4" fill="#28a197" />
         <circle cx="180" cy="80" r="4" fill="#28a197" />
@@ -77,7 +77,7 @@
         <polyline
           points="80,100 130,90 180,80 230,60 280,40 330,50 380,60"
           fill="none" stroke="#505a5f" stroke-width="2" stroke-dasharray="6,3" />
-        <!-- Forecast data point markers — hollow circles (white fill, grey stroke).
+        <!-- Forecast data point markers - hollow circles (white fill, grey stroke).
              At overlap points (Q3: both 80, Q4: both 60) the hollow ring sits
              visibly around/on top of the filled teal circle. -->
         <circle cx="80" cy="100" r="4" fill="#ffffff" stroke="#505a5f" stroke-width="1.5" />
@@ -88,7 +88,7 @@
         <circle cx="330" cy="50" r="4" fill="#ffffff" stroke="#505a5f" stroke-width="1.5" />
         <circle cx="380" cy="60" r="4" fill="#ffffff" stroke="#505a5f" stroke-width="1.5" />
 
-        <!-- Legend — line style + marker shape matches series -->
+        <!-- Legend - line style + marker shape matches series -->
         <line x1="80" y1="12" x2="100" y2="12" stroke="#28a197" stroke-width="2.5" />
         <circle cx="90" cy="12" r="3" fill="#28a197" />
         <text x="104" y="15" font-size="10" fill="#0b0c0c">Actual</text>

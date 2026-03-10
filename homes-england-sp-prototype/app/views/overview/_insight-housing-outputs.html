@@ -1,13 +1,13 @@
 {# Insight block: Housing outputs
-   Custom component — inline SVG bar chart (3 bars) + data table.
+   Custom component - inline SVG bar chart (3 bars) + data table.
    Table is first in DOM; SVG is aria-hidden.
    Three bars use colour + pattern + position labels to distinguish
-   series (WCAG 1.4.1 — never colour alone). #}
+   series (WCAG 1.4.1 - never colour alone). #}
 
 <div class="insight-block">
   <div class="insight-block__inner">
 
-    <!-- TABLE FIRST IN DOM — caption visually-hidden; tab label provides
+    <!-- TABLE FIRST IN DOM - caption visually-hidden; tab label provides
          visible heading context -->
     <div class="insight-block__table">
       {{ govukTable({
@@ -25,7 +25,7 @@
       }) }}
     </div>
 
-    <!-- CHART SECOND IN DOM — 3-bar chart, purely decorative.
+    <!-- CHART SECOND IN DOM - 3-bar chart, purely decorative.
          Uses colour + SVG pattern + x-axis position labels so colour-blind
          users can distinguish all three bars (WCAG 1.4.1).
          "Started" bar changed from #b1b4b6 (2.5:1, FAIL) to #505a5f
@@ -33,7 +33,7 @@
     <figure class="insight-block__chart" aria-hidden="true">
       <svg viewBox="0 0 400 200" focusable="false">
         <defs>
-          <!-- Diagonal stripe pattern for "Not started" bar — provides
+          <!-- Diagonal stripe pattern for "Not started" bar - provides
                a non-colour visual distinction from the two solid bars -->
           <pattern id="pattern-not-started" width="6" height="6"
             patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -61,15 +61,15 @@
         <text x="230" y="196" text-anchor="middle" font-size="10" fill="#505a5f">Completed</text>
         <text x="330" y="196" text-anchor="middle" font-size="10" fill="#505a5f">Not started</text>
 
-        <!-- Bars — scale: 0=160, 25000=20 → 5.6px per 1000 -->
-        <!-- Started: solid dark grey (#505a5f, 7.0:1 — passes 1.4.11) -->
+        <!-- Bars - scale: 0=160, 25000=20 → 5.6px per 1000 -->
+        <!-- Started: solid dark grey (#505a5f, 7.0:1 - passes 1.4.11) -->
         <rect x="100" y="36" width="60" height="124" fill="#505a5f" />
-        <!-- Completed: solid teal (#28a197, 3.2:1 — passes 1.4.11) -->
+        <!-- Completed: solid teal (#28a197, 3.2:1 - passes 1.4.11) -->
         <rect x="200" y="77" width="60" height="83" fill="#28a197" />
         <!-- Not started: orange diagonal stripes (colour + pattern, #f47738 3.1:1) -->
         <rect x="300" y="59" width="60" height="101" fill="url(#pattern-not-started)" />
 
-        <!-- Legend — pattern/colour in legend matches bar fill -->
+        <!-- Legend - pattern/colour in legend matches bar fill -->
         <rect x="80" y="5" width="10" height="10" fill="#505a5f" />
         <text x="94" y="14" font-size="9" fill="#0b0c0c">Started</text>
         <rect x="155" y="5" width="10" height="10" fill="#28a197" />

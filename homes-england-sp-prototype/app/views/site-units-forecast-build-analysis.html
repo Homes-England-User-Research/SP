@@ -2,7 +2,7 @@
 
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 
-{% set pageName = "Build analysis — Site home forecasts" %}
+{% set pageName = "Build analysis - Site home forecasts" %}
 
 {% block beforeContent %}
   {{ govukBreadcrumbs({
@@ -44,18 +44,18 @@
     {# ── GDS alignment ──────────────────────────────────────────────────────── #}
     <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
     <ul class="govuk-list govuk-list--bullet">
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> — <code>govukBreadcrumbs</code> macro, unmodified</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Page heading</a> — <code>govuk-heading-xl</code> with <code>govuk-caption-l</code>, standard GDS pattern</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table markup</a> — <code>govuk-table</code>, <code>govuk-table__header</code>, <code>govuk-table__cell</code>, standard GDS classes throughout</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Numeric columns</a> — <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code> per GDS numeric table guidance</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table captions</a> — <code>govuk-table__caption govuk-table__caption--m</code> for programmatic table association (WCAG 1.3.1); preferred over an external <code>&lt;h2&gt;</code> which has no native association with the table element</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/text-input/">Form inputs</a> — <code>govuk-input</code> with <code>type="text" inputmode="numeric"</code> per GDS recommendation; <code>type="number"</code> causes JAWS to announce "spin button"</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Save button</a> — <code>govuk-button</code>, unmodified</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Secondary button</a> — <code>govuk-button govuk-button--secondary</code>, unmodified</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button group</a> — <code>govuk-button-group</code>, standard GDS pattern</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> — all spacing uses <code>govuk-spacing()</code> tokens or <code>govuk-!</code> utility classes; no raw pixel values in custom Sass</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Deficit indicator</a> — <code>govuk-tag govuk-tag--red</code> inside <code>&lt;strong&gt;</code>, conditionally rendered in a table cell when Homes remaining falls below zero. The GDS tag component is documented for indicating status, and <code>govuk-tag--red</code> is the approved variant for problematic or urgent states. Using a tag in a table cell is an explicitly supported pattern in the GDS design system.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Page width</a> — <code>max-width: 1020px</code>; GDS states the default is 1020px and explicitly permits widening for content that requires it</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> - <code>govukBreadcrumbs</code> macro, unmodified</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Page heading</a> - <code>govuk-heading-xl</code> with <code>govuk-caption-l</code>, standard GDS pattern</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table markup</a> - <code>govuk-table</code>, <code>govuk-table__header</code>, <code>govuk-table__cell</code>, standard GDS classes throughout</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Numeric columns</a> - <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code> per GDS numeric table guidance</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table captions</a> - <code>govuk-table__caption govuk-table__caption--m</code> for programmatic table association (WCAG 1.3.1); preferred over an external <code>&lt;h2&gt;</code> which has no native association with the table element</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/text-input/">Form inputs</a> - <code>govuk-input</code> with <code>type="text" inputmode="numeric"</code> per GDS recommendation; <code>type="number"</code> causes JAWS to announce "spin button"</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Save button</a> - <code>govuk-button</code>, unmodified</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Secondary button</a> - <code>govuk-button govuk-button--secondary</code>, unmodified</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button group</a> - <code>govuk-button-group</code>, standard GDS pattern</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - all spacing uses <code>govuk-spacing()</code> tokens or <code>govuk-!</code> utility classes; no raw pixel values in custom Sass</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Deficit indicator</a> - <code>govuk-tag govuk-tag--red</code> inside <code>&lt;strong&gt;</code>, conditionally rendered in a table cell when Homes remaining falls below zero. The GDS tag component is documented for indicating status, and <code>govuk-tag--red</code> is the approved variant for problematic or urgent states. Using a tag in a table cell is an explicitly supported pattern in the GDS design system.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Page width</a> - <code>max-width: 1020px</code>; GDS states the default is 1020px and explicitly permits widening for content that requires it</li>
     </ul>
 
     {# ── Custom departures ──────────────────────────────────────────────────── #}
@@ -69,14 +69,14 @@
     <p class="govuk-body">
       <strong>Justification:</strong> The page presents data for 12 tenure types across 2 funding tiers,
       where each row has a related forecast input, a read-only actual value, and an auto-calculated
-      remaining value. This is a tabular relationship between values — not a sequence of unrelated questions.
+      remaining value. This is a tabular relationship between values - not a sequence of unrelated questions.
       Placing these as separate pages would destroy the relational context that makes the data meaningful
       to users. GDS already supports multiple related inputs on a single page through the
       <a class="govuk-link" href="https://design-system.service.gov.uk/components/fieldset/">fieldset component</a>
       (for example, address fields and date inputs). The
       <a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">GDS question pages pattern</a>
       explicitly acknowledges exceptions for complex data entry tools. The pattern is implemented using
-      entirely standard GDS table markup and <code>govuk-input</code> components — no GDS styles are
+      entirely standard GDS table markup and <code>govuk-input</code> components - no GDS styles are
       overridden. Users are professional case managers at housing associations and developers bidding under
       the <a class="govuk-link" href="https://www.gov.uk/government/news/homes-england-opens-bidding-for-ten-year-social-and-affordable-homes-programme">Affordable Homes Programme</a>,
       accessing the service via an account system.
@@ -86,7 +86,7 @@
     <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
     <p class="govuk-body">
       The following are implementation choices that flow from the editable table pattern. None override
-      GDS components — they are additive adjustments to make the pattern work correctly and remain
+      GDS components - they are additive adjustments to make the pattern work correctly and remain
       WCAG 2.1 AA compliant.
     </p>
 
@@ -141,84 +141,84 @@
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">axe DevTools (Chrome extension)</th>
           <td class="govuk-table__cell">Zero violations on page load and after typing a value in a forecast input</td>
-          <td class="govuk-table__cell">Pass — all ARIA attributes are well-formed; no duplicate IDs; <code>aria-live</code> regions correctly placed</td>
+          <td class="govuk-table__cell">Pass - all ARIA attributes are well-formed; no duplicate IDs; <code>aria-live</code> regions correctly placed</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
           <td class="govuk-table__cell">No errors; check that table headers are flagged as correctly associated</td>
-          <td class="govuk-table__cell">Pass — <code>scope="col"</code> and <code>scope="row"</code> on all header cells; captions present</td>
+          <td class="govuk-table__cell">Pass - <code>scope="col"</code> and <code>scope="row"</code> on all header cells; captions present</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
           <td class="govuk-table__cell">All text passes 4.5:1 for normal text; 3:1 for large text and UI components (WCAG 1.4.3, 1.4.11)</td>
-          <td class="govuk-table__cell">Pass — GDS colour tokens used throughout; red tag uses GDS-approved contrast ratio</td>
+          <td class="govuk-table__cell">Pass - GDS colour tokens used throughout; red tag uses GDS-approved contrast ratio</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Keyboard-only navigation</th>
           <td class="govuk-table__cell">Tab through all inputs in logical order; Enter submits form; no keyboard traps; focus visible on all interactive elements</td>
-          <td class="govuk-table__cell">Pass — native HTML inputs and buttons; logical DOM order matches visual order; GDS focus styles intact</td>
+          <td class="govuk-table__cell">Pass - native HTML inputs and buttons; logical DOM order matches visual order; GDS focus styles intact</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
           <td class="govuk-table__cell">Table navigation (row/column headers announced on cell entry); <code>aria-live</code> announces recalculated values; "Deficit" tag read inline; inputs announced with label not "spin button"</td>
-          <td class="govuk-table__cell">Pass — <code>type="text"</code> avoids spin button; <code>scope</code> headers announced; <code>aria-live="polite"</code> announces without interruption</td>
+          <td class="govuk-table__cell">Pass - <code>type="text"</code> avoids spin button; <code>scope</code> headers announced; <code>aria-live="polite"</code> announces without interruption</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
           <td class="govuk-table__cell">Same table navigation checks as NVDA; verify no "spin button" announcement on forecast inputs</td>
-          <td class="govuk-table__cell">Pass — same rationale as NVDA; JAWS also uses <code>scope</code> for table navigation</td>
+          <td class="govuk-table__cell">Pass - same rationale as NVDA; JAWS also uses <code>scope</code> for table navigation</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
           <td class="govuk-table__cell">Table row/column header announcements; form inputs labelled correctly; live regions announced</td>
-          <td class="govuk-table__cell">Pass — standard GDS table markup; <code>aria-label</code> on inputs provides full context for VoiceOver table mode</td>
+          <td class="govuk-table__cell">Pass - standard GDS table markup; <code>aria-label</code> on inputs provides full context for VoiceOver table mode</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
           <td class="govuk-table__cell">Voice commands match visible label text for all inputs; "Click Save" activates the submit button</td>
-          <td class="govuk-table__cell">Pass — <code>aria-label</code> on inputs mirrors visible tenure type and column label text; button text matches command</td>
+          <td class="govuk-table__cell">Pass - <code>aria-label</code> on inputs mirrors visible tenure type and column label text; button text matches command</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
           <td class="govuk-table__cell">Page content reflows to a single column at 1280px × 1024px viewport zoomed to 400%; no horizontal scroll on body content; table wrapper scrolls horizontally as a contained block</td>
-          <td class="govuk-table__cell">Pass — <code>overflow-x: auto</code> on <code>.sp-table-wrapper</code> contains table scroll; <code>white-space: nowrap</code> removed from all cells; <code>min-width: 260px</code> on tenure column prevents collapse but is contained within wrapper</td>
+          <td class="govuk-table__cell">Pass - <code>overflow-x: auto</code> on <code>.sp-table-wrapper</code> contains table scroll; <code>white-space: nowrap</code> removed from all cells; <code>min-width: 260px</code> on tenure column prevents collapse but is contained within wrapper</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">200% text-only zoom</th>
           <td class="govuk-table__cell">Text resizes to 200% using browser text size settings without loss of content or functionality (WCAG 1.4.4)</td>
-          <td class="govuk-table__cell">Pass — no text sizes fixed in px on content; GDS body uses rem units</td>
+          <td class="govuk-table__cell">Pass - no text sizes fixed in px on content; GDS body uses rem units</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
           <td class="govuk-table__cell">All text, borders, focus indicators and button states visible in both Light and Dark high contrast modes</td>
-          <td class="govuk-table__cell">Pass — GDS components include forced-colors CSS; no background-image-only indicators used</td>
+          <td class="govuk-table__cell">Pass - GDS components include forced-colors CSS; no background-image-only indicators used</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Reduced motion (<code>prefers-reduced-motion</code>)</th>
           <td class="govuk-table__cell">No animations or transitions on the page that could trigger vestibular disorders</td>
-          <td class="govuk-table__cell">Pass — no CSS transitions or animations on this page; GDS components respect this media query natively</td>
+          <td class="govuk-table__cell">Pass - no CSS transitions or animations on this page; GDS components respect this media query natively</td>
           <td class="govuk-table__cell"></td>
         </tr>
 

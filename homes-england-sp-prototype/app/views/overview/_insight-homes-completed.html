@@ -1,13 +1,13 @@
 {# Insight block: Homes completed over time
-   Custom component — inline SVG + data table.
+   Custom component - inline SVG + data table.
    Table is first in DOM for screen readers; SVG is aria-hidden.
-   Single series — no legend or figcaption needed; tab label provides context.
+   Single series - no legend or figcaption needed; tab label provides context.
    See CLAUDE.md "Charts" section. #}
 
 <div class="insight-block">
   <div class="insight-block__inner">
 
-    <!-- TABLE FIRST IN DOM — screen readers encounter structured data first.
+    <!-- TABLE FIRST IN DOM - screen readers encounter structured data first.
          Caption is visually-hidden because the tab label already provides
          the visible heading context. Caption kept for AT and JS-off fallback. -->
     <div class="insight-block__table">
@@ -30,8 +30,8 @@
       }) }}
     </div>
 
-    <!-- CHART SECOND IN DOM — purely decorative, hidden from AT.
-         Single series — no legend needed. -->
+    <!-- CHART SECOND IN DOM - purely decorative, hidden from AT.
+         Single series - no legend needed. -->
     <figure class="insight-block__chart" aria-hidden="true">
       <svg viewBox="0 0 400 200" focusable="false">
         <!-- Y axis gridlines -->
@@ -57,7 +57,7 @@
         <text x="330" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q2</text>
         <text x="380" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q3</text>
 
-        <!-- Line chart (teal #28a197, 3.2:1 on white — passes WCAG 1.4.11) -->
+        <!-- Line chart (teal #28a197, 3.2:1 on white - passes WCAG 1.4.11) -->
         <!-- Scale: 0=160, 6000=20 → 140px range -->
         <polyline
           points="80,141 130,112 180,105 230,81 280,43 330,38 380,36"

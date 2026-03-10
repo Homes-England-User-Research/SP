@@ -24,11 +24,11 @@
 {% endif %}
 
 {% if dataState == "mvp" %}
-  {# MVP: no Key information section — nav sections lead the page #}
+  {# MVP: no Key information section - nav sections lead the page #}
 {% else %}
   <!-- Custom component: stat card (metric card).
        No GDS equivalent exists. Built from GDS design tokens only.
-       Trend badges use shape + colour + aria-label — never colour alone
+       Trend badges use shape + colour + aria-label - never colour alone
        (WCAG 1.4.1). See CLAUDE.md "Stat card" section.
        Layout: full-width 2×3 CSS grid (changed from one-third sidebar
        following design iteration). -->
@@ -84,7 +84,7 @@
 {% endif %}
 
 <!-- Navigation sections in a two-column CSS grid. Full width.
-     Changed from two-thirds sidebar layout following design iteration —
+     Changed from two-thirds sidebar layout following design iteration -
      halves vertical length and matches how the GDS Design System groups
      related content in its own documentation. -->
 <div class="nav-section-grid govuk-!-margin-bottom-8">
@@ -133,7 +133,7 @@
 {% if dataState == "mature" %}
   <h2 class="govuk-heading-l govuk-!-margin-top-8">Data insights</h2>
 
-  <!-- GDS govuk-tabs component — unmodified. All four chart panels rendered.
+  <!-- GDS govuk-tabs component - unmodified. All four chart panels rendered.
        Each panel contains a data table first in DOM, then an aria-hidden SVG
        chart. See CLAUDE.md "Charts" section. -->
   <div class="govuk-tabs" data-module="govuk-tabs">
@@ -175,7 +175,7 @@
 {% endblock %}
 
 {# ── Prototype controls in footer ────────────────────────────────────── #}
-<!-- Prototype control — remove before handoff to development.
+<!-- Prototype control - remove before handoff to development.
      Allows researchers to switch between MVP, Growing and Mature data
      states during user research sessions. Placed in footer to keep
      it out of the main content area. -->

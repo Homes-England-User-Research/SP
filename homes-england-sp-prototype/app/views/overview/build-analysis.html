@@ -3,7 +3,7 @@
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% set pageName = "Build analysis — Overview" %}
+{% set pageName = "Build analysis - Overview" %}
 
 {% block beforeContent %}
   {{ govukBreadcrumbs({
@@ -39,7 +39,7 @@
       one-question-per-page pattern, which is not appropriate for this use case.
     </p>
     <p class="govuk-body">
-      The page has two data states — MVP (no data) and Mature (full data) —
+      The page has two data states - MVP (no data) and Mature (full data) -
       controlled by a prototype toggle in the footer.
       All GDS components used on the page are used without modification unless
       listed under Custom departures below.
@@ -48,15 +48,15 @@
     {# ── GDS alignment ──────────────────────────────────────────────────── #}
     <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
     <ul class="govuk-list govuk-list--bullet">
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tabs/">Tabs</a> — <code>govuk-tabs</code> with <code>data-module="govuk-tabs"</code>, unmodified. Keyboard navigation (arrow keys between tabs) provided by govuk-frontend JavaScript. Used to organise four data insight chart panels.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> — <code>govukButton()</code>, unmodified. Build Analysis link (secondary variant) and prototype controls Apply button.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/details/">Details</a> — <code>govukDetails()</code>, unmodified. Prototype controls toggle.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> — <code>govukSelect()</code>, unmodified. Data state selector (prototype controls only).</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> — <code>govukTable()</code>, unmodified. Data tables inside insight blocks, always rendered first in DOM before the chart SVG.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> — <code>govukBreadcrumbs()</code>, unmodified. Build Analysis page only.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> — <code>govuk-spacing()</code> tokens used throughout. No custom px values.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Page width</a> — <code>govuk-width-container</code>, 960px max-width, unmodified.</li>
-      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid</a> — <code>govuk-grid-row</code> and <code>govuk-grid-column-full</code>. Standard GDS 12-column grid, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tabs/">Tabs</a> - <code>govuk-tabs</code> with <code>data-module="govuk-tabs"</code>, unmodified. Keyboard navigation (arrow keys between tabs) provided by govuk-frontend JavaScript. Used to organise four data insight chart panels.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> - <code>govukButton()</code>, unmodified. Build Analysis link (secondary variant) and prototype controls Apply button.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/details/">Details</a> - <code>govukDetails()</code>, unmodified. Prototype controls toggle.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> - <code>govukSelect()</code>, unmodified. Data state selector (prototype controls only).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> - <code>govukTable()</code>, unmodified. Data tables inside insight blocks, always rendered first in DOM before the chart SVG.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> - <code>govukBreadcrumbs()</code>, unmodified. Build Analysis page only.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - <code>govuk-spacing()</code> tokens used throughout. No custom px values.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Page width</a> - <code>govuk-width-container</code>, 960px max-width, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid</a> - <code>govuk-grid-row</code> and <code>govuk-grid-column-full</code>. Standard GDS 12-column grid, unmodified.</li>
     </ul>
 
     {# ── Custom departures ──────────────────────────────────────────────── #}
@@ -83,9 +83,9 @@
     </p>
     <p class="govuk-body">
       <strong>Accessibility:</strong> Trend indicators use shape (▲/▼) + colour +
-      <code>aria-label</code> — never colour alone (WCAG 1.4.1). Alert state
+      <code>aria-label</code> - never colour alone (WCAG 1.4.1). Alert state
       (red border) reserved for actionable blockers only. GDS green (#00703c)
-      on white achieves 7.1:1; GDS red (#d4351c) on white achieves 4.5:1 —
+      on white achieves 7.1:1; GDS red (#d4351c) on white achieves 4.5:1 -
       both exceed WCAG 1.4.3 minimum. Windows High Contrast Mode handled via
       <code>@media (forced-colors: active)</code> to restore borders and badge
       visibility.
@@ -128,7 +128,7 @@
     </p>
     <p class="govuk-body">
       <strong>Accessibility:</strong> DOM order is left-to-right, top-to-bottom
-      — logical reading order preserved for screen readers (WCAG 1.3.2). All
+      - logical reading order preserved for screen readers (WCAG 1.3.2). All
       navigation links are standard <code>govuk-link</code> elements with
       visible text labels.
     </p>
@@ -157,7 +157,7 @@
       Table is always first in DOM regardless of visual layout. Visual position
       (table left, chart right) is achieved with CSS grid only (WCAG 1.3.2).
       Each table has a <code>govuk-visually-hidden</code> caption for screen
-      readers and the JS-off fallback — the tab label provides the visible
+      readers and the JS-off fallback - the tab label provides the visible
       heading context for sighted users.
     </p>
 
@@ -166,7 +166,7 @@
       All SVGs use <code>aria-hidden="true"</code> on the parent
       <code>&lt;figure&gt;</code> and <code>focusable="false"</code> on the
       <code>&lt;svg&gt;</code> element. No <code>role="img"</code> is applied
-      — it would contradict <code>aria-hidden</code> by assigning semantic
+      - it would contradict <code>aria-hidden</code> by assigning semantic
       meaning to a hidden element.
     </p>
 
@@ -176,11 +176,11 @@
       (non-text contrast, 3:1 minimum on white background):
     </p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>Teal <code>#28a197</code> — 3.2:1. Used for line charts, bar fills, and "Actual" series. Pass.</li>
-      <li>Dark grey <code>#505a5f</code> — 7.0:1. Used for axis labels, "Forecast" series line, and "Started" bar fill. Pass.</li>
-      <li>Orange <code>#f47738</code> — 3.1:1. Used for "Not started" bar fill (with diagonal stripe pattern). Pass.</li>
-      <li>Black <code>#0b0c0c</code> — 14.7:1. Used for legend text. Pass.</li>
-      <li>Gridline grey <code>#b1b4b6</code> — 2.5:1. Used for decorative gridlines only — not required to meet 1.4.11 as gridlines are non-essential.</li>
+      <li>Teal <code>#28a197</code> - 3.2:1. Used for line charts, bar fills, and "Actual" series. Pass.</li>
+      <li>Dark grey <code>#505a5f</code> - 7.0:1. Used for axis labels, "Forecast" series line, and "Started" bar fill. Pass.</li>
+      <li>Orange <code>#f47738</code> - 3.1:1. Used for "Not started" bar fill (with diagonal stripe pattern). Pass.</li>
+      <li>Black <code>#0b0c0c</code> - 14.7:1. Used for legend text. Pass.</li>
+      <li>Gridline grey <code>#b1b4b6</code> - 2.5:1. Used for decorative gridlines only - not required to meet 1.4.11 as gridlines are non-essential.</li>
     </ul>
 
     <h4 class="govuk-heading-s">Colour independence (WCAG 1.4.1)</h4>
@@ -188,9 +188,9 @@
       Multi-series charts never rely on colour alone to distinguish data:
     </p>
     <ul class="govuk-list govuk-list--bullet">
-      <li><strong>Forecast vs Actual (dual line):</strong> Actual line uses solid stroke + filled circle markers. Forecast line uses dashed stroke + hollow circle markers (white fill, grey ring). At overlap points where both values are identical (e.g. Q3 and Q4 2026), both marker shapes remain visible — the hollow ring sits on top of the filled circle.</li>
+      <li><strong>Forecast vs Actual (dual line):</strong> Actual line uses solid stroke + filled circle markers. Forecast line uses dashed stroke + hollow circle markers (white fill, grey ring). At overlap points where both values are identical (e.g. Q3 and Q4 2026), both marker shapes remain visible - the hollow ring sits on top of the filled circle.</li>
       <li><strong>Housing outputs (3-bar):</strong> "Started" is solid dark grey. "Completed" is solid teal. "Not started" uses a diagonal stripe SVG pattern (orange with white stripes). Each bar also has a text label directly on the x-axis. Inline SVG legend mirrors the fill styles.</li>
-      <li><strong>Single-series charts:</strong> Only one colour used — no distinction needed. Consistent data point markers (filled circles) at each value.</li>
+      <li><strong>Single-series charts:</strong> Only one colour used - no distinction needed. Consistent data point markers (filled circles) at each value.</li>
     </ul>
 
     <h4 class="govuk-heading-s">Progressive enhancement</h4>
@@ -198,14 +198,14 @@
       When JavaScript is disabled, the <code>govuk-tabs</code> component
       falls back to showing all four panels stacked vertically. Each table
       retains its <code>govuk-visually-hidden</code> caption, and the tab
-      text becomes an in-page anchor link — ensuring all data is accessible
+      text becomes an in-page anchor link - ensuring all data is accessible
       without any JavaScript dependency.
     </p>
 
     <h4 class="govuk-heading-s">Windows High Contrast Mode</h4>
     <p class="govuk-body">
       Chart colours are overridden by the OS in Windows High Contrast Mode.
-      This is expected and acceptable — the data table is the primary source
+      This is expected and acceptable - the data table is the primary source
       of information and remains fully readable. The chart is purely
       decorative and <code>aria-hidden</code>.
     </p>
@@ -241,61 +241,61 @@
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Data table alternative always present</th>
           <td class="govuk-table__cell">Analysis Function, ONS, WCAG 1.1.1</td>
-          <td class="govuk-table__cell">Pass — <code>govukTable()</code> with scoped headers is first in DOM inside every insight block. Table is always present, never hidden or toggled.</td>
+          <td class="govuk-table__cell">Pass - <code>govukTable()</code> with scoped headers is first in DOM inside every insight block. Table is always present, never hidden or toggled.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Chart hidden from assistive technology</th>
           <td class="govuk-table__cell">Analysis Function, ONS</td>
-          <td class="govuk-table__cell">Pass — <code>aria-hidden="true"</code> on <code>&lt;figure&gt;</code>, <code>focusable="false"</code> on <code>&lt;svg&gt;</code>. No <code>role="img"</code> (would contradict hidden state).</td>
+          <td class="govuk-table__cell">Pass - <code>aria-hidden="true"</code> on <code>&lt;figure&gt;</code>, <code>focusable="false"</code> on <code>&lt;svg&gt;</code>. No <code>role="img"</code> (would contradict hidden state).</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">3:1 minimum non-text contrast</th>
           <td class="govuk-table__cell">WCAG 1.4.11, Analysis Function</td>
-          <td class="govuk-table__cell">Pass — all chart element colours audited: teal #28a197 (3.2:1), dark grey #505a5f (7.0:1), orange #f47738 (3.1:1). Decorative gridlines (#b1b4b6, 2.5:1) exempt.</td>
+          <td class="govuk-table__cell">Pass - all chart element colours audited: teal #28a197 (3.2:1), dark grey #505a5f (7.0:1), orange #f47738 (3.1:1). Decorative gridlines (#b1b4b6, 2.5:1) exempt.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Never use colour alone to distinguish data series</th>
           <td class="govuk-table__cell">WCAG 1.4.1, Analysis Function, ONS</td>
-          <td class="govuk-table__cell">Pass — dual line chart uses solid vs dashed stroke + filled vs hollow markers. 3-bar chart uses solid fills + diagonal stripe pattern + x-axis text labels.</td>
+          <td class="govuk-table__cell">Pass - dual line chart uses solid vs dashed stroke + filled vs hollow markers. 3-bar chart uses solid fills + diagonal stripe pattern + x-axis text labels.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Overlapping series remain distinguishable</th>
           <td class="govuk-table__cell">ONS, Analysis Function</td>
-          <td class="govuk-table__cell">Pass — data point markers (filled circles for actual, hollow circles for forecast) remain visible at overlap points. At Q3 and Q4 2026 where values are identical, the hollow ring sits on the filled circle.</td>
+          <td class="govuk-table__cell">Pass - data point markers (filled circles for actual, hollow circles for forecast) remain visible at overlap points. At Q3 and Q4 2026 where values are identical, the hollow ring sits on the filled circle.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Table headers scoped correctly</th>
           <td class="govuk-table__cell">WCAG 1.3.1</td>
-          <td class="govuk-table__cell">Pass — <code>govukTable()</code> applies <code>scope="col"</code> to all column headers automatically. Table captions present (visually hidden — tab label is the visible heading).</td>
+          <td class="govuk-table__cell">Pass - <code>govukTable()</code> applies <code>scope="col"</code> to all column headers automatically. Table captions present (visually hidden - tab label is the visible heading).</td>
         </tr>
 
         <tr class="govuk-table__row">
-          <th scope="row" class="govuk-table__header">Progressive enhancement — works without JavaScript</th>
+          <th scope="row" class="govuk-table__header">Progressive enhancement - works without JavaScript</th>
           <td class="govuk-table__cell">GDS Service Standard, Analysis Function</td>
-          <td class="govuk-table__cell">Pass — with JS disabled, all four tab panels render stacked. Data tables remain fully accessible. Tab labels become in-page anchor links.</td>
+          <td class="govuk-table__cell">Pass - with JS disabled, all four tab panels render stacked. Data tables remain fully accessible. Tab labels become in-page anchor links.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Chart is not the sole source of any information</th>
           <td class="govuk-table__cell">Analysis Function, ONS</td>
-          <td class="govuk-table__cell">Pass — charts are <code>aria-hidden</code> and purely decorative. Every data point in every chart has a corresponding cell in the adjacent data table. Remove the SVG entirely and no information is lost.</td>
+          <td class="govuk-table__cell">Pass - charts are <code>aria-hidden</code> and purely decorative. Every data point in every chart has a corresponding cell in the adjacent data table. Remove the SVG entirely and no information is lost.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">High Contrast Mode compatibility</th>
           <td class="govuk-table__cell">WCAG 1.4.11, GDS</td>
-          <td class="govuk-table__cell">Pass — chart colours are overridden by the OS. The data table remains the only usable version of chart data in this mode. This is expected and acceptable.</td>
+          <td class="govuk-table__cell">Pass - chart colours are overridden by the OS. The data table remains the only usable version of chart data in this mode. This is expected and acceptable.</td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">No animations or motion</th>
           <td class="govuk-table__cell">WCAG 2.3.1, 2.3.3</td>
-          <td class="govuk-table__cell">Pass — inline SVGs are static. No CSS transitions, no JavaScript animation. <code>prefers-reduced-motion</code> not required (nothing to reduce).</td>
+          <td class="govuk-table__cell">Pass - inline SVGs are static. No CSS transitions, no JavaScript animation. <code>prefers-reduced-motion</code> not required (nothing to reduce).</td>
         </tr>
 
       </tbody>
@@ -336,84 +336,84 @@
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">axe DevTools (Chrome)</th>
           <td class="govuk-table__cell">Zero violations on page load and after switching data state</td>
-          <td class="govuk-table__cell">Pass — ARIA attributes are well-formed; no duplicate IDs; tab panel IDs unique; <code>aria-hidden</code> figures contain no focusable elements</td>
+          <td class="govuk-table__cell">Pass - ARIA attributes are well-formed; no duplicate IDs; tab panel IDs unique; <code>aria-hidden</code> figures contain no focusable elements</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
           <td class="govuk-table__cell">No errors; check that table headers inside insight blocks are correctly associated</td>
-          <td class="govuk-table__cell">Pass — <code>scope="col"</code> on all table headers; visually-hidden captions present on all data tables</td>
+          <td class="govuk-table__cell">Pass - <code>scope="col"</code> on all table headers; visually-hidden captions present on all data tables</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
           <td class="govuk-table__cell">Trend badge text (green/red on white); chart element colours (teal/grey/orange on white)</td>
-          <td class="govuk-table__cell">Pass — trend badges: GDS green (#00703c) 7.1:1, GDS red (#d4351c) 4.5:1. Chart fills: teal (#28a197) 3.2:1, dark grey (#505a5f) 7.0:1, orange (#f47738) 3.1:1</td>
+          <td class="govuk-table__cell">Pass - trend badges: GDS green (#00703c) 7.1:1, GDS red (#d4351c) 4.5:1. Chart fills: teal (#28a197) 3.2:1, dark grey (#505a5f) 7.0:1, orange (#f47738) 3.1:1</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Keyboard only</th>
           <td class="govuk-table__cell">Tab through page; arrow keys navigate between insight tabs; focus visible on all interactive elements</td>
-          <td class="govuk-table__cell">Pass — <code>govuk-tabs</code> implements WAI-ARIA tab pattern with arrow key navigation; focus order logical; all links and buttons keyboard accessible</td>
+          <td class="govuk-table__cell">Pass - <code>govuk-tabs</code> implements WAI-ARIA tab pattern with arrow key navigation; focus order logical; all links and buttons keyboard accessible</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
           <td class="govuk-table__cell">Stat cards announced without reading chart SVG; table data announced with column context; trend badge <code>aria-label</code> read correctly; tab panel content announced on tab switch</td>
-          <td class="govuk-table__cell">Pass — <code>aria-hidden</code> on figure; <code>focusable="false"</code> on SVG; <code>govuk-table</code> scope attributes present; <code>govuk-tabs</code> uses ARIA roles</td>
+          <td class="govuk-table__cell">Pass - <code>aria-hidden</code> on figure; <code>focusable="false"</code> on SVG; <code>govuk-table</code> scope attributes present; <code>govuk-tabs</code> uses ARIA roles</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
           <td class="govuk-table__cell">Same checks as NVDA</td>
-          <td class="govuk-table__cell">Pass — same outcome expected</td>
+          <td class="govuk-table__cell">Pass - same outcome expected</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
           <td class="govuk-table__cell">Table row/column announcements; trend badges; tab selection announced</td>
-          <td class="govuk-table__cell">Pass — <code>govuk-table</code> markup provides full context; <code>govuk-tabs</code> ARIA roles work in VoiceOver</td>
+          <td class="govuk-table__cell">Pass - <code>govuk-table</code> markup provides full context; <code>govuk-tabs</code> ARIA roles work in VoiceOver</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
           <td class="govuk-table__cell">"Click View build analysis" activates secondary button; "Click Homes completed" activates tab</td>
-          <td class="govuk-table__cell">Pass — all interactive elements have visible text labels matching speakable names</td>
+          <td class="govuk-table__cell">Pass - all interactive elements have visible text labels matching speakable names</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
           <td class="govuk-table__cell">Page reflows to single column at 1280px viewport zoomed to 400%</td>
-          <td class="govuk-table__cell">Pass — stat card grid and nav section grid collapse to single column; insight block table+chart stacks vertically; no horizontal scroll</td>
+          <td class="govuk-table__cell">Pass - stat card grid and nav section grid collapse to single column; insight block table+chart stacks vertically; no horizontal scroll</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">200% text only zoom</th>
           <td class="govuk-table__cell">Text resizes without loss of content</td>
-          <td class="govuk-table__cell">Pass — <code>govuk-body</code> uses rem units</td>
+          <td class="govuk-table__cell">Pass - <code>govuk-body</code> uses rem units</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
           <td class="govuk-table__cell">Stat card borders, trend badges, chart colours</td>
-          <td class="govuk-table__cell">Pass — borders use CSS border property; <code>forced-colors</code> media query restores stat-card and trend-badge visibility; chart is <code>aria-hidden</code> — colour override is expected and acceptable</td>
+          <td class="govuk-table__cell">Pass - borders use CSS border property; <code>forced-colors</code> media query restores stat-card and trend-badge visibility; chart is <code>aria-hidden</code> - colour override is expected and acceptable</td>
           <td class="govuk-table__cell"></td>
         </tr>
 
         <tr class="govuk-table__row">
           <th scope="row" class="govuk-table__header">Reduced motion</th>
           <td class="govuk-table__cell">No animations or transitions on the page</td>
-          <td class="govuk-table__cell">Pass — inline SVGs are static; no CSS transitions on this page</td>
+          <td class="govuk-table__cell">Pass - inline SVGs are static; no CSS transitions on this page</td>
           <td class="govuk-table__cell"></td>
         </tr>
 

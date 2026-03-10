@@ -1,12 +1,12 @@
 {# Insight block: Active sites over time
-   Custom component — inline SVG bar chart + data table.
+   Custom component - inline SVG bar chart + data table.
    Table is first in DOM; SVG is aria-hidden.
-   Single series — no legend or figcaption needed; tab label provides context. #}
+   Single series - no legend or figcaption needed; tab label provides context. #}
 
 <div class="insight-block">
   <div class="insight-block__inner">
 
-    <!-- TABLE FIRST IN DOM — caption visually-hidden; tab label provides
+    <!-- TABLE FIRST IN DOM - caption visually-hidden; tab label provides
          visible heading context -->
     <div class="insight-block__table">
       {{ govukTable({
@@ -28,8 +28,8 @@
       }) }}
     </div>
 
-    <!-- CHART SECOND IN DOM — bar chart, purely decorative.
-         Single series — no legend needed. -->
+    <!-- CHART SECOND IN DOM - bar chart, purely decorative.
+         Single series - no legend needed. -->
     <figure class="insight-block__chart" aria-hidden="true">
       <svg viewBox="0 0 400 200" focusable="false">
         <!-- Y axis gridlines -->
@@ -55,7 +55,7 @@
         <text x="330" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q2</text>
         <text x="380" y="196" text-anchor="middle" font-size="9" fill="#505a5f">Q3</text>
 
-        <!-- Bars (teal #28a197, 3.2:1 on white — passes WCAG 1.4.11) -->
+        <!-- Bars (teal #28a197, 3.2:1 on white - passes WCAG 1.4.11) -->
         <!-- Scale: 0=160, 25=20 → 5.6px per unit -->
         <rect x="65" y="126" width="30" height="34" fill="#28a197" />
         <rect x="115" y="93" width="30" height="67" fill="#28a197" />
