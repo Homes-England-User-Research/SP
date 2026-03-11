@@ -405,6 +405,90 @@ router.get('/sites/build-analysis', function (req, res) {
   res.render('sites/build-analysis')
 })
 
+/**
+ * GET /sites/:siteId
+ *
+ * Site summary page — CRM-style detail view for an individual site.
+ * Looks up the site from seedSites by ID, enriches with mock milestone
+ * and metric data, and renders the summary template with tabs.
+ *
+ * IMPORTANT: This wildcard route must be defined AFTER all specific
+ * /sites/* routes (add/step-1, add/step-2, build-analysis) to avoid
+ * the :siteId param matching "add" or "build-analysis".
+ */
+router.get('/sites/:siteId', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  // Enrich with mock data that mirrors add-new-site form fields
+  var enriched = Object.assign({}, site, {
+    typeOfSite: 'greenfield',
+    ruralArea: 'no',
+    operatingArea: 'South East',
+    processingRoute: 'acquisition-works',
+    regenerationSite: 'no',
+    postcode: 'XXXX XXX',
+    xCoordinate: '',
+    yCoordinate: '',
+    typeOfContractor: 'in-house',
+    contractor: '---',
+    // Step 2 milestone data
+    ownershipStatus: 'conditional',
+    planningStatus: 'detailed-no-steps',
+    buildingContractStatus: 'conditional-let',
+    startOnSiteStatus: 'forecast',
+    forecastCompletionDay: '27',
+    forecastCompletionMonth: '3',
+    forecastCompletionYear: '2027'
+  })
+
+  res.render('sites/summary', { site: enriched })
+})
+
+/**
+ * POST /sites/:siteId
+ *
+ * Handles save from the site summary form tabs. In a real service this
+ * would persist changes; here we just redirect back to the summary page.
+ */
+router.post('/sites/:siteId', function (req, res) {
+  res.redirect('/sites/' + req.params.siteId)
+})
+
+/**
+ * GET /sites/:siteId/summary-2
+ *
+ * Option 2 site summary — full-width layout with grouped task list
+ * on the Site progress tab (default tab). No sidebar. Matches the
+ * Site-summaries.jpg design reference.
+ */
+router.get('/sites/:siteId/summary-2', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var enriched = Object.assign({}, site, {
+    typeOfSite: 'greenfield',
+    ruralArea: 'no',
+    operatingArea: 'South East',
+    processingRoute: 'acquisition-works',
+    regenerationSite: 'no',
+    postcode: 'XXXX XXX',
+    xCoordinate: '',
+    yCoordinate: '',
+    typeOfContractor: 'in-house',
+    contractor: '---',
+    ownershipStatus: 'conditional',
+    planningStatus: 'detailed-no-steps',
+    buildingContractStatus: 'conditional-let',
+    startOnSiteStatus: 'forecast',
+    forecastCompletionDay: '27',
+    forecastCompletionMonth: '3',
+    forecastCompletionYear: '2027'
+  })
+
+  res.render('sites/summary-2', { site: enriched })
+})
+
 // =============================================================================
 // Sites (GDS) — pure GDS components version of the Sites flow
 // =============================================================================

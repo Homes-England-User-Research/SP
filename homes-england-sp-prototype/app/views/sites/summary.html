@@ -1,0 +1,404 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/task-list/macro.njk" import govukTaskList %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set pageName = site.siteName + " site summary" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [{ text: "Sites", href: "/sites" }]
+}) }}
+
+<span class="govuk-caption-xl">Site {{ site.siteId }}</span>
+<h1 class="govuk-heading-xl">{{ site.siteName }} site summary</h1>
+
+{# ── Layout: sidebar + main content ─────────────────────────────────── #}
+<div class="govuk-grid-row">
+
+  {# ── Sidebar: Site related actions ───────────────────────────────── #}
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Site related actions</h2>
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="#">Activate site</a></li>
+      <li><a class="govuk-link" href="/site-units-forecast">Site homes forecast</a></li>
+      <li><a class="govuk-link" href="#">Allocate home types</a></li>
+      <li><a class="govuk-link" href="#">Grant rates</a></li>
+      <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
+      <li><a class="govuk-link" href="#">Start on a site achievement</a></li>
+      <li><a class="govuk-link" href="#">Completions</a></li>
+      <li><a class="govuk-link" href="#">Total housing output costs</a></li>
+    </ul>
+  </div>
+
+  {# ── Main content: metrics + tabs ────────────────────────────────── #}
+  <div class="govuk-grid-column-two-thirds">
+
+    {# ── Metric cards ────────────────────────────────────────────────── #}
+    <!-- Custom component: stat card (metric card).
+         Reuses the existing .stat-card component. Three cards in a
+         3-column grid variant (.stat-card-grid--3col).
+         No GDS equivalent exists. Built from GDS design tokens only.
+         See CLAUDE.md "Stat card" section. -->
+    <section aria-labelledby="site-stats">
+      <h2 class="govuk-visually-hidden" id="site-stats">
+        Key site statistics
+      </h2>
+      <div class="stat-card-grid stat-card-grid--3col">
+        <div class="stat-card">
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Total grant attributable</p>
+          <p class="govuk-heading-l govuk-!-margin-bottom-1">&pound;0</p>
+          <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-colour-secondary">Lorem ipsum</p>
+        </div>
+        <div class="stat-card">
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Site status</p>
+          <p class="govuk-heading-l govuk-!-margin-bottom-1">INACTIVE</p>
+          <p class="govuk-body-s govuk-!-margin-bottom-0 govuk-!-colour-secondary">Since 14/01/2022</p>
+        </div>
+        <div class="stat-card">
+          <p class="govuk-body-s govuk-!-margin-bottom-1">Grant funded homes</p>
+          <p class="govuk-heading-l govuk-!-margin-bottom-1">0</p>
+          <a class="govuk-link govuk-body-s" href="#">View homes</a>
+        </div>
+      </div>
+    </section>
+
+    {# ── Tabs: Site details / Site milestones / Site progress ────────── #}
+    {% set siteDetailsHtml %}
+      <h2 class="govuk-heading-m">Site details</h2>
+
+      <form method="post" action="/sites/{{ site.siteId }}">
+
+        {{ govukInput({
+          label: { text: "Site ID" },
+          id: "site-id",
+          name: "site-id",
+          value: site.siteId,
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Site name" },
+          id: "site-name",
+          name: "site-name",
+          value: site.siteName,
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Type of site" },
+          id: "type-of-site",
+          name: "type-of-site",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "brownfield", text: "Brownfield" },
+            { value: "greenfield", text: "Greenfield", selected: site.typeOfSite == "greenfield" },
+            { value: "mixed", text: "Mixed" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Is the land in a rural area?" },
+          id: "rural-area",
+          name: "rural-area",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "yes", text: "Yes" },
+            { value: "no", text: "No", selected: site.ruralArea == "no" }
+          ]
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Local authority" },
+          id: "local-authority",
+          name: "local-authority",
+          value: site.localAuthority,
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Operating area" },
+          id: "operating-area",
+          name: "operating-area",
+          value: site.operatingArea or "",
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Region" },
+          id: "region",
+          name: "region",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "east-midlands", text: "East Midlands", selected: site.region == "East Midlands" },
+            { value: "east-of-england", text: "East of England", selected: site.region == "East of England" },
+            { value: "london", text: "London", selected: site.region == "London" },
+            { value: "north-east", text: "North East", selected: site.region == "North East" },
+            { value: "north-west", text: "North West", selected: site.region == "North West" },
+            { value: "south-east", text: "South East", selected: site.region == "South East" },
+            { value: "south-west", text: "South West", selected: site.region == "South West" },
+            { value: "west-midlands", text: "West Midlands", selected: site.region == "West Midlands" },
+            { value: "yorkshire", text: "Yorkshire and the Humber", selected: site.region == "Yorkshire and the Humber" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Processing route" },
+          id: "processing-route",
+          name: "processing-route",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "acquisition-works", text: "Acquisition & Works", selected: site.processingRoute == "acquisition-works" },
+            { value: "works-only", text: "Works only" },
+            { value: "acquisition-only", text: "Acquisition only" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
+          id: "regeneration-site",
+          name: "regeneration-site",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "yes", text: "Yes" },
+            { value: "no", text: "No", selected: site.regenerationSite == "no" }
+          ]
+        }) }}
+
+        {# ── Section: Site location ──────────────────────────────────── #}
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">Site location</h2>
+
+        {{ govukInput({
+          label: { text: "Postcode (optional)" },
+          id: "postcode",
+          name: "postcode",
+          value: site.postcode or "",
+          classes: "govuk-input--width-10"
+        }) }}
+
+        {{ govukInput({
+          label: { text: "X coordinate (optional if known)" },
+          id: "x-coordinate",
+          name: "x-coordinate",
+          value: site.xCoordinate or "",
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Y coordinate (optional if known)" },
+          id: "y-coordinate",
+          name: "y-coordinate",
+          value: site.yCoordinate or "",
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {# ── Section: Contractor details ─────────────────────────────── #}
+        <h2 class="govuk-heading-m govuk-!-margin-top-6">Contractor details</h2>
+
+        {{ govukSelect({
+          label: { text: "Type of contractor" },
+          id: "type-of-contractor",
+          name: "type-of-contractor",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "in-house", text: "In house contractor", selected: site.typeOfContractor == "in-house" },
+            { value: "external", text: "External contractor" },
+            { value: "mixed", text: "Mixed" }
+          ]
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Contractor" },
+          id: "contractor",
+          name: "contractor",
+          value: site.contractor or "---",
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {# ── Buttons ─────────────────────────────────────────────────── #}
+        <div class="govuk-!-margin-top-6">
+          {{ govukButton({ text: "Save changes" }) }}
+          {{ govukButton({
+            text: "Cancel changes",
+            classes: "govuk-button--secondary govuk-!-margin-left-3",
+            href: "/sites"
+          }) }}
+        </div>
+
+      </form>
+    {% endset %}
+
+    {% set siteMilestonesHtml %}
+      <h2 class="govuk-heading-m">Site milestones</h2>
+
+      <form method="post" action="/sites/{{ site.siteId }}">
+
+        {{ govukSelect({
+          label: { text: "What is the ownership status of the site?" },
+          id: "ownership-status",
+          name: "ownership-status",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "conditional", text: "Conditional acquisition, land option or heads of terms", selected: site.ownershipStatus == "conditional" },
+            { value: "negotiations-underway", text: "Land purchase negotiations underway" },
+            { value: "identified", text: "Land identified but purchase negotiations not yet started" },
+            { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest has occurred or Secure Legal Interest/Qualifying Secure Legal Interest as defined in the relevant Grant Agreement" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "What is the planning status of the site?" },
+          id: "planning-status",
+          name: "planning-status",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "detailed-no-steps", text: "Detailed Planning Approval granted with no further steps required before start on site can occur", selected: site.planningStatus == "detailed-no-steps" },
+            { value: "detailed-some-steps", text: "Detailed Planning Approval granted with some further steps required before start on site can occur" },
+            { value: "outline-granted", text: "Outline Planning Approval granted" },
+            { value: "outline-submitted", text: "Outline planning submitted" },
+            { value: "detailed-submitted", text: "Detailed planning submitted" },
+            { value: "discussion", text: "Planning discussion underway with planning office" },
+            { value: "no-progress", text: "No progress yet on planning application" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Building contract status" },
+          id: "building-contract-status",
+          name: "building-contract-status",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "unconditional-let", text: "Unconditional works contract let" },
+            { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract", selected: site.buildingContractStatus == "conditional-let" },
+            { value: "tender", text: "Tender for works contract out for competition" },
+            { value: "not-begun", text: "Works contracting process not yet begun" }
+          ]
+        }) }}
+
+        {{ govukSelect({
+          label: { text: "Start on site status" },
+          id: "start-on-site-status",
+          name: "start-on-site-status",
+          classes: "govuk-!-width-full",
+          items: [
+            { value: "", text: "---Please select---" },
+            { value: "forecast", text: "Forecast", selected: site.startOnSiteStatus == "forecast" },
+            { value: "actual", text: "Actual" }
+          ]
+        }) }}
+
+        {{ govukDateInput({
+          id: "forecast-completion-date",
+          namePrefix: "forecast-completion-date",
+          fieldset: {
+            legend: { text: "Forecast practical completion date" }
+          },
+          hint: { text: "For example, 27 3 2027" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: site.forecastCompletionDay or "" },
+            { name: "month", classes: "govuk-input--width-2", value: site.forecastCompletionMonth or "" },
+            { name: "year",  classes: "govuk-input--width-4", value: site.forecastCompletionYear or "" }
+          ]
+        }) }}
+
+        {# ── Buttons ─────────────────────────────────────────────────── #}
+        <div class="govuk-!-margin-top-6">
+          {{ govukButton({ text: "Save changes" }) }}
+          {{ govukButton({
+            text: "Cancel changes",
+            classes: "govuk-button--secondary govuk-!-margin-left-3",
+            href: "/sites"
+          }) }}
+        </div>
+
+      </form>
+    {% endset %}
+
+    {% set siteProgressHtml %}
+      <h2 class="govuk-heading-m">Site progress</h2>
+
+      <!-- Standard GDS task list component — no custom departure.
+           Uses govukTaskList macro from govuk-frontend with govukTag
+           status indicators. Mock progress data for prototype. -->
+      {{ govukTaskList({
+        idPrefix: "site-progress",
+        items: [
+          {
+            title: { text: "Land acquisition" },
+            href: "#",
+            status: {
+              tag: {
+                text: "Completed",
+                classes: "govuk-tag--green"
+              }
+            }
+          },
+          {
+            title: { text: "Planning approval" },
+            href: "#",
+            status: {
+              tag: {
+                text: "In progress",
+                classes: "govuk-tag--blue"
+              }
+            }
+          },
+          {
+            title: { text: "Building contract" },
+            status: {
+              tag: {
+                text: "Not started",
+                classes: "govuk-tag--grey"
+              }
+            }
+          },
+          {
+            title: { text: "Start on site" },
+            status: {
+              tag: {
+                text: "Cannot start yet",
+                classes: "govuk-tag--grey"
+              }
+            }
+          },
+          {
+            title: { text: "Practical completion" },
+            status: {
+              tag: {
+                text: "Cannot start yet",
+                classes: "govuk-tag--grey"
+              }
+            }
+          }
+        ]
+      }) }}
+    {% endset %}
+
+    {{ govukTabs({
+      items: [
+        { label: "Site progress", id: "site-progress", panel: { html: siteProgressHtml } },
+        { label: "Site details", id: "site-details", panel: { html: siteDetailsHtml } },
+        { label: "Site milestones", id: "site-milestones", panel: { html: siteMilestonesHtml } }
+      ]
+    }) }}
+
+  </div>
+</div>
+
+{% endblock %}

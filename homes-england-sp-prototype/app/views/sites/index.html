@@ -129,10 +129,10 @@
     {% for site in sites %}
     <tr class="govuk-table__row">
       <td class="govuk-table__cell">
-        <a href="#" class="govuk-link">{{ site.siteId }}</a>
+        <a href="/sites/{{ site.siteId }}" class="govuk-link">{{ site.siteId }}</a>
       </td>
       <td class="govuk-table__cell">
-        <a href="#" class="govuk-link">{{ site.siteName }}</a>
+        <a href="/sites/{{ site.siteId }}" class="govuk-link">{{ site.siteName }}</a>
       </td>
       <td class="govuk-table__cell govuk-table__cell--numeric">{{ site.homes | toLocaleString }}</td>
       <td class="govuk-table__cell">{{ site.statusInDeal }}</td>
