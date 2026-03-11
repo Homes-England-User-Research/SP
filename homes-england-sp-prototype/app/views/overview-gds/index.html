@@ -24,17 +24,22 @@
      - Custom CSS grids → govuk-grid-row / govuk-grid-column-* -->
 
 {% if dataState == "mvp" %}
-  {# ── MVP: programme links only, single column, full width ─────────── #}
-  <!-- MVP state: no key information section. Page heading and programme
-       links in a single two-thirds column — the standard GDS content flow
-       pattern for transactional service pages. -->
+  {# ── MVP: programme links only, two-column grid ──────────────────── #}
+  <!-- MVP state: no key information section. Page heading full width,
+       programme navigation sections in a two-column GDS grid layout
+       matching the standard Overview MVP content. -->
+
+  <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-l govuk-!-margin-bottom-8">Manage your Affordable Homes Programme.</p>
+    </div>
+  </div>
 
   <div class="govuk-grid-row govuk-!-margin-bottom-8">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
-      <p class="govuk-body-l govuk-!-margin-bottom-6">Manage your Affordable Homes Programme.</p>
-
+    <div class="govuk-grid-column-one-half">
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
       <ul class="govuk-list govuk-!-margin-bottom-6">
         <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
         <li><a class="govuk-link" href="#">Grant rates</a></li>
@@ -43,7 +48,16 @@
         <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
       </ul>
 
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
+      <p class="govuk-body">Submit your Quarterly Development Expenditure.</p>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
+      <p class="govuk-body">Request and track your grant payments.</p>
+    </div>
+
+    <div class="govuk-grid-column-one-half">
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
       <ul class="govuk-list govuk-!-margin-bottom-6">
         <li><a class="govuk-link" href="#">Add a new site</a></li>
         <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
@@ -51,11 +65,8 @@
         <li><a class="govuk-link" href="#">Manage home types</a></li>
       </ul>
 
-      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
-
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
-
-      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
+      <p class="govuk-body">Submit your cash and home forecasts.</p>
     </div>
   </div>
 
