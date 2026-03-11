@@ -1,0 +1,347 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Site summaries" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Home", href: "/" },
+      { text: "Sites", href: "/sites" },
+      { text: "Build analysis" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Site summaries</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the three site summary page options were built,
+      how they align with the GOV.UK Design System and WCAG 2.1 AA, all custom
+      departures with their justifications, and predicted accessibility tool
+      outcomes.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The site summary is the CRM-style detail view that users land on when
+      clicking into a specific site from the Sites table. Three layout options
+      have been built to test different approaches in user research:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><strong>Option 1</strong> — sidebar layout with "Site related actions" links + metric cards + tabs</li>
+      <li><strong>Option 2</strong> — full-width layout with grouped task list progress + metric cards + tabs</li>
+      <li><strong>Option 3</strong> — pure GDS version with key information sidebar (no custom components)</li>
+    </ul>
+    <p class="govuk-body">
+      All three options share the same tab content: Site progress (task list),
+      Site details (form fields matching the Add new site step 1) and Site
+      milestones (form fields matching step 2). The difference is in how the
+      page-level layout, metrics and navigation are presented.
+    </p>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/sites/1001">Option 1</a> — sidebar layout with site related actions</li>
+      <li><a class="govuk-link" href="/sites/1001/summary-2">Option 2</a> — full-width layout with grouped task list progress</li>
+      <li><a class="govuk-link" href="/sites/1001/summary-3">Option 3</a> — pure GDS version with key information sidebar</li>
+    </ul>
+
+    {# -- GDS alignment ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> — <code>govukBreadcrumbs()</code>, unmodified. Links back to Sites landing page.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tabs/">Tabs</a> — <code>govukTabs()</code>, unmodified. Three panels: Site progress, Site details, Site milestones. Auto-initialised by govuk-frontend JavaScript. Falls back to stacked sections without JS.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/task-list/">Task list</a> — <code>govukTaskList()</code>, unmodified. Used in the Site progress tab to show lifecycle stages with status indicators. Option 1 uses a flat list; Option 2 uses grouped sections with numbered headings.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/input/">Text input</a> — <code>govukInput()</code>, unmodified. Same fields as Add new site step 1 (Site ID, Site name, Local authority, etc.).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> — <code>govukSelect()</code>, unmodified. Same dropdowns as Add new site steps 1 and 2.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">Date input</a> — <code>govukDateInput()</code>, unmodified. Forecast practical completion date on Site milestones tab.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> — <code>govukButton()</code>, unmodified. Save changes (primary) and Cancel changes (secondary).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid</a> — <code>govuk-grid-row</code> with <code>govuk-grid-column-one-third</code> / <code>govuk-grid-column-two-thirds</code> for sidebar layouts (Options 1 and 3). Standard GDS 12-column grid.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> — <code>govuk-heading-xl</code> with <code>govuk-caption-xl</code> for site ID. Section headings use <code>govuk-heading-m</code>.</li>
+    </ul>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+
+    {# -- Stat cards ------------------------------------------------------- #}
+    <h3 class="govuk-heading-m">Stat cards — Options 1 and 2 only</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> Three metric cards (Total grant attributable,
+      Site status, Grant funded homes) displayed using the custom
+      <code>.stat-card</code> component in a 3-column grid
+      (<code>.stat-card-grid--3col</code>). No GDS equivalent exists.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> Reuses the stat card component established
+      on the Overview and Sites landing pages. At-a-glance metrics are critical
+      for CRM-style detail views where users need to assess site health quickly.
+      Built entirely from GDS design tokens. A visually hidden heading ("Key site
+      statistics") wraps the cards in a labelled <code>&lt;section&gt;</code> for
+      screen reader landmark navigation (WCAG 1.3.1).
+    </p>
+    <p class="govuk-body">
+      <strong>GDS alternative (Option 3):</strong> Option 3 replaces these cards
+      with stacked GDS typography in a one-third sidebar, using
+      <code>govuk-body-s</code> labels and <code>govuk-heading-m</code> values
+      with <code>govuk-section-break</code> dividers. This is the same pattern
+      used on the GDS Sites landing page (<code>/sites-gds</code>).
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Sidebar links ---------------------------------------------------- #}
+    <h3 class="govuk-heading-m">Sidebar navigation — Option 1 only</h3>
+    <p class="govuk-body">
+      <strong>Not a departure.</strong> Option 1 includes a sidebar with
+      "Site related actions" links using a standard
+      <code>&lt;ul class="govuk-list"&gt;</code> with
+      <code>govuk-link</code> anchors. This is standard GDS markup.
+    </p>
+    <p class="govuk-body">
+      <strong>Design rationale:</strong> Provides quick access to common site
+      management tasks without leaving the summary page context. This mirrors
+      the IMS pattern where related actions are always visible alongside the
+      detail view.
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Grouped task list ------------------------------------------------ #}
+    <h3 class="govuk-heading-m">Grouped task list — Option 2 only</h3>
+    <p class="govuk-body">
+      <strong>Not a departure.</strong> Option 2 uses the standard
+      <code>govukTaskList()</code> macro multiple times with numbered section
+      headings (<code>govuk-heading-m</code>) and descriptions
+      (<code>govuk-body</code>) above each group. The task list component
+      itself is unmodified — the grouping is achieved through standard HTML
+      headings and paragraphs placed between separate task list invocations.
+    </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Multi-field form ------------------------------------------------- #}
+    <h3 class="govuk-heading-m">Multi-field form tabs — all options</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> The Site details and Site milestones tabs
+      present multiple related fields on a single tab panel, rather than one
+      question per page. This is the same departure documented in the Sites
+      flow build analysis.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> SP users are experienced data entry
+      professionals. The fields are the same as the Add new site form steps,
+      displayed in a single-column layout within tab panels. Section headings
+      group related fields. GDS guidance allows grouping questions where appropriate.
+    </p>
+
+    {# -- Option comparison ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Option comparison</h2>
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Feature comparison across options</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Feature</th>
+          <th scope="col" class="govuk-table__header">Option 1</th>
+          <th scope="col" class="govuk-table__header">Option 2</th>
+          <th scope="col" class="govuk-table__header">Option 3</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Layout</th>
+          <td class="govuk-table__cell">Sidebar + two-thirds</td>
+          <td class="govuk-table__cell">Full width</td>
+          <td class="govuk-table__cell">Two-thirds + one-third sidebar</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Metrics display</th>
+          <td class="govuk-table__cell">Stat cards (custom)</td>
+          <td class="govuk-table__cell">Stat cards (custom)</td>
+          <td class="govuk-table__cell">GDS typography sidebar</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Site related actions</th>
+          <td class="govuk-table__cell">Sidebar link list</td>
+          <td class="govuk-table__cell">Via task list items</td>
+          <td class="govuk-table__cell">Via task list items</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Task list style</th>
+          <td class="govuk-table__cell">Flat (5 items)</td>
+          <td class="govuk-table__cell">Grouped (4 sections)</td>
+          <td class="govuk-table__cell">Grouped (4 sections)</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom CSS required</th>
+          <td class="govuk-table__cell">Yes (stat cards)</td>
+          <td class="govuk-table__cell">Yes (stat cards)</td>
+          <td class="govuk-table__cell">No</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">GDS compliance</th>
+          <td class="govuk-table__cell">Partial</td>
+          <td class="govuk-table__cell">Partial</td>
+          <td class="govuk-table__cell">Full</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {# -- Implementation details ------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
+
+    <h3 class="govuk-heading-m">Route and data enrichment</h3>
+    <p class="govuk-body">
+      All three options use the same data pattern: <code>GET /sites/:siteId</code>
+      (and <code>/summary-2</code>, <code>/summary-3</code> variants) look up the
+      site from the <code>seedSites</code> array by ID, then enrich the site object
+      with mock form field values (type of site, contractor details, milestone
+      statuses, forecast completion date). This mirrors how a real service would
+      fetch site data from an API and pass it to the template.
+    </p>
+
+    <h3 class="govuk-heading-m">Tab content reuse</h3>
+    <p class="govuk-body">
+      The Site details and Site milestones tab content is defined once per template
+      using Nunjucks <code>{% set %}</code> blocks, then passed to
+      <code>govukTabs()</code>. The form fields match those on the Add new site
+      pages but are pre-populated with the enriched site data. Field widths match
+      the GDS version at <code>/sites-gds/add/step-1</code>.
+    </p>
+
+    {# -- Recommended accessibility tests ---------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Recommended accessibility tests</h2>
+    <p class="govuk-body">
+      These tests apply to all three options. Predicted outcomes are based on
+      the current implementation. Actual results should be populated after testing.
+    </p>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Accessibility test results</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 22%">Tool / method</th>
+          <th scope="col" class="govuk-table__header" style="width: 30%">What to check</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Predicted outcome</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Actual result</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">axe DevTools (Chrome)</th>
+          <td class="govuk-table__cell">Zero violations on all three options. Run on each tab panel — axe only tests visible DOM by default, so switch tabs before re-running.</td>
+          <td class="govuk-table__cell">Pass — all form fields use GDS macros with associated labels; task list items have correct ARIA; stat cards use semantic HTML with visually-hidden heading; tabs use standard govuk-frontend ARIA</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
+          <td class="govuk-table__cell">No errors on all options; check form labels present on all inputs; verify no empty links in sidebar (Option 1)</td>
+          <td class="govuk-table__cell">Pass — all <code>govukInput()</code> and <code>govukSelect()</code> macros generate associated <code>&lt;label&gt;</code> elements; sidebar links have visible text content</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
+          <td class="govuk-table__cell">All text passes 4.5:1 for normal text; 3:1 for large text and UI components. Check stat card secondary text and task list status tags.</td>
+          <td class="govuk-table__cell">Pass — GDS colour tokens throughout; stat card secondary text uses <code>govuk-!-colour-secondary</code> which meets 4.5:1; task list tags are standard GDS colour variants</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Keyboard-only navigation</th>
+          <td class="govuk-table__cell">Tab through breadcrumbs, sidebar links (Opt 1), tabs, form inputs and buttons in logical order; Arrow keys navigate between tab headers; Enter/Space selects tab; no keyboard traps</td>
+          <td class="govuk-table__cell">Pass — <code>govukTabs()</code> implements full WAI-ARIA tab pattern with arrow key navigation; all form controls are standard GDS; logical DOM order matches visual layout</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
+          <td class="govuk-table__cell">Tabs announced as "tab, [n] of 3, [label]"; tab panel content announced on selection; task list items announced with status; form labels read on input focus; stat card section landmark announced (Options 1/2)</td>
+          <td class="govuk-table__cell">Pass — <code>govukTabs()</code> generates correct <code>role="tablist"</code>/<code>role="tab"</code>/<code>role="tabpanel"</code>; task list uses native GDS ARIA; <code>&lt;section aria-labelledby&gt;</code> creates named landmark</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
+          <td class="govuk-table__cell">Same checks as NVDA; verify tab navigation with arrow keys works correctly; task list status tags read as part of list item</td>
+          <td class="govuk-table__cell">Pass — same rationale as NVDA; JAWS has strong support for WAI-ARIA tab pattern</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
+          <td class="govuk-table__cell">Tab panel announced correctly; form inputs labelled; task list items read with status</td>
+          <td class="govuk-table__cell">Pass — standard GDS tab and form macros; VoiceOver handles WAI-ARIA tabs correctly</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
+          <td class="govuk-table__cell">"Click Site progress" selects tab; "Click Save changes" submits form; "Click Activate site" follows sidebar link (Opt 1); "Click Site homes forecast" follows task list link (Opts 2/3)</td>
+          <td class="govuk-table__cell">Pass — all interactive elements have visible text labels matching their accessible names; tab labels are visible text; button text matches speakable name</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
+          <td class="govuk-table__cell">Page content reflows to single column at 1280px viewport zoomed to 400%; sidebar collapses above main content; stat cards stack; tab panels remain usable; form fields stack vertically</td>
+          <td class="govuk-table__cell">Pass — GDS grid columns collapse at mobile breakpoint; stat card grid uses CSS grid with <code>auto-fill</code>; tab component handles narrow viewports; form fields use responsive GDS width classes</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">200% text-only zoom</th>
+          <td class="govuk-table__cell">Text resizes to 200% without loss of content or functionality (WCAG 1.4.4)</td>
+          <td class="govuk-table__cell">Pass — GDS body uses rem units; no fixed-width text containers; tab labels wrap correctly</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
+          <td class="govuk-table__cell">Tab borders, focus indicators and button states visible; stat card borders visible (Opts 1/2); task list status text readable without colour</td>
+          <td class="govuk-table__cell">Pass — GDS components include forced-colors CSS; stat card borders use CSS border property; task list status uses text content not just colour</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Reduced motion (<code>prefers-reduced-motion</code>)</th>
+          <td class="govuk-table__cell">No animations or transitions on any option</td>
+          <td class="govuk-table__cell">Pass — no CSS transitions or animations used; GDS tab switching is instant DOM show/hide</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Sites",
+      href: "/sites"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

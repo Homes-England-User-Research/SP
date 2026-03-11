@@ -406,6 +406,17 @@ router.get('/sites/build-analysis', function (req, res) {
 })
 
 /**
+ * GET /sites/summary-build-analysis
+ *
+ * Build analysis page for site summary options — documents GDS alignment,
+ * custom departures, option comparison and accessibility predictions.
+ * Must be defined BEFORE /sites/:siteId to avoid wildcard matching.
+ */
+router.get('/sites/summary-build-analysis', function (req, res) {
+  res.render('sites/summary-build-analysis')
+})
+
+/**
  * GET /sites/:siteId
  *
  * Site summary page — CRM-style detail view for an individual site.
@@ -487,6 +498,40 @@ router.get('/sites/:siteId/summary-2', function (req, res) {
   })
 
   res.render('sites/summary-2', { site: enriched })
+})
+
+/**
+ * GET /sites/:siteId/summary-3
+ *
+ * Option 3 site summary — pure GDS version with key information sidebar.
+ * No custom components (no stat cards). Uses stacked GDS typography for
+ * metrics, matching the pattern on /sites-gds. Extends sites-gds layout.
+ */
+router.get('/sites/:siteId/summary-3', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites-gds')
+
+  var enriched = Object.assign({}, site, {
+    typeOfSite: 'greenfield',
+    ruralArea: 'no',
+    operatingArea: 'South East',
+    processingRoute: 'acquisition-works',
+    regenerationSite: 'no',
+    postcode: 'XXXX XXX',
+    xCoordinate: '',
+    yCoordinate: '',
+    typeOfContractor: 'in-house',
+    contractor: '---',
+    ownershipStatus: 'conditional',
+    planningStatus: 'detailed-no-steps',
+    buildingContractStatus: 'conditional-let',
+    startOnSiteStatus: 'forecast',
+    forecastCompletionDay: '27',
+    forecastCompletionMonth: '3',
+    forecastCompletionYear: '2027'
+  })
+
+  res.render('sites/summary-3', { site: enriched })
 })
 
 // =============================================================================
