@@ -11,75 +11,30 @@
 
 {% block content %}
 
-{# ── 1. Page heading ────────────────────────────────────────────────────── #}
-<h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-body-l {% if dataState == 'mvp' %}govuk-!-margin-bottom-8{% else %}govuk-!-margin-bottom-4{% endif %}">Manage your Affordable Homes Programme. Track completions, submit forecasts and monitor your sites.</p>
-  </div>
-</div>
-
 <!-- GDS-only version of the Overview page.
      Every element uses standard GDS components, patterns and layouts only.
      No custom components, no custom CSS classes, no inline SVGs.
 
      Key translations from the standard Overview:
-     - Stat cards → govukSummaryList (key-value pairs)
-     - Trend badges → govukTag (green/red) with direction text
+     - Page heading, subtitle and programme links in two-thirds column
+       with key information in one-third sidebar — same pattern as Sites GDS.
+     - Stat cards → stacked GDS typography (govuk-body-s label + govuk-heading-m
+       value + govuk-section-break dividers). No trend tags — cleaner display.
      - SVG charts → removed entirely; govukTable is the primary data display
-     - Custom CSS grids → govuk-grid-row / govuk-grid-column-*
-     - insight-block layout → standard full-width govukTable per tab panel -->
+     - Custom CSS grids → govuk-grid-row / govuk-grid-column-* -->
 
 {% if dataState == "mvp" %}
   {# ── MVP: programme links only, single column, full width ─────────── #}
-  <!-- MVP state: no key information section. Programme links lead the
-       page in a single column — the standard GDS content flow pattern
-       for transactional service pages. Single column avoids the GDS
-       purist concern about multi-column link layouts in services. -->
+  <!-- MVP state: no key information section. Page heading and programme
+       links in a single two-thirds column — the standard GDS content flow
+       pattern for transactional service pages. -->
 
-  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
-  <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
-  <ul class="govuk-list govuk-!-margin-bottom-6">
-    <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
-    <li><a class="govuk-link" href="#">Grant rates</a></li>
-    <li><a class="govuk-link" href="#">Homes by tenure and region</a></li>
-    <li><a class="govuk-link" href="#">Nil grant homes</a></li>
-    <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
-  </ul>
-
-  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
-  <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
-  <ul class="govuk-list govuk-!-margin-bottom-6">
-    <li><a class="govuk-link" href="#">Add a new site</a></li>
-    <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
-    <li><a class="govuk-link" href="#">Completions</a></li>
-    <li><a class="govuk-link" href="#">Manage home types</a></li>
-  </ul>
-
-  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
-  <p class="govuk-body govuk-!-margin-bottom-6">Submit your Quarterly Development Expenditure.</p>
-
-  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
-  <p class="govuk-body govuk-!-margin-bottom-6">Submit your cash and home forecasts.</p>
-
-  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
-  <p class="govuk-body govuk-!-margin-bottom-6">Request and track your grant payments.</p>
-
-{% else %}
-  {# ── Mature: two-thirds + one-third layout ───────────────────── #}
-  <!-- Mature state: standard GDS two-thirds + one-third layout.
-       Programme links in two-thirds (primary, actionable content).
-       Key information in one-third sidebar (reference data for scanning).
-       This is the most common GDS service page pattern and avoids the
-       dead space issue caused by full-width govukSummaryList. -->
-  <div class="govuk-grid-row">
-
-    {# ── Two-thirds: programme links (primary content) ────────────── #}
+  <div class="govuk-grid-row govuk-!-margin-bottom-8">
     <div class="govuk-grid-column-two-thirds">
-      <h2 class="govuk-heading-l govuk-!-margin-top-4">Your programme</h2>
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
+      <p class="govuk-body-l govuk-!-margin-bottom-6">Manage your Affordable Homes Programme.</p>
 
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
-      <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
       <ul class="govuk-list govuk-!-margin-bottom-6">
         <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
         <li><a class="govuk-link" href="#">Grant rates</a></li>
@@ -89,7 +44,6 @@
       </ul>
 
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
-      <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
       <ul class="govuk-list govuk-!-margin-bottom-6">
         <li><a class="govuk-link" href="#">Add a new site</a></li>
         <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
@@ -98,35 +52,71 @@
       </ul>
 
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
-      <p class="govuk-body govuk-!-margin-bottom-6">Submit your Quarterly Development Expenditure.</p>
 
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
-      <p class="govuk-body govuk-!-margin-bottom-6">Submit your cash and home forecasts.</p>
 
       <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
-      <p class="govuk-body govuk-!-margin-bottom-6">Request and track your grant payments.</p>
+    </div>
+  </div>
+
+{% else %}
+  {# ── Mature: heading then two-thirds + one-third layout ─────── #}
+  <!-- Mature state: page heading and subtitle span full width above
+       the grid row. Programme links in two-thirds, key information in
+       one-third sidebar — both vertically aligned at the same start
+       point below the subtitle. No trend tags on metrics to keep the
+       sidebar compact and scannable. -->
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
+      <p class="govuk-body-l govuk-!-margin-bottom-8">Manage your Affordable Homes Programme.</p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-8">
+
+    {# ── Two-thirds: programme links ──────────────────────────────── #}
+    <div class="govuk-grid-column-two-thirds">
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
+        <li><a class="govuk-link" href="#">Grant rates</a></li>
+        <li><a class="govuk-link" href="#">Homes by tenure and region</a></li>
+        <li><a class="govuk-link" href="#">Nil grant homes</a></li>
+        <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
+      </ul>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li><a class="govuk-link" href="#">Add a new site</a></li>
+        <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+        <li><a class="govuk-link" href="#">Completions</a></li>
+        <li><a class="govuk-link" href="#">Manage home types</a></li>
+      </ul>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
     </div>
 
     {# ── One-third: key information sidebar ───────────────────── #}
     <div class="govuk-grid-column-one-third">
-      <h2 class="govuk-heading-l govuk-!-margin-top-4">Key information</h2>
+      <h2 class="govuk-heading-m govuk-!-margin-top-0">Key information</h2>
 
       <!-- GDS replacement for stat cards: stacked label-above-data pattern.
            Uses standard GDS typography classes only — govuk-body-s for labels,
            govuk-heading-m for values, govuk-section-break between metrics.
-           This avoids the bunched side-by-side key-value look of govukSummaryList
-           and gives each metric more visual weight and breathing room.
-           Trend information uses govukTag (green/red) with text like
-           "14% increase" — meaning never conveyed by colour alone (WCAG 1.4.1). -->
+           No trend tags — keeps the sidebar compact and scannable, matching
+           the Sites GDS page pattern. -->
 
       <p class="govuk-body-s govuk-!-margin-bottom-1">Homes started</p>
-      <p class="govuk-heading-m govuk-!-margin-bottom-1">1,782</p>
-      {{ govukTag({ text: "12% decrease", classes: "govuk-tag--red" }) }}
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">1,782</p>
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
       <p class="govuk-body-s govuk-!-margin-bottom-1">Homes completed</p>
-      <p class="govuk-heading-m govuk-!-margin-bottom-1">5,841</p>
-      {{ govukTag({ text: "14% increase", classes: "govuk-tag--green" }) }}
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">5,841</p>
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
       <p class="govuk-body-s govuk-!-margin-bottom-1">Left to fulfil</p>
@@ -137,19 +127,14 @@
       <p class="govuk-heading-m govuk-!-margin-bottom-0">15</p>
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
-      <p class="govuk-body-s govuk-!-margin-bottom-1">Inactive sites</p>
-      <p class="govuk-heading-m govuk-!-margin-bottom-0">28</p>
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-
       <p class="govuk-body-s govuk-!-margin-bottom-1">Current quarter</p>
-      <p class="govuk-heading-m govuk-!-margin-bottom-1">Q3</p>
-      <p class="govuk-body-s govuk-!-margin-bottom-0">Sep 1 to Nov 30</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">Q3</p>
     </div>
 
   </div>
 
   {# ── Data insights ────────────────────────────────────────── #}
-  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+  <hr class="govuk-section-break govuk-section-break--xl">
   <h2 class="govuk-heading-l govuk-!-margin-top-6">Data insights</h2>
 
 

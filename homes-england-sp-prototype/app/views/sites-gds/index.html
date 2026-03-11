@@ -20,10 +20,9 @@
 
 <!-- GDS-only version of the Sites landing page.
      Key translations from the standard Sites page:
-     - Page heading, subtitle and quick links all sit in a two-thirds column
-       with key statistics in a one-third sidebar alongside. This is a standard
-       GDS two-thirds + one-third grid layout — no GDS rule prevents placing
-       the h1 inside a grid column.
+     - Page heading and subtitle in a two-thirds column above the grid row.
+       Quick links in two-thirds with key statistics in one-third sidebar
+       below — both vertically aligned at the same start point.
      - Stat cards → stacked GDS typography in the one-third sidebar
        (govuk-body-s label + govuk-heading-m value + section-break dividers).
        Same pattern used on the GDS Overview page key information sidebar.
@@ -34,20 +33,30 @@
        components and remain unchanged.
      - No custom CSS classes used anywhere on this page. -->
 
-{# ── Two-thirds (heading + links) + one-third (metrics) ──────────────── #}
-<div class="govuk-grid-row govuk-!-margin-bottom-8">
-
-  {# ── Two-thirds: page heading, subtitle and quick links ────────────── #}
+{# ── Page heading ─────────────────────────────────────────────────────── #}
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Sites</h1>
-    <p class="govuk-body-l">Manage your sites, home type allocations and forecasts.</p>
+    <p class="govuk-body-l govuk-!-margin-bottom-8">Manage your sites, home type allocations and forecasts.</p>
+  </div>
+</div>
 
-    <ul class="govuk-list">
-      <li><a class="govuk-link" href="/sites-gds/add/step-1">Add new site</a></li>
-      <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
-      <li><a class="govuk-link" href="#">Completions</a></li>
-      <li><a class="govuk-link" href="#">Manage all home types</a></li>
-    </ul>
+{# ── Two-thirds (links) + one-third (metrics) ────────────────────────── #}
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+
+  {# ── Two-thirds: quick links with descriptions ──────────────────────── #}
+  <div class="govuk-grid-column-two-thirds">
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1"><a class="govuk-link" href="/sites-gds/add/step-1">Add new site</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-4">Register a new site with details, location and contractor information.</p>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1"><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-4">Upload a spreadsheet to register multiple sites at once.</p>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1"><a class="govuk-link" href="#">Completions</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-4">Record and view home completions across your sites.</p>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-1"><a class="govuk-link" href="#">Manage all home types</a></h3>
+    <p class="govuk-body govuk-!-margin-bottom-0">View and edit tenure types and allocations for your portfolio.</p>
   </div>
 
   {# ── One-third: key statistics (reference data) ────────────────────── #}
@@ -67,6 +76,8 @@
   </div>
 
 </div>
+
+<hr class="govuk-section-break govuk-section-break--xl">
 
 {# ── Sites table ──────────────────────────────────────────────────────── #}
 <table class="govuk-table">
