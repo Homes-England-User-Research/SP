@@ -1,0 +1,194 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Add new site - Step 1 of 2 (GDS)" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [{ text: "Sites", href: "/sites-gds" }]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Step 1 of 2</span>
+    <h1 class="govuk-heading-xl">Add new site</h1>
+
+    <!-- GDS-only version of the Add new site form.
+         Agreed deviation: multiple questions per page (not one-question-per-page).
+         SP users are experienced data entry professionals. GDS guidance allows
+         grouping questions where appropriate.
+
+         Key difference from standard Sites version: all fields are in a single
+         column stack rather than two-column grid layout. This is pure GDS
+         content flow — no govuk-grid-column-one-half pairs. -->
+    <form method="post" action="/sites-gds/add/step-1">
+
+      {# ── Section: Site details ──────────────────────────────────────────── #}
+      <h2 class="govuk-heading-m">Site details</h2>
+
+      {{ govukInput({
+        label: { text: "Site ID" },
+        id: "site-id-gds",
+        name: "site-id",
+        classes: "govuk-input--width-10"
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Site name" },
+        id: "site-name-gds",
+        name: "site-name",
+        classes: "govuk-!-width-two-thirds"
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Type of site" },
+        id: "type-of-site-gds",
+        name: "type-of-site",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "brownfield", text: "Brownfield" },
+          { value: "greenfield", text: "Greenfield" },
+          { value: "mixed", text: "Mixed" }
+        ]
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Is the land in a rural area?" },
+        id: "rural-area-gds",
+        name: "rural-area",
+        classes: "govuk-!-width-one-third",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "yes", text: "Yes" },
+          { value: "no", text: "No" }
+        ]
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Local authority" },
+        id: "local-authority-gds",
+        name: "local-authority",
+        classes: "govuk-!-width-two-thirds"
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Operating area" },
+        id: "operating-area-gds",
+        name: "operating-area",
+        classes: "govuk-!-width-two-thirds"
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Region" },
+        id: "region-gds",
+        name: "region",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "east-midlands", text: "East Midlands" },
+          { value: "east-of-england", text: "East of England" },
+          { value: "london", text: "London" },
+          { value: "north-east", text: "North East" },
+          { value: "north-west", text: "North West" },
+          { value: "south-east", text: "South East" },
+          { value: "south-west", text: "South West" },
+          { value: "west-midlands", text: "West Midlands" },
+          { value: "yorkshire", text: "Yorkshire and the Humber" }
+        ]
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Processing route" },
+        id: "processing-route-gds",
+        name: "processing-route",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "acquisition-works", text: "Acquisition & Works" },
+          { value: "works-only", text: "Works only" },
+          { value: "acquisition-only", text: "Acquisition only" }
+        ]
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
+        id: "regeneration-site-gds",
+        name: "regeneration-site",
+        classes: "govuk-!-width-one-third",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "yes", text: "Yes" },
+          { value: "no", text: "No" }
+        ]
+      }) }}
+
+      {# ── Section: Site location ─────────────────────────────────────────── #}
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Site location</h2>
+
+      {{ govukInput({
+        label: { text: "Postcode (optional)" },
+        id: "postcode-gds",
+        name: "postcode",
+        classes: "govuk-input--width-10"
+      }) }}
+
+      {{ govukInput({
+        label: { text: "X coordinate (optional if known)" },
+        id: "x-coordinate-gds",
+        name: "x-coordinate",
+        classes: "govuk-input--width-10"
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Y coordinate (optional if known)" },
+        id: "y-coordinate-gds",
+        name: "y-coordinate",
+        classes: "govuk-input--width-10"
+      }) }}
+
+      {# ── Section: Contractor details ────────────────────────────────────── #}
+      <h2 class="govuk-heading-m govuk-!-margin-top-6">Contractor details</h2>
+
+      {{ govukSelect({
+        label: { text: "Type of contractor" },
+        id: "type-of-contractor-gds",
+        name: "type-of-contractor",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "---Please select---" },
+          { value: "in-house", text: "In house contractor" },
+          { value: "external", text: "External contractor" },
+          { value: "mixed", text: "Mixed" }
+        ]
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Contractor" },
+        id: "contractor-gds",
+        name: "contractor",
+        classes: "govuk-!-width-two-thirds"
+      }) }}
+
+      {# ── Buttons ────────────────────────────────────────────────────────── #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

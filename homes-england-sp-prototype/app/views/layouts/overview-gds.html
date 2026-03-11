@@ -1,7 +1,7 @@
 {#
-  Sites layout - extends main.html but overrides the service navigation
-  to show the SP programme navigation (Overview, APP, Sites, etc.) with
-  Sites as the current page. Matches the overview.html layout pattern.
+  Overview GDS layout - extends main.html but overrides the service navigation
+  to show the SP programme navigation with Overview as the current page.
+  Links to /overview-gds instead of /overview for the Overview nav item.
 #}
 
 {% extends "layouts/main.html" %}
@@ -16,7 +16,8 @@
     navigation: [
       {
         text: "Overview",
-        href: "/overview"
+        href: "/overview-gds",
+        current: true if currentPath == "/overview-gds" else false
       },
       {
         text: "Agreed provider profile",
@@ -24,8 +25,7 @@
       },
       {
         text: "Sites",
-        href: "/sites",
-        current: true if "/sites" in currentPath else false
+        href: "/sites"
       },
       {
         text: "Forecasting",

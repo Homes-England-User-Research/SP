@@ -1,0 +1,261 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Sites (GDS)" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Home", href: "/" },
+      { text: "Sites (GDS)", href: "/sites-gds" },
+      { text: "Build analysis" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Sites (GDS)</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the GDS-only Sites page and Add new site flow were
+      built. All elements use standard GOV.UK Design System components, patterns
+      and layouts. The only agreed deviation is presenting multiple questions per
+      page rather than one question per page.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The GDS Sites flow is a pure GDS equivalent of the standard Sites flow,
+      which uses custom stat cards and a two-column form layout. This version
+      replaces every custom element with standard GDS components to demonstrate
+      what is achievable with minimal departures from the Design System.
+    </p>
+    <p class="govuk-body">
+      The flow consists of three pages: a landing page with quick links in a
+      two-thirds column and key statistics in a one-third sidebar, a data
+      table with pagination; and a two-step Add new site form with all
+      fields in a single-column stack.
+    </p>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/sites-gds">Sites landing page (GDS)</a> - two-thirds quick links + one-third key statistics sidebar, data table, pagination</li>
+      <li><a class="govuk-link" href="/sites-gds/add/step-1">Add new site - Step 1 of 2 (GDS)</a> - site details, location, contractor (single-column form)</li>
+      <li><a class="govuk-link" href="/sites-gds/add/step-2">Add new site - Step 2 of 2 (GDS)</a> - site milestones (select dropdowns + date input, single-column)</li>
+    </ul>
+
+    {# -- GDS components used ---------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS components used</h2>
+    <p class="govuk-body">
+      Every component on these pages is an unmodified GOV.UK Design System
+      component or standard GDS typography/layout class. No components have been
+      extended, overridden or customised.
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/service-navigation/">Service navigation</a> - <code>govukServiceNavigation()</code>, unmodified. Programme-level navigation with Sites as current page.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/notification-banner/">Notification banner</a> - <code>govukNotificationBanner()</code> with <code>type: "success"</code>, unmodified. Shown after completing the Add new site flow.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/#headings">Key statistics metrics</a> - stacked <code>govuk-body-s</code> (label) above <code>govuk-heading-m</code> (value) separated by <code>govuk-section-break</code> dividers, placed in a <code>govuk-grid-column-one-third</code> sidebar alongside the two-thirds quick links column. Pure GDS typography and layout classes used as a lightweight replacement for stat cards. Same pattern used on the GDS Overview page key information sidebar.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> - <code>govuk-table</code> classes, unmodified. <code>scope="col"</code> on all column headers. Numeric column uses <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code>.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Tag</a> - <code>govukTag()</code> with colour variants (<code>govuk-tag--blue</code>, <code>govuk-tag--yellow</code>, <code>govuk-tag--grey</code>, <code>govuk-tag--green</code>), unmodified. Site status indicators.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/pagination/">Pagination</a> - <code>govukPagination()</code>, unmodified. Previous/Next links with numbered page items.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> - <code>govukBreadcrumbs()</code>, unmodified. Used on all pages with appropriate hierarchy.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/input/">Text input</a> - <code>govukInput()</code>, unmodified. Single-column stacked layout with GDS width classes (<code>govuk-input--width-10</code>, <code>govuk-!-width-two-thirds</code>).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> - <code>govukSelect()</code>, unmodified. All dropdowns in both form steps.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">Date input</a> - <code>govukDateInput()</code>, unmodified. Forecast practical completion date in step 2.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> - <code>govukButton()</code>, unmodified. Primary and secondary variants in <code>govuk-button-group</code>.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid layout</a> - <code>govuk-grid-row</code> with <code>govuk-grid-column-two-thirds</code> + <code>govuk-grid-column-one-third</code> sidebar for landing page metrics; <code>govuk-grid-column-two-thirds</code> for form pages. Standard GDS grid layout.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> - <code>govuk-heading-xl</code>, <code>govuk-caption-xl</code>, <code>govuk-heading-m</code>, <code>govuk-body-l</code>. All standard GDS classes.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - all spacing uses <code>govuk-!-margin-*</code> utility classes. No custom pixel values.</li>
+    </ul>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+
+    <h3 class="govuk-heading-m">Multi-question pages (agreed deviation)</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> The Add new site form presents multiple related
+      fields on a single page across two steps, rather than one question per page.
+      Unlike the standard Sites version, all fields are in a single-column stack
+      rather than a two-column grid.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> SP users are experienced data entry
+      professionals. The fields are grouped by subject area (site details,
+      location, contractor in step 1; milestones in step 2). A single-question-per-page
+      approach would create an excessively long journey. GDS guidance explicitly
+      allows grouping questions:
+      <em>"there are times when it makes sense to group a few questions on the
+      same page"</em>
+      (<a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">GDS question pages pattern</a>).
+    </p>
+    <p class="govuk-body">
+      <strong>No other custom departures.</strong> Every other element uses
+      standard GDS components. No custom CSS classes, no custom Sass, no inline
+      styles and no custom JavaScript.
+    </p>
+
+    {# -- Design trade-offs ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Design trade-offs</h2>
+
+    <h3 class="govuk-heading-m">Stat cards replaced with stacked typography in a sidebar</h3>
+    <p class="govuk-body">
+      The standard Sites page uses three custom stat cards in a CSS grid to
+      display Total sites, Total homes and Completed sites. The GDS version
+      replaces these with stacked <code>govuk-body-s</code> /
+      <code>govuk-heading-m</code> pairs separated by
+      <code>govuk-section-break</code> dividers, placed in a
+      <code>govuk-grid-column-one-third</code> sidebar. Quick links sit in the
+      adjacent <code>govuk-grid-column-two-thirds</code> primary column. This
+      is the same two-thirds + one-third pattern used on the GDS Overview page.
+      The data is identical but the visual prominence is reduced - metrics are
+      read vertically in a sidebar rather than in a scannable grid with
+      bordered cards. For users who scan dashboards quickly, this is a
+      regression. For GDS compliance, it is the correct approach.
+    </p>
+
+    <h3 class="govuk-heading-m">Filters removed</h3>
+    <p class="govuk-body">
+      The standard Sites page uses <code>govukDetails</code> wrapping
+      <code>govukCheckboxes</code> with custom auto-redirect JavaScript to
+      filter sites by status and region. While the individual components
+      (Details, Checkboxes) are standard GDS, the composition into a filter
+      pattern with auto-submitting JS is bespoke - the GOV.UK Design System
+      has no documented filter pattern. To maintain a pure GDS build, the
+      filters have been removed entirely. Users see all sites with pagination
+      only. This is a functional regression but eliminates the only custom
+      JavaScript on the page.
+    </p>
+
+    {# -- Accessibility ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Accessibility</h2>
+    <p class="govuk-body">
+      Because every component on these pages is a standard, unmodified GOV.UK
+      Design System component, the accessibility characteristics are inherited
+      directly from the Design System. GOV.UK Frontend components are tested
+      against WCAG 2.2 AA by the GDS team.
+    </p>
+    <p class="govuk-body">
+      <strong>Reduced testing burden</strong> compared to the standard Sites
+      version. The standard version requires a full 12-row assistive technology
+      matrix to validate the custom stat cards. The GDS version needs only
+      standard GDS component testing:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Run axe DevTools to confirm zero violations - expected to pass as all components are standard GDS</li>
+      <li>Run Lighthouse accessibility audit - expected to score 100</li>
+      <li>Verify keyboard navigation - all GDS components are natively keyboard accessible</li>
+      <li>Verify screen reader announcements - GDS tables, tags, summary lists and form components have built-in ARIA support</li>
+    </ul>
+    <p class="govuk-body">
+      The multi-question layout is the one area worth manual confirmation. While
+      all form fields use standard <code>govukInput()</code> and
+      <code>govukSelect()</code> macros with associated labels, the grouping of
+      multiple fields with section headings should be checked with a screen reader
+      to confirm logical reading order.
+    </p>
+
+    {# -- Comparison with standard Sites ----------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Comparison with standard Sites</h2>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Standard Sites vs GDS Sites</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 25%">Feature</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">Standard Sites</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">GDS Sites</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">Trade-off</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Key statistics</th>
+          <td class="govuk-table__cell">Custom stat cards in 1x3 CSS grid (<code>.stat-card-grid--3col</code>) with coloured top borders</td>
+          <td class="govuk-table__cell">Stacked <code>govuk-body-s</code> label + <code>govuk-heading-m</code> value with <code>govuk-section-break</code> dividers in a <code>govuk-grid-column-one-third</code> sidebar</td>
+          <td class="govuk-table__cell">Less visual prominence; metrics in a sidebar rather than scannable cards. No coloured borders. Quick links gain more horizontal space.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Filters</th>
+          <td class="govuk-table__cell"><code>govukDetails</code> + <code>govukCheckboxes--small</code> with custom auto-redirect JavaScript</td>
+          <td class="govuk-table__cell">Removed. No GDS filter pattern exists.</td>
+          <td class="govuk-table__cell">Users cannot filter by status or region. All sites shown with pagination only. Removes custom JavaScript dependency.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Data table</th>
+          <td class="govuk-table__cell"><code>govuk-table</code> with <code>govukTag</code> status indicators (unmodified GDS)</td>
+          <td class="govuk-table__cell"><code>govuk-table</code> with <code>govukTag</code> status indicators (unmodified GDS)</td>
+          <td class="govuk-table__cell">Parity - identical implementation.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Pagination</th>
+          <td class="govuk-table__cell"><code>govukPagination()</code> (unmodified GDS)</td>
+          <td class="govuk-table__cell"><code>govukPagination()</code> (unmodified GDS)</td>
+          <td class="govuk-table__cell">Parity - identical implementation.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Form layout (step 1)</th>
+          <td class="govuk-table__cell">Two-column grid using <code>govuk-grid-column-one-half</code> pairs. Fields side by side.</td>
+          <td class="govuk-table__cell">Single-column stack in <code>govuk-grid-column-two-thirds</code>. Fields stacked vertically.</td>
+          <td class="govuk-table__cell">Longer form; more scrolling. But follows standard GDS content flow.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Form layout (step 2)</th>
+          <td class="govuk-table__cell">Single-column in <code>govuk-grid-column-two-thirds</code></td>
+          <td class="govuk-table__cell">Single-column in <code>govuk-grid-column-two-thirds</code></td>
+          <td class="govuk-table__cell">Parity - step 2 was already single-column in both versions.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Questions per page</th>
+          <td class="govuk-table__cell">Multiple questions per page (agreed deviation)</td>
+          <td class="govuk-table__cell">Multiple questions per page (agreed deviation)</td>
+          <td class="govuk-table__cell">Parity - same deviation in both versions. SP user need.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Button layout</th>
+          <td class="govuk-table__cell">Primary + secondary buttons with <code>govuk-!-margin-left-3</code></td>
+          <td class="govuk-table__cell">Primary + secondary buttons in <code>govuk-button-group</code></td>
+          <td class="govuk-table__cell">GDS version uses the recommended <code>govuk-button-group</code> wrapper for correct spacing.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom CSS</th>
+          <td class="govuk-table__cell"><code>.stat-card</code>, <code>.stat-card-grid--3col</code> classes</td>
+          <td class="govuk-table__cell">None. Zero custom CSS.</td>
+          <td class="govuk-table__cell">No maintenance burden; no risk of GDS version conflicts.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom accessibility testing</th>
+          <td class="govuk-table__cell">Full 12-row AT matrix required for stat cards and multi-column form</td>
+          <td class="govuk-table__cell">Standard GDS testing only - axe, Lighthouse, keyboard, screen reader spot check</td>
+          <td class="govuk-table__cell">Significant reduction in testing effort and risk.</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Sites (GDS)",
+      href: "/sites-gds"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

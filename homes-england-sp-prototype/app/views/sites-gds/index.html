@@ -1,0 +1,130 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set pageName = "Sites (GDS)" %}
+
+{% block content %}
+
+{# ── Success banner - shown only after completing the add-new-site flow ── #}
+{% if success %}
+  {{ govukNotificationBanner({
+    type: "success",
+    titleText: "Site added",
+    html: "<p class='govuk-body'>The new site has been added to your portfolio and appears at the top of the table below.</p>"
+  }) }}
+{% endif %}
+
+<!-- GDS-only version of the Sites landing page.
+     Key translations from the standard Sites page:
+     - Page heading, subtitle and quick links all sit in a two-thirds column
+       with key statistics in a one-third sidebar alongside. This is a standard
+       GDS two-thirds + one-third grid layout — no GDS rule prevents placing
+       the h1 inside a grid column.
+     - Stat cards → stacked GDS typography in the one-third sidebar
+       (govuk-body-s label + govuk-heading-m value + section-break dividers).
+       Same pattern used on the GDS Overview page key information sidebar.
+     - Filters removed — GDS has no documented filter pattern. The standard
+       Sites version uses govukDetails + govukCheckboxes with custom auto-redirect
+       JS, which is a bespoke composition not a GDS pattern.
+     - All other elements (table, pagination, tags) were already standard GDS
+       components and remain unchanged.
+     - No custom CSS classes used anywhere on this page. -->
+
+{# ── Two-thirds (heading + links) + one-third (metrics) ──────────────── #}
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+
+  {# ── Two-thirds: page heading, subtitle and quick links ────────────── #}
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Sites</h1>
+    <p class="govuk-body-l">Manage your sites, home type allocations and forecasts.</p>
+
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="/sites-gds/add/step-1">Add new site</a></li>
+      <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+      <li><a class="govuk-link" href="#">Completions</a></li>
+      <li><a class="govuk-link" href="#">Manage all home types</a></li>
+    </ul>
+  </div>
+
+  {# ── One-third: key statistics (reference data) ────────────────────── #}
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m govuk-!-margin-top-0">Key information</h2>
+
+    <p class="govuk-body-s govuk-!-margin-bottom-1">Total sites</p>
+    <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ totalSites }}</p>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    <p class="govuk-body-s govuk-!-margin-bottom-1">Total homes</p>
+    <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ totalHomes | toLocaleString }}</p>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+    <p class="govuk-body-s govuk-!-margin-bottom-1">Completed sites</p>
+    <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ completedSites }}</p>
+  </div>
+
+</div>
+
+{# ── Sites table ──────────────────────────────────────────────────────── #}
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">Site ID</th>
+      <th scope="col" class="govuk-table__header">Site name</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Homes</th>
+      <th scope="col" class="govuk-table__header">Status in deal</th>
+      <th scope="col" class="govuk-table__header">Local authority</th>
+      <th scope="col" class="govuk-table__header">Region</th>
+      <th scope="col" class="govuk-table__header">Status</th>
+      <th scope="col" class="govuk-table__header">Delete</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for site in sites %}
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link">{{ site.siteId }}</a>
+      </td>
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link">{{ site.siteName }}</a>
+      </td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ site.homes | toLocaleString }}</td>
+      <td class="govuk-table__cell">{{ site.statusInDeal }}</td>
+      <td class="govuk-table__cell">{{ site.localAuthority }}</td>
+      <td class="govuk-table__cell">{{ site.region }}</td>
+      <td class="govuk-table__cell">
+        {% if site.status == "Active" %}
+          {{ govukTag({ text: "Active", classes: "govuk-tag--blue" }) }}
+        {% elif site.status == "Pipeline" %}
+          {{ govukTag({ text: "Pipeline", classes: "govuk-tag--yellow" }) }}
+        {% elif site.status == "Not started" %}
+          {{ govukTag({ text: "Not started", classes: "govuk-tag--grey" }) }}
+        {% elif site.status == "Site completed" %}
+          {{ govukTag({ text: "Site completed", classes: "govuk-tag--green" }) }}
+        {% endif %}
+      </td>
+      <td class="govuk-table__cell">
+        <a href="#" class="govuk-link govuk-link--destructive">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# ── Pagination ───────────────────────────────────────────────────────── #}
+{% if pagination.items %}
+  {{ govukPagination(pagination) }}
+{% endif %}
+
+{# ── Build analysis ──────────────────────────────────────────────────── #}
+<hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+{{ govukButton({
+  text: "View build analysis",
+  classes: "govuk-button--secondary",
+  href: "/sites-gds/build-analysis"
+}) }}
+
+{% endblock %}

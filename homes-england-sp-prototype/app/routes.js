@@ -132,6 +132,44 @@ router.get('/overview/build-analysis', function (req, res) {
 })
 
 // =============================================================================
+// Overview (GDS) — pure GDS components version of the overview page
+// =============================================================================
+
+/**
+ * GET /overview-gds
+ *
+ * Renders the GDS-only Overview page. Same data states as /overview but
+ * every element uses standard GDS components only — no custom components.
+ */
+router.get('/overview-gds', function (req, res) {
+  res.render('overview-gds/index', {
+    dataState: req.session.data['dataStateGds'] || 'mvp'
+  })
+})
+
+/**
+ * POST /overview-gds/set-state
+ *
+ * Prototype control — switches between mvp / mature data states.
+ * Uses a separate session key (dataStateGds) so it does not interfere
+ * with the standard overview page state.
+ */
+router.post('/overview-gds/set-state', function (req, res) {
+  req.session.data['dataStateGds'] = req.body['dataState']
+  res.redirect('/overview-gds')
+})
+
+/**
+ * GET /overview-gds/build-analysis
+ *
+ * Build analysis page for the GDS-only Overview — documents all GDS
+ * components used and confirms zero custom departures.
+ */
+router.get('/overview-gds/build-analysis', function (req, res) {
+  res.render('overview-gds/build-analysis')
+})
+
+// =============================================================================
 // Sites — landing page + add new site (2-step form)
 // =============================================================================
 
@@ -365,6 +403,136 @@ router.post('/sites/add/step-2', function (req, res) {
  */
 router.get('/sites/build-analysis', function (req, res) {
   res.render('sites/build-analysis')
+})
+
+// =============================================================================
+// Sites (GDS) — pure GDS components version of the Sites flow
+// =============================================================================
+
+/**
+ * GET /sites-gds
+ *
+ * GDS-only version of the Sites landing page. No filters — GDS has no
+ * documented filter pattern, so this page shows all sites with pagination
+ * only. Uses stacked typography in a one-third sidebar for key statistics.
+ */
+router.get('/sites-gds', function (req, res) {
+  var allSites = seedSites
+
+  var totalSites = allSites.length
+  var totalHomes = allSites.reduce(function (sum, s) { return sum + s.homes }, 0)
+  var completedSites = allSites.filter(function (s) { return s.status === 'Site completed' }).length
+
+  var page = parseInt(req.query.page, 10) || 1
+  var totalPages = Math.max(1, Math.ceil(allSites.length / SITES_PER_PAGE))
+  if (page > totalPages) page = totalPages
+  if (page < 1) page = 1
+
+  var start = (page - 1) * SITES_PER_PAGE
+  var pageSites = allSites.slice(start, start + SITES_PER_PAGE)
+
+  var paginationItems = []
+  for (var i = 1; i <= totalPages; i++) {
+    paginationItems.push({
+      number: i,
+      current: i === page,
+      href: '/sites-gds?page=' + i
+    })
+  }
+
+  var pagination = {}
+  if (totalPages > 1) {
+    pagination.items = paginationItems
+    if (page > 1) {
+      pagination.previous = {
+        href: '/sites-gds?page=' + (page - 1)
+      }
+    }
+    if (page < totalPages) {
+      pagination.next = {
+        href: '/sites-gds?page=' + (page + 1)
+      }
+    }
+  }
+
+  res.render('sites-gds/index', {
+    success: req.query.success === 'true',
+    sites: pageSites,
+    pagination: pagination,
+    totalSites: totalSites,
+    totalHomes: totalHomes,
+    completedSites: completedSites
+  })
+})
+
+/**
+ * GET /sites-gds/add/step-1
+ */
+router.get('/sites-gds/add/step-1', function (req, res) {
+  res.render('sites-gds/add/step-1')
+})
+
+/**
+ * POST /sites-gds/add/step-1
+ *
+ * Saves step 1 fields to session and redirects to step 2.
+ * Uses a separate session key (newSiteGds) to avoid conflicts with /sites flow.
+ */
+router.post('/sites-gds/add/step-1', function (req, res) {
+  req.session.data['newSiteGds'] = {
+    ...req.session.data['newSiteGds'],
+    siteId: req.body['site-id'],
+    siteName: req.body['site-name'],
+    typeOfSite: req.body['type-of-site'],
+    ruralArea: req.body['rural-area'],
+    localAuthority: req.body['local-authority'],
+    operatingArea: req.body['operating-area'],
+    region: req.body['region'],
+    processingRoute: req.body['processing-route'],
+    regenerationSite: req.body['regeneration-site'],
+    postcode: req.body['postcode'],
+    xCoordinate: req.body['x-coordinate'],
+    yCoordinate: req.body['y-coordinate'],
+    typeOfContractor: req.body['type-of-contractor'],
+    contractor: req.body['contractor']
+  }
+  res.redirect('/sites-gds/add/step-2')
+})
+
+/**
+ * GET /sites-gds/add/step-2
+ */
+router.get('/sites-gds/add/step-2', function (req, res) {
+  res.render('sites-gds/add/step-2')
+})
+
+/**
+ * POST /sites-gds/add/step-2
+ *
+ * Saves step 2 fields, marks the new site as complete, and redirects
+ * to the Sites GDS page with a success banner.
+ */
+router.post('/sites-gds/add/step-2', function (req, res) {
+  req.session.data['newSiteGds'] = {
+    ...req.session.data['newSiteGds'],
+    ownershipStatus: req.body['ownership-status'],
+    planningStatus: req.body['planning-status'],
+    buildingContractStatus: req.body['building-contract-status'],
+    startOnSiteStatus: req.body['start-on-site-status'],
+    forecastCompletionDate: req.body['forecast-completion-date']
+  }
+  req.session.data['newSiteGdsAdded'] = true
+  res.redirect('/sites-gds?success=true')
+})
+
+/**
+ * GET /sites-gds/build-analysis
+ *
+ * Documents GDS alignment, the single agreed deviation (multi-question pages)
+ * and comparison with the standard Sites flow.
+ */
+router.get('/sites-gds/build-analysis', function (req, res) {
+  res.render('sites-gds/build-analysis')
 })
 
 // =============================================================================

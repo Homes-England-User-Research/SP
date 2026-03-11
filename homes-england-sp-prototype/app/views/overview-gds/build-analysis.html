@@ -1,0 +1,244 @@
+{% extends "layouts/overview-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Overview (GDS)" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Home", href: "/" },
+      { text: "Overview (GDS)", href: "/overview-gds" },
+      { text: "Build analysis" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Overview (GDS)</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the GDS-only Overview page was built. All elements
+      use standard GOV.UK Design System components, patterns and layouts with
+      no custom departures.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The GDS Overview page is a pure GDS equivalent of the standard Overview
+      page, which uses custom stat cards, inline SVG charts and CSS grid layouts.
+      This version replaces every custom element with standard GDS components to
+      demonstrate what is achievable without any departures from the Design System.
+    </p>
+    <p class="govuk-body">
+      The page has two data states controlled by a prototype toggle in the footer:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><strong>MVP</strong> - programme links only, single-column layout, no key information or data insights</li>
+      <li><strong>Mature</strong> - two-thirds (programme links) + one-third (key information) layout, plus full-width tabbed data tables</li>
+    </ul>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/overview-gds">Overview (GDS) - MVP state</a> - single-column programme links</li>
+      <li><a class="govuk-link" href="/overview-gds">Overview (GDS) - Mature state</a> - two-thirds + one-third layout with tabbed data tables</li>
+    </ul>
+
+    {# -- GDS alignment ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS components used</h2>
+    <p class="govuk-body">
+      Every component on this page is an unmodified GOV.UK Design System component
+      or standard GDS typography/layout class. No components have been extended,
+      overridden or customised in any way.
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/service-navigation/">Service navigation</a> - <code>govukServiceNavigation()</code>, unmodified. Programme-level navigation (Overview, Agreed provider profile, Sites, etc.).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> - <code>govuk-heading-xl</code>, <code>govuk-heading-l</code>, <code>govuk-heading-m</code>, <code>govuk-body-l</code>, <code>govuk-body</code>, <code>govuk-body-s</code>. All standard GDS classes, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid layout</a> - <code>govuk-grid-row</code> with <code>govuk-grid-column-two-thirds</code> and <code>govuk-grid-column-one-third</code>. Standard GDS 12-column grid, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/#headings">Key information metrics</a> - stacked <code>govuk-body-s</code> (label) above <code>govuk-heading-m</code> (value). Pure GDS typography classes used as a lightweight alternative to <code>govukSummaryList</code> for dashboard-style metrics in a narrow column.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Tag</a> - <code>govukTag()</code> with <code>govuk-tag--green</code>, <code>govuk-tag--red</code> and <code>govuk-tag--blue</code> variants, unmodified. Used for trend indicators (e.g. "14% increase") in both the key information sidebar and data insight tables. Text always describes the direction - colour is never the sole indicator (WCAG 1.4.1).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/#section-break">Section break</a> - <code>govuk-section-break--m govuk-section-break--visible</code> between key information metrics. <code>govuk-section-break--xl govuk-section-break--visible</code> between the programme links section and data insights. Standard GDS component, unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tabs/">Tabs</a> - <code>govuk-tabs</code> with <code>data-module="govuk-tabs"</code>, unmodified. Four tab panels for data insights: Homes completed, Active sites, Housing outputs, Forecast vs Actual. Auto-initialised by govuk-frontend JavaScript. No-JS fallback shows all panels as stacked sections.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> - <code>govukTable()</code>, unmodified. Used inside each tab panel for quarterly data. Numeric columns use <code>format: "numeric"</code> for right-alignment. Column headers generated by the macro with correct <code>scope="col"</code>.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/summary-list/">Summary list</a> - <code>govukSummaryList()</code>, unmodified. Used in the Housing outputs tab to provide a narrative summary alongside the data table.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - all spacing uses <code>govuk-!-margin-*</code> and <code>govuk-!-padding-*</code> utility classes. No custom pixel values anywhere on the page.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/#font-size">Font size overrides</a> - no custom font sizes. All text uses the sizes provided by GDS typography classes (<code>govuk-heading-m</code> for metric values, <code>govuk-body-s</code> for labels).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/links/">Links</a> - <code>govuk-link</code> class on all anchor elements. Programme section links use <code>govuk-heading-m</code> wrapping a <code>govuk-link</code>, following the standard GDS pattern for navigation sections.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/lists/">Lists</a> - <code>govuk-list</code> for programme section child links. Unmodified.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/details/">Details</a> - <code>govukDetails()</code>, unmodified. Used for the prototype controls toggle in the footer.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> - <code>govukSelect()</code>, unmodified. Used inside prototype controls for data state switching.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> - <code>govukButton()</code> with <code>govuk-button--secondary</code>, unmodified. Used for the prototype controls Apply button and Build analysis link.</li>
+    </ul>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+    <p class="govuk-body">
+      <strong>None.</strong> Every element on the GDS Overview page uses standard
+      GOV.UK Design System components and classes. There are no custom CSS classes,
+      no custom Sass, no inline styles, no custom JavaScript and no SVG graphics.
+    </p>
+    <p class="govuk-body">
+      This is the key difference from the standard Overview page, which uses
+      custom stat cards (<code>.stat-card-grid</code>), inline SVG charts
+      (<code>aria-hidden="true"</code>), custom insight blocks
+      (<code>.insight-block</code>) and a custom CSS grid layout
+      (<code>.nav-section-grid</code>). The GDS version achieves the same
+      information architecture using only components from the Design System.
+    </p>
+
+    {# -- Design trade-offs ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Design trade-offs</h2>
+    <p class="govuk-body">
+      Staying within pure GDS involves trade-offs compared to the custom version.
+      These are documented here for design review.
+    </p>
+
+    <h3 class="govuk-heading-m">Charts replaced with data tables</h3>
+    <p class="govuk-body">
+      The standard Overview uses inline SVG line charts and bar charts to show
+      trends visually. The GDS version replaces these entirely with
+      <code>govukTable</code> and <code>govukTag</code>. The data is identical
+      but the visual impact is reduced - users must read numbers and percentage
+      tags rather than scanning a chart shape. For users who are comfortable
+      with tabular data (SP users typically are), this may be acceptable. For
+      users who rely on visual pattern recognition, it is a regression.
+    </p>
+
+    <h3 class="govuk-heading-m">Stat cards replaced with stacked typography</h3>
+    <p class="govuk-body">
+      The standard Overview uses bordered metric cards in a 2x3 grid to give
+      six key metrics high visual prominence. The GDS version uses stacked
+      <code>govuk-body-s</code> / <code>govuk-heading-m</code> pairs in a
+      one-third sidebar column. This occupies less horizontal space but makes
+      the metrics less scannable - they are read vertically rather than in a
+      grid. The section break dividers help separate each metric visually.
+    </p>
+
+    <h3 class="govuk-heading-m">Two-column programme links vs single-column</h3>
+    <p class="govuk-body">
+      The standard Overview uses a CSS grid to show programme sections in two
+      columns. The GDS version uses a single-column list in a two-thirds column.
+      This is more conservative and aligns with GDS guidance on content pages,
+      but creates a longer vertical scroll for the programme links section.
+    </p>
+
+    {# -- Accessibility ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Accessibility</h2>
+    <p class="govuk-body">
+      Because every component on this page is a standard, unmodified GOV.UK Design
+      System component, the accessibility characteristics are inherited directly
+      from the Design System. GOV.UK Frontend components are tested against
+      WCAG 2.2 AA by the GDS team and undergo regular accessibility audits.
+    </p>
+    <p class="govuk-body">
+      <strong>No custom accessibility testing is required</strong> beyond the
+      standard testing that would apply to any page using GDS components:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Run axe DevTools to confirm zero violations - expected to pass as all components are standard GDS</li>
+      <li>Run Lighthouse accessibility audit - expected to score 100 as there are no custom elements</li>
+      <li>Verify keyboard navigation - all GDS components are natively keyboard accessible</li>
+      <li>Verify screen reader announcements - GDS tabs, tables and tags all have built-in ARIA support</li>
+    </ul>
+    <p class="govuk-body">
+      The detailed 12-row assistive technology testing matrix used for the custom
+      Overview page and Sites page is <strong>not needed here</strong>. That matrix
+      exists to validate custom departures (editable tables, stat cards, SVG charts,
+      custom ARIA patterns). When all components are unmodified GDS, the testing
+      burden falls on the GDS team's own component tests, not on the service team.
+    </p>
+    <p class="govuk-body">
+      The one area worth confirming manually is the stacked label/value pattern in
+      the key information sidebar. While it uses only standard GDS typography classes
+      (<code>govuk-body-s</code>, <code>govuk-heading-m</code>), the composition
+      of multiple metrics with section breaks is a layout decision rather than a
+      documented GDS pattern. A quick screen reader check should confirm that each
+      label-value pair is announced clearly in sequence.
+    </p>
+
+    {# -- Comparison with standard Overview --------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Comparison with standard Overview</h2>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Standard Overview vs GDS Overview</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 25%">Feature</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">Standard Overview</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">GDS Overview</th>
+          <th scope="col" class="govuk-table__header" style="width: 25%">Trade-off</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Key metrics</th>
+          <td class="govuk-table__cell">Custom stat cards in 2x3 CSS grid with coloured top borders and trend badges</td>
+          <td class="govuk-table__cell">Stacked <code>govuk-body-s</code> label + <code>govuk-heading-m</code> value in one-third sidebar with <code>govukTag</code> for trends</td>
+          <td class="govuk-table__cell">Less scannable; metrics read vertically rather than in a grid. No visual card boundary.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Data visualisation</th>
+          <td class="govuk-table__cell">Inline SVG line charts and bar charts (<code>aria-hidden</code>) with accompanying data tables</td>
+          <td class="govuk-table__cell"><code>govukTable</code> only - no charts. <code>govukTag</code> for change/variance indicators.</td>
+          <td class="govuk-table__cell">No visual trend lines. Users must read numbers to identify patterns. Data is identical.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Programme links layout</th>
+          <td class="govuk-table__cell">2-column CSS grid (<code>.nav-section-grid</code>)</td>
+          <td class="govuk-table__cell">Single column in <code>govuk-grid-column-two-thirds</code></td>
+          <td class="govuk-table__cell">Longer vertical scroll; more conservative layout.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Data states</th>
+          <td class="govuk-table__cell">MVP, Growing, Mature (3 states)</td>
+          <td class="govuk-table__cell">MVP, Mature (2 states)</td>
+          <td class="govuk-table__cell">Growing state omitted - without charts, the distinction between Growing and Mature is minimal.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom CSS</th>
+          <td class="govuk-table__cell"><code>_overview.scss</code> - stat-card, trend-badge, insight-block, nav-section-grid classes</td>
+          <td class="govuk-table__cell">None. Zero custom CSS.</td>
+          <td class="govuk-table__cell">No maintenance burden; no risk of GDS version conflicts.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom JavaScript</th>
+          <td class="govuk-table__cell">None (SVG is static; tabs auto-initialise)</td>
+          <td class="govuk-table__cell">None (tabs auto-initialise)</td>
+          <td class="govuk-table__cell">Parity - neither version uses custom JS.</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Custom accessibility testing</th>
+          <td class="govuk-table__cell">Full 12-row AT matrix required for stat cards, SVG charts, custom ARIA</td>
+          <td class="govuk-table__cell">Not required - all components are standard GDS with built-in accessibility</td>
+          <td class="govuk-table__cell">Significant reduction in testing effort and risk.</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Overview (GDS)",
+      href: "/overview-gds"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,311 @@
+{% extends "layouts/overview-gds.html" %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% set pageName = "Overview (GDS)" %}
+
+{% block content %}
+
+{# ── 1. Page heading ────────────────────────────────────────────────────── #}
+<h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Overview</h1>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body-l {% if dataState == 'mvp' %}govuk-!-margin-bottom-8{% else %}govuk-!-margin-bottom-4{% endif %}">Manage your Affordable Homes Programme. Track completions, submit forecasts and monitor your sites.</p>
+  </div>
+</div>
+
+<!-- GDS-only version of the Overview page.
+     Every element uses standard GDS components, patterns and layouts only.
+     No custom components, no custom CSS classes, no inline SVGs.
+
+     Key translations from the standard Overview:
+     - Stat cards → govukSummaryList (key-value pairs)
+     - Trend badges → govukTag (green/red) with direction text
+     - SVG charts → removed entirely; govukTable is the primary data display
+     - Custom CSS grids → govuk-grid-row / govuk-grid-column-*
+     - insight-block layout → standard full-width govukTable per tab panel -->
+
+{% if dataState == "mvp" %}
+  {# ── MVP: programme links only, single column, full width ─────────── #}
+  <!-- MVP state: no key information section. Programme links lead the
+       page in a single column — the standard GDS content flow pattern
+       for transactional service pages. Single column avoids the GDS
+       purist concern about multi-column link layouts in services. -->
+
+  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
+  <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
+    <li><a class="govuk-link" href="#">Grant rates</a></li>
+    <li><a class="govuk-link" href="#">Homes by tenure and region</a></li>
+    <li><a class="govuk-link" href="#">Nil grant homes</a></li>
+    <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
+  </ul>
+
+  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
+  <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    <li><a class="govuk-link" href="#">Add a new site</a></li>
+    <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+    <li><a class="govuk-link" href="#">Completions</a></li>
+    <li><a class="govuk-link" href="#">Manage home types</a></li>
+  </ul>
+
+  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
+  <p class="govuk-body govuk-!-margin-bottom-6">Submit your Quarterly Development Expenditure.</p>
+
+  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
+  <p class="govuk-body govuk-!-margin-bottom-6">Submit your cash and home forecasts.</p>
+
+  <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
+  <p class="govuk-body govuk-!-margin-bottom-6">Request and track your grant payments.</p>
+
+{% else %}
+  {# ── Mature: two-thirds + one-third layout ───────────────────── #}
+  <!-- Mature state: standard GDS two-thirds + one-third layout.
+       Programme links in two-thirds (primary, actionable content).
+       Key information in one-third sidebar (reference data for scanning).
+       This is the most common GDS service page pattern and avoids the
+       dead space issue caused by full-width govukSummaryList. -->
+  <div class="govuk-grid-row">
+
+    {# ── Two-thirds: programme links (primary content) ────────────── #}
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-l govuk-!-margin-top-4">Your programme</h2>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Agreed provider profile</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-2">Manage your rates, homes and tenure agreements.</p>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li><a class="govuk-link" href="#">Enhanced grant rates</a></li>
+        <li><a class="govuk-link" href="#">Grant rates</a></li>
+        <li><a class="govuk-link" href="#">Homes by tenure and region</a></li>
+        <li><a class="govuk-link" href="#">Nil grant homes</a></li>
+        <li><a class="govuk-link" href="#">Total grant by homes and tenure</a></li>
+      </ul>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Sites</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-2">Manage your sites, home types and completions.</p>
+      <ul class="govuk-list govuk-!-margin-bottom-6">
+        <li><a class="govuk-link" href="#">Add a new site</a></li>
+        <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
+        <li><a class="govuk-link" href="#">Completions</a></li>
+        <li><a class="govuk-link" href="#">Manage home types</a></li>
+      </ul>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Quarterly Expenditure</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-6">Submit your Quarterly Development Expenditure.</p>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Forecasting</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-6">Submit your cash and home forecasts.</p>
+
+      <h3 class="govuk-heading-m"><a class="govuk-link" href="#">Payments</a></h3>
+      <p class="govuk-body govuk-!-margin-bottom-6">Request and track your grant payments.</p>
+    </div>
+
+    {# ── One-third: key information sidebar ───────────────────── #}
+    <div class="govuk-grid-column-one-third">
+      <h2 class="govuk-heading-l govuk-!-margin-top-4">Key information</h2>
+
+      <!-- GDS replacement for stat cards: stacked label-above-data pattern.
+           Uses standard GDS typography classes only — govuk-body-s for labels,
+           govuk-heading-m for values, govuk-section-break between metrics.
+           This avoids the bunched side-by-side key-value look of govukSummaryList
+           and gives each metric more visual weight and breathing room.
+           Trend information uses govukTag (green/red) with text like
+           "14% increase" — meaning never conveyed by colour alone (WCAG 1.4.1). -->
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Homes started</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-1">1,782</p>
+      {{ govukTag({ text: "12% decrease", classes: "govuk-tag--red" }) }}
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Homes completed</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-1">5,841</p>
+      {{ govukTag({ text: "14% increase", classes: "govuk-tag--green" }) }}
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Left to fulfil</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">18,112</p>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Active sites</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">15</p>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Inactive sites</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-0">28</p>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <p class="govuk-body-s govuk-!-margin-bottom-1">Current quarter</p>
+      <p class="govuk-heading-m govuk-!-margin-bottom-1">Q3</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-0">Sep 1 to Nov 30</p>
+    </div>
+
+  </div>
+
+  {# ── Data insights ────────────────────────────────────────── #}
+  <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+  <h2 class="govuk-heading-l govuk-!-margin-top-6">Data insights</h2>
+
+
+  <!-- GDS replacement for custom insight blocks: standard govukTabs
+       (already a GDS component) with each panel containing ONLY a
+       govukTable. No SVG charts — the table IS the data presentation.
+       This is the purest GDS approach: tabbed data tables. -->
+  <div class="govuk-tabs" data-module="govuk-tabs">
+    <h3 class="govuk-tabs__title">Data insights</h3>
+    <ul class="govuk-tabs__list">
+      <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+        <a class="govuk-tabs__tab" href="#homes-completed">Homes completed</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#active-sites">Active sites</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#housing-outputs">Housing outputs</a>
+      </li>
+      <li class="govuk-tabs__list-item">
+        <a class="govuk-tabs__tab" href="#forecast-actual">Forecast vs Actual</a>
+      </li>
+    </ul>
+
+    {# ── Tab 1: Homes completed ─────────────────────────────────────── #}
+    <div class="govuk-tabs__panel" id="homes-completed">
+      <h3 class="govuk-heading-m">Homes completed per quarter</h3>
+      {{ govukTable({
+        head: [
+          { text: "Quarter" },
+          { text: "Homes completed", format: "numeric" },
+          { text: "Change", format: "numeric" }
+        ],
+        rows: [
+          [{ text: "2026 Q1" }, { text: "800", format: "numeric" }, { text: "-", format: "numeric" }],
+          [{ text: "2026 Q2" }, { text: "2,050", format: "numeric" }, { html: govukTag({ text: "156% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2026 Q3" }, { text: "2,350", format: "numeric" }, { html: govukTag({ text: "15% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2026 Q4" }, { text: "3,400", format: "numeric" }, { html: govukTag({ text: "45% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q1" }, { text: "5,000", format: "numeric" }, { html: govukTag({ text: "47% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q2" }, { text: "5,250", format: "numeric" }, { html: govukTag({ text: "5% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q3" }, { text: "5,300", format: "numeric" }, { html: govukTag({ text: "1% increase", classes: "govuk-tag--green" }), format: "numeric" }]
+        ]
+      }) }}
+    </div>
+
+    {# ── Tab 2: Active sites ────────────────────────────────────────── #}
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="active-sites">
+      <h3 class="govuk-heading-m">Active sites per quarter</h3>
+      {{ govukTable({
+        head: [
+          { text: "Quarter" },
+          { text: "Active sites", format: "numeric" },
+          { text: "Change", format: "numeric" }
+        ],
+        rows: [
+          [{ text: "2026 Q1" }, { text: "6", format: "numeric" }, { text: "-", format: "numeric" }],
+          [{ text: "2026 Q2" }, { text: "12", format: "numeric" }, { html: govukTag({ text: "100% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2026 Q3" }, { text: "14", format: "numeric" }, { html: govukTag({ text: "17% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2026 Q4" }, { text: "7", format: "numeric" }, { html: govukTag({ text: "50% decrease", classes: "govuk-tag--red" }), format: "numeric" }],
+          [{ text: "2027 Q1" }, { text: "19", format: "numeric" }, { html: govukTag({ text: "171% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q2" }, { text: "23", format: "numeric" }, { html: govukTag({ text: "21% increase", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q3" }, { text: "15", format: "numeric" }, { html: govukTag({ text: "35% decrease", classes: "govuk-tag--red" }), format: "numeric" }]
+        ]
+      }) }}
+    </div>
+
+    {# ── Tab 3: Housing outputs ─────────────────────────────────────── #}
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="housing-outputs">
+      <h3 class="govuk-heading-m">Housing outputs by status</h3>
+      {{ govukTable({
+        head: [
+          { text: "Status" },
+          { text: "Housing outputs", format: "numeric" },
+          { text: "Proportion", format: "numeric" }
+        ],
+        rows: [
+          [{ text: "Started" }, { text: "22,124", format: "numeric" }, { text: "40%", format: "numeric" }],
+          [{ text: "Completed" }, { text: "14,766", format: "numeric" }, { text: "27%", format: "numeric" }],
+          [{ text: "Not started" }, { text: "18,112", format: "numeric" }, { text: "33%", format: "numeric" }]
+        ]
+      }) }}
+
+      <!-- GDS replacement for bar chart: govukSummaryList showing the
+           same proportional data as descriptive text. The table above
+           has the precise numbers; this summary reinforces the story. -->
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: { text: "Total housing outputs" },
+            value: { text: "55,002" }
+          },
+          {
+            key: { text: "Largest category" },
+            value: { text: "Started (22,124 - 40%)" }
+          },
+          {
+            key: { text: "Completion rate" },
+            value: { text: "27% of all outputs are completed" }
+          }
+        ]
+      }) }}
+    </div>
+
+    {# ── Tab 4: Forecast vs Actual ──────────────────────────────────── #}
+    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="forecast-actual">
+      <h3 class="govuk-heading-m">Forecast versus actual quarterly spend</h3>
+      {{ govukTable({
+        head: [
+          { text: "Quarter" },
+          { text: "Actual", format: "numeric" },
+          { text: "Forecast", format: "numeric" },
+          { text: "Variance", format: "numeric" }
+        ],
+        rows: [
+          [{ text: "2026 Q1" }, { text: "£9M", format: "numeric" }, { text: "£10M", format: "numeric" }, { html: govukTag({ text: "£1M under", classes: "govuk-tag--red" }), format: "numeric" }],
+          [{ text: "2026 Q2" }, { text: "£8.5M", format: "numeric" }, { text: "£10.5M", format: "numeric" }, { html: govukTag({ text: "£2M under", classes: "govuk-tag--red" }), format: "numeric" }],
+          [{ text: "2026 Q3" }, { text: "£11M", format: "numeric" }, { text: "£11M", format: "numeric" }, { html: govukTag({ text: "On target", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2026 Q4" }, { text: "£12M", format: "numeric" }, { text: "£12M", format: "numeric" }, { html: govukTag({ text: "On target", classes: "govuk-tag--green" }), format: "numeric" }],
+          [{ text: "2027 Q1" }, { text: "£13.5M", format: "numeric" }, { text: "£13M", format: "numeric" }, { html: govukTag({ text: "£0.5M over", classes: "govuk-tag--blue" }), format: "numeric" }],
+          [{ text: "2027 Q2" }, { text: "£12M", format: "numeric" }, { text: "£12.5M", format: "numeric" }, { html: govukTag({ text: "£0.5M under", classes: "govuk-tag--red" }), format: "numeric" }],
+          [{ text: "2027 Q3" }, { text: "£11.5M", format: "numeric" }, { text: "£12M", format: "numeric" }, { html: govukTag({ text: "£0.5M under", classes: "govuk-tag--red" }), format: "numeric" }]
+        ]
+      }) }}
+    </div>
+  </div>
+
+{% endif %}
+
+{% endblock %}
+
+{# ── Prototype controls in footer ────────────────────────────────────── #}
+{% block footerStart %}
+  <div class="govuk-width-container govuk-!-padding-top-4 govuk-!-padding-bottom-4 prototype-tools">
+    <div class="govuk-button-group govuk-!-margin-bottom-2">
+      {{ govukButton({
+        text: "Build analysis",
+        href: "/overview-gds/build-analysis",
+        classes: "govuk-button--secondary"
+      }) }}
+    </div>
+    {% call govukDetails({ summaryText: "Prototype controls" }) %}
+      <form method="post" action="/overview-gds/set-state">
+        <label class="govuk-label" for="dataState">Data state</label>
+        {{ govukSelect({
+          id: "dataState",
+          name: "dataState",
+          items: [
+            { value: "mvp", text: "MVP (no data)", selected: true if dataState == "mvp" },
+            { value: "mature", text: "Mature (full data)", selected: true if dataState == "mature" }
+          ]
+        }) }}
+        {{ govukButton({
+          text: "Apply",
+          classes: "govuk-button--secondary"
+        }) }}
+      </form>
+    {% endcall %}
+  </div>
+{% endblock %}
