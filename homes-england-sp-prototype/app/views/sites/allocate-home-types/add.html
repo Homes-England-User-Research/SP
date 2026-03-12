@@ -1,0 +1,82 @@
+<!-- Add home types — GDS checkboxes pattern.
+     Lists all home types NOT currently allocated to this site.
+     User selects which to add via standard GDS checkboxes, then submits.
+     Follows the GDS "Question page" pattern with a single question. -->
+
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Add home types" %}
+
+{% block content %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/allocate-home-types"
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    {% if availableHomeTypes.length > 0 %}
+
+      <form method="post" action="/sites/allocate-home-types/add" novalidate>
+
+        {# Build checkbox items from available home types #}
+        {% set checkboxItems = [] %}
+        {% for ht in availableHomeTypes %}
+          {% set checkboxItems = (checkboxItems.push({
+            value: ht.id,
+            text: ht.id + " — " + ht.description,
+            hint: {
+              text: ht.buildingType + ", " + ht.bedrooms + " bedrooms, " + ht.persons + " persons"
+            }
+          }), checkboxItems) %}
+        {% endfor %}
+
+        {{ govukCheckboxes({
+          name: "home-types",
+          fieldset: {
+            legend: {
+              text: "Which home types do you want to add to this site?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          hint: {
+            text: "Select all the home types you want to allocate to Bracken Avenue. These are the home types created for your programme that are not yet included at this site."
+          },
+          items: checkboxItems
+        }) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({
+            text: "Add selected home types"
+          }) }}
+          <a class="govuk-link" href="/sites/allocate-home-types">Cancel</a>
+        </div>
+
+      </form>
+
+    {% else %}
+
+      <h1 class="govuk-heading-l">Add home types</h1>
+
+      <!-- Inset text for empty state — all home types already allocated. -->
+      <div class="govuk-inset-text">
+        All available home types have already been allocated to this site.
+      </div>
+
+      <p class="govuk-body">
+        <a class="govuk-link" href="/sites/allocate-home-types">Back to allocate home types</a>
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

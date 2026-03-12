@@ -1,0 +1,273 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Allocate home types" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [
+    { text: "Sites", href: "/sites-gds" },
+    { text: "Allocate home types", href: "/sites/allocate-home-types" },
+    { text: "Build analysis" }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Allocate home types</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the Allocate home types flow was built, how it
+      aligns with the GOV.UK Design System and WCAG 2.1 AA, and predicted
+      accessibility tool outcomes. This flow uses zero custom components -
+      every element is a standard GDS component or pattern.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The Allocate home types flow allows SP users to manage which home types
+      from their organisation are included at a specific site. It follows the
+      GDS "Add to a list" pattern: a main page showing currently allocated
+      items with remove actions, a separate page for adding new items via
+      checkboxes, and a confirmation page before removal.
+    </p>
+    <p class="govuk-body">
+      Every GDS component used on these pages is used without modification.
+      There are no custom departures.
+    </p>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/sites/allocate-home-types">Allocate home types</a> - main page with allocated home types table, "Add home types" and "Create new home type" buttons</li>
+      <li><a class="govuk-link" href="/sites/allocate-home-types/add">Add home types</a> - checkbox selection page listing unallocated home types</li>
+      <li><a class="govuk-link" href="/sites/allocate-home-types/remove/HT-001">Remove home type</a> - confirmation page with summary list, warning text and Yes/No radios</li>
+    </ul>
+
+    {# -- GDS alignment ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
+    <p class="govuk-body">
+      All components are standard GDS, used via their official Nunjucks macros
+      with no class overrides or modifications.
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> - <code>govukBreadcrumbs()</code>, unmodified. Used on all three pages with appropriate hierarchy (Sites > Site summary > Allocate home types).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/notification-banner/">Notification banner</a> - <code>govukNotificationBanner()</code> with <code>type: "success"</code>, unmodified. Shown after adding or removing home types with a count of items added.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> - <code>govukTable()</code>, unmodified. Used on the main page to display allocated home types with columns for ID, description, building type, bedrooms, persons and a Remove action link. Visually hidden caption for screen readers.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> - <code>govukButton()</code>, unmodified. Primary variant for "Add home types" and "Add selected home types"; secondary variant for "Create new home type" and "View build analysis". Uses <code>govuk-button-group</code> for paired button layout.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/checkboxes/">Checkboxes</a> - <code>govukCheckboxes()</code>, unmodified. Used on the Add page with fieldset legend as page heading (<code>isPageHeading: true</code>). Each checkbox has a hint showing building type, bedrooms and persons.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/radios/">Radios</a> - <code>govukRadios()</code>, unmodified. Used on the Remove confirmation page for the Yes/No question.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/summary-list/">Summary list</a> - <code>govukSummaryList()</code>, unmodified. Used on the Remove confirmation page to show full details of the home type being removed.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/warning-text/">Warning text</a> - <code>govukWarningText()</code>, unmodified. Used on the Remove confirmation page to reassure users that removal is reversible.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/back-link/">Back link</a> - <code>govukBackLink()</code>, unmodified. Used on the Add and Remove pages to return to the main allocate page.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/inset-text/">Inset text</a> - standard <code>govuk-inset-text</code> class, unmodified. Used for the empty state when no home types are allocated.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/layout/">Grid</a> - <code>govuk-grid-row</code> with <code>govuk-grid-column-two-thirds</code> for text content. Table sits full-width to accommodate its columns. Standard GDS 12-column grid.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> - <code>govuk-heading-xl</code> with <code>govuk-caption-xl</code> for "Site 1234". <code>govuk-heading-m</code> for section heading. All standard GDS classes.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> - all spacing uses <code>govuk-!-margin-*</code> and <code>govuk-!-padding-*</code> utility classes. No custom pixel values.</li>
+    </ul>
+
+    {# -- GDS patterns ----------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS patterns used</h2>
+
+    <h3 class="govuk-heading-m">Add to a list</h3>
+    <p class="govuk-body">
+      The flow follows the GDS
+      <a class="govuk-link" href="https://design-system.service.gov.uk/patterns/add-multiple-things/">Add multiple things</a>
+      pattern. The main page shows a list of items (allocated home types) with
+      the ability to remove individual items and a button to add more. The add
+      page uses checkboxes to allow batch selection. After submission, the user
+      returns to the main page with a success notification.
+    </p>
+
+    <h3 class="govuk-heading-m">Question page</h3>
+    <p class="govuk-body">
+      The Add home types page follows the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">Question pages</a>
+      pattern exactly: a single question as the page heading (using
+      <code>isPageHeading: true</code> on the fieldset legend), hint text
+      providing context, and a submit button. The two-thirds column width
+      constrains reading line length per GDS guidance.
+    </p>
+
+    <h3 class="govuk-heading-m">Confirmation before destructive action</h3>
+    <p class="govuk-body">
+      The Remove page follows the
+      <a class="govuk-link" href="https://design-system.service.gov.uk/patterns/confirmation-pages/">Confirmation pages</a>
+      pattern: showing full details of what will be affected (via summary list),
+      a warning explaining consequences, and a Yes/No radio for explicit
+      confirmation. This prevents accidental removal.
+    </p>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+    <p class="govuk-body">
+      <strong>None.</strong> This flow uses exclusively standard GDS components
+      and patterns. No custom CSS classes, no custom JavaScript, no custom
+      components. All styling comes from GDS utility classes and component
+      defaults.
+    </p>
+
+    {# -- Implementation details ------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
+
+    <h3 class="govuk-heading-m">Session-based allocation state</h3>
+    <p class="govuk-body">
+      The allocated home types are stored in
+      <code>req.session.data['allocatedHomeTypes']</code> as an array of home
+      type IDs. On first visit, the session is seeded with 4 default allocations.
+      Adding home types appends IDs to this array; removing splices them out.
+      The full home type data (description, building type, bedrooms, persons)
+      lives in a server-side array and is filtered by the session IDs on each
+      request. This follows the standard Prototype Kit session pattern.
+    </p>
+
+    <h3 class="govuk-heading-m">POST-redirect-GET</h3>
+    <p class="govuk-body">
+      Both the Add and Remove forms follow the POST-redirect-GET pattern.
+      After processing, the server redirects to the main page with query
+      parameters (<code>?success=3</code> or <code>?removed=true</code>)
+      that trigger the appropriate notification banner. This prevents
+      duplicate submissions on browser refresh.
+    </p>
+
+    <h3 class="govuk-heading-m">Accessible Remove links</h3>
+    <p class="govuk-body">
+      Each Remove link in the table includes a
+      <code>govuk-visually-hidden</code> span containing the home type
+      description. This means screen readers announce "Remove 2B4P House -
+      Social Rent" rather than just "Remove", distinguishing between
+      multiple Remove links on the page (WCAG 2.4.4 Link Purpose in Context).
+    </p>
+
+    {# -- Recommended accessibility tests ---------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Recommended accessibility tests</h2>
+    <p class="govuk-body">
+      These are the tools and methods GOV.UK teams use when validating new
+      components and patterns. Predicted outcomes are based on the current
+      implementation. Actual results should be populated after testing.
+    </p>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Accessibility test results</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 22%">Tool / method</th>
+          <th scope="col" class="govuk-table__header" style="width: 30%">What to check</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Predicted outcome</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Actual result</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">axe DevTools (Chrome)</th>
+          <td class="govuk-table__cell">Zero violations on all three pages. Run on main page with home types allocated, on the Add page with checkboxes visible, and on the Remove confirmation page.</td>
+          <td class="govuk-table__cell">Pass - all components are standard GDS macros generating well-formed ARIA; visually hidden table caption present; checkbox fieldset has legend; radio fieldset has legend; no duplicate IDs</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
+          <td class="govuk-table__cell">No errors on all three pages; verify table headers correctly associated; check Remove links are distinguishable; verify checkbox and radio labels present</td>
+          <td class="govuk-table__cell">Pass - <code>scope="col"</code> and <code>scope="row"</code> on table headers via <code>govukTable()</code> macro; Remove links include visually hidden text for unique link purposes; all form controls generated by GDS macros with associated labels</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
+          <td class="govuk-table__cell">All text passes 4.5:1 for normal text; 3:1 for large text and UI components (WCAG 1.4.3, 1.4.11). Check button colours, link colours, warning text icon.</td>
+          <td class="govuk-table__cell">Pass - GDS colour tokens used throughout; green button (#00703c) on white achieves 4.5:1; link blue (#1d70b8) achieves 4.5:1; warning text icon uses standard GDS black</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Keyboard-only navigation</th>
+          <td class="govuk-table__cell">Tab through table Remove links, buttons, checkboxes and radios in logical order; Space/Enter activates all controls; no keyboard traps; focus visible on all interactive elements</td>
+          <td class="govuk-table__cell">Pass - all interactive elements are standard GDS components with built-in keyboard support; tab order follows DOM order which matches visual order; GDS yellow focus ring (#ffdd00) on all focusable elements</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
+          <td class="govuk-table__cell">Table announces column headers on cell focus; Remove links read full home type description; notification banner announced on page load after add/remove; checkboxes announce label, hint and checked state; radios announce question and options</td>
+          <td class="govuk-table__cell">Pass - <code>govukTable()</code> generates correct <code>scope</code> attributes; visually hidden spans in Remove links provide full context; <code>govukNotificationBanner</code> uses <code>role="alert"</code> for success type; GDS checkbox and radio macros generate correct ARIA</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
+          <td class="govuk-table__cell">Same checks as NVDA; verify table navigation mode works correctly with column and row headers; confirm summary list key-value pairs announced on Remove page</td>
+          <td class="govuk-table__cell">Pass - same rationale as NVDA; JAWS table navigation supported by standard <code>govukTable()</code> markup; <code>govukSummaryList()</code> uses <code>&lt;dt&gt;</code>/<code>&lt;dd&gt;</code> pairs announced correctly</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
+          <td class="govuk-table__cell">Table row/column header announcements; checkbox legend read as group label; radio legend read as question; summary list pairs announced; warning text read including icon fallback text</td>
+          <td class="govuk-table__cell">Pass - standard GDS table markup; <code>govukCheckboxes</code> fieldset legend announced; <code>govukRadios</code> fieldset legend announced; <code>govukWarningText</code> uses <code>iconFallbackText</code> for non-visual icon</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
+          <td class="govuk-table__cell">"Click Add home types" activates primary button; "Click Create new home type" activates secondary button; "Click Remove" activates table Remove links; "Click Add selected home types" submits checkbox form; "Click Continue" submits remove form</td>
+          <td class="govuk-table__cell">Pass - all interactive elements have visible text labels matching their accessible names; button text is the speakable name; link text includes visible "Remove" which Dragon can target; checkbox labels match visible text</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
+          <td class="govuk-table__cell">Page content reflows to single column at 1280px viewport zoomed to 400%; two-thirds column expands to full width; table scrolls horizontally if needed; checkboxes stack vertically; buttons stack vertically in button group</td>
+          <td class="govuk-table__cell">Pass - <code>govuk-grid-column-two-thirds</code> collapses at mobile breakpoint; <code>govukTable()</code> uses standard GDS overflow; <code>govuk-button-group</code> stacks buttons at narrow widths; checkbox list is naturally single-column</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">200% text-only zoom</th>
+          <td class="govuk-table__cell">Text resizes to 200% using browser text size settings without loss of content or functionality (WCAG 1.4.4)</td>
+          <td class="govuk-table__cell">Pass - no text sizes fixed in px; GDS body uses rem units; all typography via GDS classes which scale with root font size</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
+          <td class="govuk-table__cell">All text, borders, focus indicators and button states visible in both Light and Dark high contrast modes; warning text icon visible; checkbox and radio tick marks visible</td>
+          <td class="govuk-table__cell">Pass - GDS components include forced-colors CSS; warning text icon uses standard GDS SVG which respects system colours; checkbox and radio controls are OS-rendered in High Contrast Mode</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Reduced motion (<code>prefers-reduced-motion</code>)</th>
+          <td class="govuk-table__cell">No animations or transitions on any of the three pages</td>
+          <td class="govuk-table__cell">Pass - no CSS transitions or animations used; no custom JavaScript animations; GDS components respect this media query natively</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Allocate home types",
+      href: "/sites/allocate-home-types"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

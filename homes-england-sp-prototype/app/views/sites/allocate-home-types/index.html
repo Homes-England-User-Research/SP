@@ -1,0 +1,131 @@
+<!-- Allocate home types — GDS-only prototype (Option 1).
+     Uses the GDS "Add to a list" pattern:
+     - Summary table of currently allocated home types with Remove links
+     - "Add home types" button to navigate to a checkbox selection page
+     - Success notification banner after adding/removing
+     No custom components — all standard GDS. -->
+
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Allocate home types" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Sites", href: "/sites-gds" },
+      { text: "Site summary", href: "#" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{# ── Success banners — GDS guidance: breadcrumbs, then banner, then page title #}
+
+{% if success and success !== 'null' %}
+  {% set successHtml %}
+    <p class="govuk-notification-banner__heading">
+      You have added {{ success }} home {{ "type" if success == "1" else "types" }} to this site.
+    </p>
+  {% endset %}
+  {{ govukNotificationBanner({
+    type: "success",
+    html: successHtml
+  }) }}
+{% endif %}
+
+{% if removed %}
+  {% set removedHtml %}
+    <p class="govuk-notification-banner__heading">
+      Home type removed from this site.
+    </p>
+  {% endset %}
+  {{ govukNotificationBanner({
+    type: "success",
+    html: removedHtml
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Site 1234</span>
+    <h1 class="govuk-heading-xl">Allocate home types</h1>
+
+    {# ── Allocated home types ─────────────────────────────────────────── #}
+
+    <h2 class="govuk-heading-m">Bracken Avenue home types</h2>
+    <p class="govuk-body">Bracken Avenue has {{ allocatedHomeTypes.length }} home {{ "type" if allocatedHomeTypes.length == 1 else "types" }} allocated. You can add more from your organisation's available home types or remove ones no longer needed.</p>
+
+  </div>
+</div>
+
+<div class="govuk-!-margin-top-4 govuk-!-padding-bottom-4">
+{% if allocatedHomeTypes.length > 0 %}
+
+  {# Build table rows from allocated home types #}
+  {% set tableRows = [] %}
+  {% for ht in allocatedHomeTypes %}
+    {% set tableRows = (tableRows.push([
+      { text: ht.id },
+      { text: ht.description },
+      { text: ht.buildingType },
+      { text: ht.bedrooms },
+      { text: ht.persons },
+      { html: '<a class="govuk-link" href="/sites/allocate-home-types/remove/' + ht.id + '">Remove<span class="govuk-visually-hidden"> ' + ht.description + '</span></a>' }
+    ]), tableRows) %}
+  {% endfor %}
+
+  {{ govukTable({
+    caption: "Home types allocated to this site",
+    captionClasses: "govuk-visually-hidden",
+    head: [
+      { text: "Home type ID" },
+      { text: "Template description" },
+      { text: "Building type" },
+      { text: "Bedrooms" },
+      { text: "Persons" },
+      { text: "Action" }
+    ],
+    rows: tableRows
+  }) }}
+
+{% else %}
+
+  <!-- Inset text for empty state — standard GDS pattern for
+       drawing attention to important information. -->
+  <div class="govuk-inset-text">
+    No home types have been allocated to this site yet. Use the button below to add home types.
+  </div>
+
+{% endif %}
+</div>
+
+{# ── Action buttons ───────────────────────────────────────────────────── #}
+
+<div class="govuk-button-group">
+  {{ govukButton({
+    text: "Add home types",
+    href: "/sites/allocate-home-types/add"
+  }) }}
+  {{ govukButton({
+    text: "Create new home type",
+    href: "#",
+    classes: "govuk-button--secondary"
+  }) }}
+</div>
+
+{# ── Build analysis ──────────────────────────────────────────────────── #}
+<hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+{{ govukButton({
+  text: "View build analysis",
+  classes: "govuk-button--secondary",
+  href: "/sites/allocate-home-types/build-analysis"
+}) }}
+
+{% endblock %}

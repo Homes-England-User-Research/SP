@@ -1,0 +1,90 @@
+<!-- Remove home type confirmation — standard GDS "Are you sure?" pattern.
+     Uses radios (Yes/No) with a warning, following the GDS confirmation
+     page pattern. This prevents accidental removal. -->
+
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set pageName = "Remove home type" %}
+
+{% block content %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/allocate-home-types"
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <form method="post" action="/sites/allocate-home-types/remove/{{ homeType.id }}" novalidate>
+
+      <h1 class="govuk-heading-l">Remove home type from this site</h1>
+
+      <!-- Summary list showing the home type being removed — gives the
+           user full context before they confirm. Standard GDS summary list. -->
+      {{ govukSummaryList({
+        rows: [
+          {
+            key: { text: "Home type ID" },
+            value: { text: homeType.id }
+          },
+          {
+            key: { text: "Description" },
+            value: { text: homeType.description }
+          },
+          {
+            key: { text: "Building type" },
+            value: { text: homeType.buildingType }
+          },
+          {
+            key: { text: "Bedrooms" },
+            value: { text: homeType.bedrooms }
+          },
+          {
+            key: { text: "Persons" },
+            value: { text: homeType.persons }
+          }
+        ]
+      }) }}
+
+      {{ govukWarningText({
+        text: "Removing this home type will not delete it from your programme. You can add it back to this site at any time.",
+        iconFallbackText: "Warning"
+      }) }}
+
+      {{ govukRadios({
+        name: "confirm-remove",
+        fieldset: {
+          legend: {
+            text: "Are you sure you want to remove this home type from Bracken Avenue?",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: [
+          {
+            value: "yes",
+            text: "Yes, remove it"
+          },
+          {
+            value: "no",
+            text: "No, keep it"
+          }
+        ]
+      }) }}
+
+      {{ govukButton({
+        text: "Continue"
+      }) }}
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

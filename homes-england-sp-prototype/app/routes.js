@@ -416,6 +416,157 @@ router.get('/sites/summary-build-analysis', function (req, res) {
   res.render('sites/summary-build-analysis')
 })
 
+// =============================================================================
+// Allocate home types — GDS-only prototype
+// =============================================================================
+
+/**
+ * Mock home type data — represents templates created at programme level.
+ * In production these would come from a home type manager/API.
+ * Each home type has a unique ID, a template description, building type,
+ * bedrooms, persons capacity and a valid/draft status.
+ */
+var allHomeTypes = [
+  { id: 'HT-001', description: '2B4P House - Social Rent',           status: 'Valid', buildingType: 'House',       bedrooms: 2, persons: 4 },
+  { id: 'HT-002', description: '3B5P House - Social Rent',           status: 'Valid', buildingType: 'House',       bedrooms: 3, persons: 5 },
+  { id: 'HT-003', description: '4B5P House - Affordable Rent',       status: 'Valid', buildingType: 'House',       bedrooms: 4, persons: 5 },
+  { id: 'HT-004', description: '4B6P Maisonette - Shared Ownership', status: 'Valid', buildingType: 'Maisonette',  bedrooms: 4, persons: 6 },
+  { id: 'HT-005', description: '2B4P House - Shared Ownership',      status: 'Valid', buildingType: 'House',       bedrooms: 2, persons: 4 },
+  { id: 'HT-006', description: '3B5P House - Affordable Rent',       status: 'Valid', buildingType: 'House',       bedrooms: 3, persons: 5 },
+  { id: 'HT-007', description: '4B5P House - Social Rent',           status: 'Valid', buildingType: 'House',       bedrooms: 4, persons: 5 },
+  { id: 'HT-008', description: '4B6P Maisonette - Affordable Rent',  status: 'Valid', buildingType: 'Maisonette',  bedrooms: 4, persons: 6 },
+  { id: 'HT-009', description: '2B4P Flat - Social Rent',            status: 'Valid', buildingType: 'Flat',        bedrooms: 2, persons: 4 },
+  { id: 'HT-010', description: '3B5P House - Shared Ownership',      status: 'Valid', buildingType: 'House',       bedrooms: 3, persons: 5 },
+  { id: 'HT-011', description: '1B2P Flat - Social Rent',            status: 'Valid', buildingType: 'Flat',        bedrooms: 1, persons: 2 },
+  { id: 'HT-012', description: '4B5P House - Rent to Buy',           status: 'Valid', buildingType: 'House',       bedrooms: 4, persons: 5 },
+  { id: 'HT-013', description: '2B3P Bungalow - Shared Ownership',   status: 'Valid', buildingType: 'Bungalow',    bedrooms: 2, persons: 3 },
+  { id: 'HT-014', description: '3B5P House - Rent to Buy',           status: 'Valid', buildingType: 'House',       bedrooms: 3, persons: 5 },
+  { id: 'HT-015', description: '2B4P Flat - Affordable Rent',        status: 'Valid', buildingType: 'Flat',        bedrooms: 2, persons: 4 }
+]
+
+/**
+ * Default home types allocated to Bracken Avenue (site 1234) on first visit.
+ * Stored in session as an array of home type IDs.
+ */
+var defaultAllocatedIds = ['HT-001', 'HT-002', 'HT-003', 'HT-004']
+
+/**
+ * Helper — initialise session allocation if not yet set.
+ */
+function ensureAllocationSession(req) {
+  if (!req.session.data['allocatedHomeTypes']) {
+    req.session.data['allocatedHomeTypes'] = defaultAllocatedIds.slice()
+  }
+  return req.session.data['allocatedHomeTypes']
+}
+
+/**
+ * GET /sites/allocate-home-types
+ *
+ * Main page — shows home types currently allocated to this site.
+ * Uses the GDS "Add to a list" pattern: summary list + "Add" button.
+ */
+router.get('/sites/allocate-home-types', function (req, res) {
+  var allocatedIds = ensureAllocationSession(req)
+  var allocated = allHomeTypes.filter(function (ht) {
+    return allocatedIds.indexOf(ht.id) !== -1
+  })
+
+  res.render('sites/allocate-home-types/index', {
+    allocatedHomeTypes: allocated,
+    success: req.query.success || null,
+    removed: req.query.removed === 'true'
+  })
+})
+
+/**
+ * GET /sites/allocate-home-types/add
+ *
+ * Checkbox page — lists all home types NOT currently allocated.
+ * Standard GDS checkboxes pattern. User selects which to add.
+ */
+router.get('/sites/allocate-home-types/add', function (req, res) {
+  var allocatedIds = ensureAllocationSession(req)
+  var available = allHomeTypes.filter(function (ht) {
+    return allocatedIds.indexOf(ht.id) === -1
+  })
+
+  res.render('sites/allocate-home-types/add', {
+    availableHomeTypes: available
+  })
+})
+
+/**
+ * POST /sites/allocate-home-types/add
+ *
+ * Processes the checkbox form. Adds selected home type IDs to the
+ * session allocation array and redirects back with a success message.
+ */
+router.post('/sites/allocate-home-types/add', function (req, res) {
+  var allocatedIds = ensureAllocationSession(req)
+  var selected = req.body['home-types'] || []
+
+  // Normalise to array (single checkbox posts as string)
+  if (typeof selected === 'string') selected = [selected]
+
+  selected.forEach(function (id) {
+    if (allocatedIds.indexOf(id) === -1) {
+      allocatedIds.push(id)
+    }
+  })
+
+  req.session.data['allocatedHomeTypes'] = allocatedIds
+  var count = selected.length
+  res.redirect('/sites/allocate-home-types?success=' + count)
+})
+
+/**
+ * GET /sites/allocate-home-types/remove/:homeTypeId
+ *
+ * Confirmation page — "Are you sure you want to remove [home type]?"
+ * Standard GDS confirmation pattern.
+ */
+router.get('/sites/allocate-home-types/remove/:homeTypeId', function (req, res) {
+  var homeType = allHomeTypes.find(function (ht) {
+    return ht.id === req.params.homeTypeId
+  })
+  if (!homeType) return res.redirect('/sites/allocate-home-types')
+
+  res.render('sites/allocate-home-types/remove', {
+    homeType: homeType
+  })
+})
+
+/**
+ * POST /sites/allocate-home-types/remove/:homeTypeId
+ *
+ * Processes the removal. If user confirmed, removes the home type ID
+ * from the session allocation array.
+ */
+/**
+ * GET /sites/allocate-home-types/build-analysis
+ *
+ * Documents GDS alignment, zero custom departures and accessibility
+ * predictions for the Allocate home types flow.
+ */
+router.get('/sites/allocate-home-types/build-analysis', function (req, res) {
+  res.render('sites/allocate-home-types/build-analysis')
+})
+
+router.post('/sites/allocate-home-types/remove/:homeTypeId', function (req, res) {
+  if (req.body['confirm-remove'] === 'yes') {
+    var allocatedIds = ensureAllocationSession(req)
+    var idx = allocatedIds.indexOf(req.params.homeTypeId)
+    if (idx !== -1) {
+      allocatedIds.splice(idx, 1)
+      req.session.data['allocatedHomeTypes'] = allocatedIds
+    }
+    return res.redirect('/sites/allocate-home-types?removed=true')
+  }
+  // User chose "No" — go back to main page without removing
+  res.redirect('/sites/allocate-home-types')
+})
+
 /**
  * GET /sites/:siteId
  *
