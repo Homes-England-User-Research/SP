@@ -1,0 +1,110 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Processing and contractor - Add a new site - Step 3 of 4" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [
+    { text: "Sites", href: "/sites-gds-v3" },
+    { text: "Add a new site", href: "/sites-gds/add-3/step-1" }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Add a new site</span>
+    <h1 class="govuk-heading-l">Processing and contractor</h1>
+
+    <!-- Step 3: processing route, regeneration status, and contractor.
+         Regeneration uses inline radios (yes/no) per GDS guidance.
+         Processing route uses radios (3 options — well within radio range).
+         Contractor type uses radios (3 options). -->
+    <form method="post" action="/sites-gds/add-3/step-3">
+
+      {{ govukRadios({
+        name: "processing-route",
+        fieldset: {
+          legend: {
+            text: "Processing route",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          { value: "acquisition-works", text: "Acquisition and works" },
+          { value: "works-only", text: "Works only" },
+          { value: "acquisition-only", text: "Acquisition only" }
+        ],
+        value: data['processing-route'] or ""
+      }) }}
+
+      {{ govukRadios({
+        name: "regeneration-site",
+        fieldset: {
+          legend: {
+            text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        classes: "govuk-radios--inline",
+        items: [
+          { value: "yes", text: "Yes" },
+          { value: "no", text: "No" }
+        ],
+        value: data['regeneration-site'] or ""
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {{ govukRadios({
+        name: "type-of-contractor",
+        fieldset: {
+          legend: {
+            text: "Type of contractor",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          { value: "in-house", text: "In house contractor" },
+          { value: "external", text: "External contractor" },
+          { value: "mixed", text: "Mixed" }
+        ],
+        value: data['type-of-contractor'] or ""
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Contractor name",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "The name of the main contractor for this site"
+        },
+        id: "contractor-v3",
+        name: "contractor",
+        classes: "govuk-!-width-two-thirds",
+        value: data['contractor'] or ""
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds-v3"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,326 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Check your answers - Add a new site" %}
+
+{# ── Display-value helpers ──────────────────────────────────────────────
+   Maps stored values (slugs) back to human-readable labels for the
+   summary list. Uses Nunjucks set + if/elif chains. #}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [
+    { text: "Sites", href: "/sites-gds-v3" },
+    { text: "Add a new site", href: "/sites-gds/add-3/step-1" }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-l">Check your answers before adding this site</h1>
+
+    <!-- GDS "Check your answers" pattern — standard summary list with
+         change links back to each step. This is the canonical GDS pattern
+         for reviewing form data before final submission.
+         See: design-system.service.gov.uk/patterns/check-answers -->
+
+    {# ── Site details (step 1) ──────────────────────────────────────── #}
+    <h2 class="govuk-heading-m">Site details</h2>
+
+    {# Resolve type of site display value #}
+    {% if site.typeOfSite == "brownfield" %}
+      {% set typeOfSiteDisplay = "Brownfield" %}
+    {% elif site.typeOfSite == "greenfield" %}
+      {% set typeOfSiteDisplay = "Greenfield" %}
+    {% elif site.typeOfSite == "mixed" %}
+      {% set typeOfSiteDisplay = "Mixed" %}
+    {% else %}
+      {% set typeOfSiteDisplay = site.typeOfSite or "Not provided" %}
+    {% endif %}
+
+    {# Resolve rural area display value #}
+    {% if site.ruralArea == "yes" %}
+      {% set ruralDisplay = "Yes" %}
+    {% elif site.ruralArea == "no" %}
+      {% set ruralDisplay = "No" %}
+    {% else %}
+      {% set ruralDisplay = site.ruralArea or "Not provided" %}
+    {% endif %}
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: { text: "Site ID" },
+          value: { text: site.siteId or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-1", text: "Change", visuallyHiddenText: "site ID" }]
+          }
+        },
+        {
+          key: { text: "Site name" },
+          value: { text: site.siteName or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-1", text: "Change", visuallyHiddenText: "site name" }]
+          }
+        },
+        {
+          key: { text: "Type of site" },
+          value: { text: typeOfSiteDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-1", text: "Change", visuallyHiddenText: "type of site" }]
+          }
+        },
+        {
+          key: { text: "Rural area" },
+          value: { text: ruralDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-1", text: "Change", visuallyHiddenText: "rural area" }]
+          }
+        }
+      ]
+    }) }}
+
+    {# ── Site location (step 2) ─────────────────────────────────────── #}
+    <h2 class="govuk-heading-m">Site location</h2>
+
+    {# Resolve region display value #}
+    {% set regionMap = {
+      "east-midlands": "East Midlands",
+      "east-of-england": "East of England",
+      "london": "London",
+      "north-east": "North East",
+      "north-west": "North West",
+      "south-east": "South East",
+      "south-west": "South West",
+      "west-midlands": "West Midlands",
+      "yorkshire": "Yorkshire and the Humber"
+    } %}
+    {% set regionDisplay = regionMap[site.region] or site.region or "Not provided" %}
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: { text: "Local authority" },
+          value: { text: site.localAuthority or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "local authority" }]
+          }
+        },
+        {
+          key: { text: "Operating area" },
+          value: { text: site.operatingArea or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "operating area" }]
+          }
+        },
+        {
+          key: { text: "Region" },
+          value: { text: regionDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "region" }]
+          }
+        },
+        {
+          key: { text: "Postcode" },
+          value: { text: site.postcode or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "postcode" }]
+          }
+        },
+        {
+          key: { text: "X coordinate" },
+          value: { text: site.xCoordinate or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "X coordinate" }]
+          }
+        },
+        {
+          key: { text: "Y coordinate" },
+          value: { text: site.yCoordinate or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-2", text: "Change", visuallyHiddenText: "Y coordinate" }]
+          }
+        }
+      ]
+    }) }}
+
+    {# ── Processing and contractor (step 3) ─────────────────────────── #}
+    <h2 class="govuk-heading-m">Processing and contractor</h2>
+
+    {# Resolve processing route display value #}
+    {% if site.processingRoute == "acquisition-works" %}
+      {% set processingDisplay = "Acquisition and works" %}
+    {% elif site.processingRoute == "works-only" %}
+      {% set processingDisplay = "Works only" %}
+    {% elif site.processingRoute == "acquisition-only" %}
+      {% set processingDisplay = "Acquisition only" %}
+    {% else %}
+      {% set processingDisplay = site.processingRoute or "Not provided" %}
+    {% endif %}
+
+    {# Resolve regeneration display value #}
+    {% if site.regenerationSite == "yes" %}
+      {% set regenerationDisplay = "Yes" %}
+    {% elif site.regenerationSite == "no" %}
+      {% set regenerationDisplay = "No" %}
+    {% else %}
+      {% set regenerationDisplay = site.regenerationSite or "Not provided" %}
+    {% endif %}
+
+    {# Resolve type of contractor display value #}
+    {% if site.typeOfContractor == "in-house" %}
+      {% set contractorTypeDisplay = "In house contractor" %}
+    {% elif site.typeOfContractor == "external" %}
+      {% set contractorTypeDisplay = "External contractor" %}
+    {% elif site.typeOfContractor == "mixed" %}
+      {% set contractorTypeDisplay = "Mixed" %}
+    {% else %}
+      {% set contractorTypeDisplay = site.typeOfContractor or "Not provided" %}
+    {% endif %}
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: { text: "Processing route" },
+          value: { text: processingDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-3", text: "Change", visuallyHiddenText: "processing route" }]
+          }
+        },
+        {
+          key: { text: "Regeneration site" },
+          value: { text: regenerationDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-3", text: "Change", visuallyHiddenText: "regeneration site" }]
+          }
+        },
+        {
+          key: { text: "Type of contractor" },
+          value: { text: contractorTypeDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-3", text: "Change", visuallyHiddenText: "type of contractor" }]
+          }
+        },
+        {
+          key: { text: "Contractor name" },
+          value: { text: site.contractor or "Not provided" },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-3", text: "Change", visuallyHiddenText: "contractor name" }]
+          }
+        }
+      ]
+    }) }}
+
+    {# ── Milestones (step 4) ────────────────────────────────────────── #}
+    <h2 class="govuk-heading-m">Site milestones</h2>
+
+    {# Resolve ownership status display value #}
+    {% set ownershipMap = {
+      "conditional": "Conditional acquisition, land option or heads of terms",
+      "negotiations-underway": "Land purchase negotiations underway",
+      "identified": "Land identified but purchase negotiations not yet started",
+      "unconditional": "Unconditional acquisition of freehold or long leasehold interest"
+    } %}
+    {% set ownershipDisplay = ownershipMap[site.ownershipStatus] or site.ownershipStatus or "Not provided" %}
+
+    {# Resolve planning status display value #}
+    {% set planningMap = {
+      "detailed-no-steps": "Detailed planning approval granted, no further steps required",
+      "detailed-some-steps": "Detailed planning approval granted, some further steps required",
+      "outline-granted": "Outline planning approval granted",
+      "outline-submitted": "Outline planning submitted",
+      "detailed-submitted": "Detailed planning submitted",
+      "discussion": "Planning discussion underway with planning office",
+      "no-progress": "No progress yet on planning application"
+    } %}
+    {% set planningDisplay = planningMap[site.planningStatus] or site.planningStatus or "Not provided" %}
+
+    {# Resolve building contract status display value #}
+    {% set buildingMap = {
+      "unconditional-let": "Unconditional works contract let",
+      "conditional-let": "Conditional contract let or contractor identified but not yet in contract",
+      "tender": "Tender for works contract out for competition",
+      "not-begun": "Works contracting process not yet begun"
+    } %}
+    {% set buildingDisplay = buildingMap[site.buildingContractStatus] or site.buildingContractStatus or "Not provided" %}
+
+    {# Resolve start on site status display value #}
+    {% if site.startOnSiteStatus == "forecast" %}
+      {% set startDisplay = "Forecast" %}
+    {% elif site.startOnSiteStatus == "actual" %}
+      {% set startDisplay = "Actual" %}
+    {% else %}
+      {% set startDisplay = site.startOnSiteStatus or "Not provided" %}
+    {% endif %}
+
+    {# Format forecast completion date #}
+    {% if site.forecastCompletionDay and site.forecastCompletionMonth and site.forecastCompletionYear %}
+      {% set dateDisplay = site.forecastCompletionDay + " / " + site.forecastCompletionMonth + " / " + site.forecastCompletionYear %}
+    {% else %}
+      {% set dateDisplay = "Not provided" %}
+    {% endif %}
+
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: { text: "Ownership status" },
+          value: { text: ownershipDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-4", text: "Change", visuallyHiddenText: "ownership status" }]
+          }
+        },
+        {
+          key: { text: "Planning status" },
+          value: { text: planningDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-4", text: "Change", visuallyHiddenText: "planning status" }]
+          }
+        },
+        {
+          key: { text: "Building contract status" },
+          value: { text: buildingDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-4", text: "Change", visuallyHiddenText: "building contract status" }]
+          }
+        },
+        {
+          key: { text: "Start on site status" },
+          value: { text: startDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-4", text: "Change", visuallyHiddenText: "start on site status" }]
+          }
+        },
+        {
+          key: { text: "Forecast completion date" },
+          value: { text: dateDisplay },
+          actions: {
+            items: [{ href: "/sites-gds/add-3/step-4", text: "Change", visuallyHiddenText: "forecast completion date" }]
+          }
+        }
+      ]
+    }) }}
+
+    {# ── Submit ──────────────────────────────────────────────────────── #}
+    <h2 class="govuk-heading-m">Now add this site</h2>
+    <p class="govuk-body">By adding this site you are confirming that, to the best of your knowledge, the details you are providing are correct.</p>
+
+    <form method="post" action="/sites-gds/add-3/check-answers">
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Add site" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds-v3"
+        }) }}
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

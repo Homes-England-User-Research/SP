@@ -1,0 +1,143 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Site milestones - Add a new site - Step 4 of 4" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [
+    { text: "Sites", href: "/sites-gds-v3" },
+    { text: "Add a new site", href: "/sites-gds/add-3/step-1" }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Add a new site</span>
+    <h1 class="govuk-heading-l">Site milestones</h1>
+
+    <!-- Step 4: milestone statuses and forecast completion date.
+         Ownership, planning and building contract use selects because
+         their option text is very long (some 50+ characters) — radios
+         would create an unwieldy page. Start on site uses radios (2 options).
+         Date input uses the standard GDS date input component. -->
+    <form method="post" action="/sites-gds/add-3/step-4">
+
+      {{ govukSelect({
+        label: {
+          text: "Ownership status",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "The current land ownership status for this site"
+        },
+        id: "ownership-status-v3",
+        name: "ownership-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select a status" },
+          { value: "conditional", text: "Conditional acquisition, land option or heads of terms" },
+          { value: "negotiations-underway", text: "Land purchase negotiations underway" },
+          { value: "identified", text: "Land identified but purchase negotiations not yet started" },
+          { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest" }
+        ],
+        value: data['ownership-status'] or ""
+      }) }}
+
+      {{ govukSelect({
+        label: {
+          text: "Planning status",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "The current planning permission status"
+        },
+        id: "planning-status-v3",
+        name: "planning-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select a status" },
+          { value: "detailed-no-steps", text: "Detailed planning approval granted, no further steps required" },
+          { value: "detailed-some-steps", text: "Detailed planning approval granted, some further steps required" },
+          { value: "outline-granted", text: "Outline planning approval granted" },
+          { value: "outline-submitted", text: "Outline planning submitted" },
+          { value: "detailed-submitted", text: "Detailed planning submitted" },
+          { value: "discussion", text: "Planning discussion underway with planning office" },
+          { value: "no-progress", text: "No progress yet on planning application" }
+        ],
+        value: data['planning-status'] or ""
+      }) }}
+
+      {{ govukSelect({
+        label: {
+          text: "Building contract status",
+          classes: "govuk-label--s"
+        },
+        id: "building-contract-status-v3",
+        name: "building-contract-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select a status" },
+          { value: "unconditional-let", text: "Unconditional works contract let" },
+          { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract" },
+          { value: "tender", text: "Tender for works contract out for competition" },
+          { value: "not-begun", text: "Works contracting process not yet begun" }
+        ],
+        value: data['building-contract-status'] or ""
+      }) }}
+
+      {{ govukRadios({
+        name: "start-on-site-status",
+        fieldset: {
+          legend: {
+            text: "Start on site status",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        classes: "govuk-radios--inline",
+        items: [
+          { value: "forecast", text: "Forecast" },
+          { value: "actual", text: "Actual" }
+        ],
+        value: data['start-on-site-status'] or ""
+      }) }}
+
+      {{ govukDateInput({
+        id: "forecast-completion-date-v3",
+        namePrefix: "forecast-completion-date",
+        fieldset: {
+          legend: {
+            text: "Forecast practical completion date",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: { text: "For example, 27 3 2027" },
+        items: [
+          { name: "day",   classes: "govuk-input--width-2", value: data['forecast-completion-date-day'] or "" },
+          { name: "month", classes: "govuk-input--width-2", value: data['forecast-completion-date-month'] or "" },
+          { name: "year",  classes: "govuk-input--width-4", value: data['forecast-completion-date-year'] or "" }
+        ]
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds-v3"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

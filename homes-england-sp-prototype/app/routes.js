@@ -805,6 +805,194 @@ router.post('/sites-gds/add/step-2', function (req, res) {
   res.redirect('/sites-gds?success=true')
 })
 
+// =============================================================================
+// Sites (GDS v3) — landing page for Option 3 add-new-site flow
+// =============================================================================
+
+/**
+ * GET /sites-gds-v3
+ *
+ * Option 3 version of the Sites landing page. Identical to /sites-gds except
+ * the "Add new site" link points to the 4-step add-3 flow.
+ */
+router.get('/sites-gds-v3', function (req, res) {
+  var allSites = seedSites
+
+  var totalSites = allSites.length
+  var totalHomes = allSites.reduce(function (sum, s) { return sum + s.homes }, 0)
+  var completedSites = allSites.filter(function (s) { return s.status === 'Site completed' }).length
+
+  var page = parseInt(req.query.page, 10) || 1
+  var totalPages = Math.max(1, Math.ceil(allSites.length / SITES_PER_PAGE))
+  if (page > totalPages) page = totalPages
+  if (page < 1) page = 1
+
+  var start = (page - 1) * SITES_PER_PAGE
+  var pageSites = allSites.slice(start, start + SITES_PER_PAGE)
+
+  var paginationItems = []
+  for (var i = 1; i <= totalPages; i++) {
+    paginationItems.push({
+      number: i,
+      current: i === page,
+      href: '/sites-gds-v3?page=' + i
+    })
+  }
+
+  var pagination = {}
+  if (totalPages > 1) {
+    pagination.items = paginationItems
+    if (page > 1) {
+      pagination.previous = {
+        href: '/sites-gds-v3?page=' + (page - 1)
+      }
+    }
+    if (page < totalPages) {
+      pagination.next = {
+        href: '/sites-gds-v3?page=' + (page + 1)
+      }
+    }
+  }
+
+  res.render('sites-gds-v3/index', {
+    success: req.query.success === 'true',
+    sites: pageSites,
+    pagination: pagination,
+    totalSites: totalSites,
+    totalHomes: totalHomes,
+    completedSites: completedSites
+  })
+})
+
+// =============================================================================
+// Sites (GDS) — Option 3: improved add-new-site UX
+// =============================================================================
+
+/**
+ * GET /sites-gds/add-3/step-1
+ *
+ * Option 3 step 1 — Site details (ID, name, type, rural area).
+ * Shorter, focused pages with radios instead of selects for small option sets.
+ */
+router.get('/sites-gds/add-3/step-1', function (req, res) {
+  res.render('sites-gds/add-3/step-1')
+})
+
+/**
+ * POST /sites-gds/add-3/step-1
+ *
+ * Saves step 1 fields to session and redirects to step 2.
+ * Uses a separate session key (newSiteV3) to avoid conflicts.
+ */
+router.post('/sites-gds/add-3/step-1', function (req, res) {
+  req.session.data['newSiteV3'] = {
+    ...req.session.data['newSiteV3'],
+    siteId: req.body['site-id'],
+    siteName: req.body['site-name'],
+    typeOfSite: req.body['type-of-site'],
+    ruralArea: req.body['rural-area']
+  }
+  res.redirect('/sites-gds/add-3/step-2')
+})
+
+/**
+ * GET /sites-gds/add-3/step-2
+ *
+ * Option 3 step 2 — Site location (LA, operating area, region, postcode, coordinates).
+ */
+router.get('/sites-gds/add-3/step-2', function (req, res) {
+  res.render('sites-gds/add-3/step-2')
+})
+
+/**
+ * POST /sites-gds/add-3/step-2
+ */
+router.post('/sites-gds/add-3/step-2', function (req, res) {
+  req.session.data['newSiteV3'] = {
+    ...req.session.data['newSiteV3'],
+    localAuthority: req.body['local-authority'],
+    operatingArea: req.body['operating-area'],
+    region: req.body['region'],
+    postcode: req.body['postcode'],
+    xCoordinate: req.body['x-coordinate'],
+    yCoordinate: req.body['y-coordinate']
+  }
+  res.redirect('/sites-gds/add-3/step-3')
+})
+
+/**
+ * GET /sites-gds/add-3/step-3
+ *
+ * Option 3 step 3 — Processing route, regeneration, contractor details.
+ */
+router.get('/sites-gds/add-3/step-3', function (req, res) {
+  res.render('sites-gds/add-3/step-3')
+})
+
+/**
+ * POST /sites-gds/add-3/step-3
+ */
+router.post('/sites-gds/add-3/step-3', function (req, res) {
+  req.session.data['newSiteV3'] = {
+    ...req.session.data['newSiteV3'],
+    processingRoute: req.body['processing-route'],
+    regenerationSite: req.body['regeneration-site'],
+    typeOfContractor: req.body['type-of-contractor'],
+    contractor: req.body['contractor']
+  }
+  res.redirect('/sites-gds/add-3/step-4')
+})
+
+/**
+ * GET /sites-gds/add-3/step-4
+ *
+ * Option 3 step 4 — Site milestones (ownership, planning, building contract,
+ * start on site, forecast completion date).
+ */
+router.get('/sites-gds/add-3/step-4', function (req, res) {
+  res.render('sites-gds/add-3/step-4')
+})
+
+/**
+ * POST /sites-gds/add-3/step-4
+ */
+router.post('/sites-gds/add-3/step-4', function (req, res) {
+  req.session.data['newSiteV3'] = {
+    ...req.session.data['newSiteV3'],
+    ownershipStatus: req.body['ownership-status'],
+    planningStatus: req.body['planning-status'],
+    buildingContractStatus: req.body['building-contract-status'],
+    startOnSiteStatus: req.body['start-on-site-status'],
+    forecastCompletionDay: req.body['forecast-completion-date-day'],
+    forecastCompletionMonth: req.body['forecast-completion-date-month'],
+    forecastCompletionYear: req.body['forecast-completion-date-year']
+  }
+  res.redirect('/sites-gds/add-3/check-answers')
+})
+
+/**
+ * GET /sites-gds/add-3/check-answers
+ *
+ * GDS "Check your answers" pattern — summary list with change links.
+ * Passes the accumulated session data as a site object to the template.
+ */
+router.get('/sites-gds/add-3/check-answers', function (req, res) {
+  res.render('sites-gds/add-3/check-answers', {
+    site: req.session.data['newSiteV3'] || {}
+  })
+})
+
+/**
+ * POST /sites-gds/add-3/check-answers
+ *
+ * Final submission — marks the site as added and redirects to the
+ * sites landing page with a success banner.
+ */
+router.post('/sites-gds/add-3/check-answers', function (req, res) {
+  req.session.data['newSiteV3Added'] = true
+  res.redirect('/sites-gds-v3?success=true')
+})
+
 /**
  * GET /sites-gds/build-analysis
  *

@@ -1,0 +1,100 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Site details - Add a new site - Step 1 of 4" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [{ text: "Sites", href: "/sites-gds-v3" }]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Add a new site</span>
+    <h1 class="govuk-heading-l">Site details</h1>
+
+    <!-- Option 3: cleaner GDS form UX. Instead of 14 fields on one page,
+         the journey is split into 4 focused steps + check your answers.
+         Each step uses radios for small option sets (GDS best practice),
+         fieldsets for grouping, and hint text for context.
+         All components are standard GDS — zero custom CSS. -->
+    <form method="post" action="/sites-gds/add-3/step-1">
+
+      {{ govukInput({
+        label: {
+          text: "Site ID",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "The unique identifier for this site in IMS"
+        },
+        id: "site-id-v3",
+        name: "site-id",
+        classes: "govuk-input--width-10",
+        value: data['site-id'] or ""
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Site name",
+          classes: "govuk-label--s"
+        },
+        id: "site-name-v3",
+        name: "site-name",
+        classes: "govuk-!-width-two-thirds",
+        value: data['site-name'] or ""
+      }) }}
+
+      {{ govukRadios({
+        name: "type-of-site",
+        fieldset: {
+          legend: {
+            text: "Type of site",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          { value: "brownfield", text: "Brownfield" },
+          { value: "greenfield", text: "Greenfield" },
+          { value: "mixed", text: "Mixed" }
+        ],
+        value: data['type-of-site'] or ""
+      }) }}
+
+      {{ govukRadios({
+        name: "rural-area",
+        fieldset: {
+          legend: {
+            text: "Is the land in a rural area?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        classes: "govuk-radios--inline",
+        items: [
+          { value: "yes", text: "Yes" },
+          { value: "no", text: "No" }
+        ],
+        value: data['rural-area'] or ""
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds-v3"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

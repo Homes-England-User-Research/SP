@@ -1,0 +1,129 @@
+{% extends "layouts/sites-gds.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Site location - Add a new site - Step 2 of 4" %}
+
+{% block content %}
+
+{{ govukBreadcrumbs({
+  items: [
+    { text: "Sites", href: "/sites-gds-v3" },
+    { text: "Add a new site", href: "/sites-gds/add-3/step-1" }
+  ]
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Add a new site</span>
+    <h1 class="govuk-heading-l">Site location</h1>
+
+    <!-- Step 2: location and administrative area fields.
+         Region uses a select because there are 9 options — too many for radios.
+         Postcode and coordinates use narrow input widths per GDS sizing guidance. -->
+    <form method="post" action="/sites-gds/add-3/step-2">
+
+      {{ govukInput({
+        label: {
+          text: "Local authority",
+          classes: "govuk-label--s"
+        },
+        id: "local-authority-v3",
+        name: "local-authority",
+        classes: "govuk-!-width-two-thirds",
+        value: data['local-authority'] or ""
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Operating area",
+          classes: "govuk-label--s"
+        },
+        id: "operating-area-v3",
+        name: "operating-area",
+        classes: "govuk-!-width-two-thirds",
+        value: data['operating-area'] or ""
+      }) }}
+
+      {{ govukSelect({
+        label: {
+          text: "Region",
+          classes: "govuk-label--s"
+        },
+        id: "region-v3",
+        name: "region",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "Select a region" },
+          { value: "east-midlands", text: "East Midlands" },
+          { value: "east-of-england", text: "East of England" },
+          { value: "london", text: "London" },
+          { value: "north-east", text: "North East" },
+          { value: "north-west", text: "North West" },
+          { value: "south-east", text: "South East" },
+          { value: "south-west", text: "South West" },
+          { value: "west-midlands", text: "West Midlands" },
+          { value: "yorkshire", text: "Yorkshire and the Humber" }
+        ],
+        value: data['region'] or ""
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Postcode",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "Optional. For example, SW1A 2AA"
+        },
+        id: "postcode-v3",
+        name: "postcode",
+        classes: "govuk-input--width-10",
+        value: data['postcode'] or ""
+      }) }}
+
+      <fieldset class="govuk-fieldset govuk-!-margin-bottom-6">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+          Grid coordinates
+        </legend>
+        <div id="coordinates-hint" class="govuk-hint">
+          Optional. Easting (X) and northing (Y) OS grid references if known.
+        </div>
+
+        {{ govukInput({
+          label: { text: "X coordinate (easting)" },
+          id: "x-coordinate-v3",
+          name: "x-coordinate",
+          classes: "govuk-input--width-10",
+          attributes: { "aria-describedby": "coordinates-hint" },
+          value: data['x-coordinate'] or ""
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Y coordinate (northing)" },
+          id: "y-coordinate-v3",
+          name: "y-coordinate",
+          classes: "govuk-input--width-10",
+          value: data['y-coordinate'] or ""
+        }) }}
+      </fieldset>
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites-gds-v3"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
