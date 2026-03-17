@@ -1,0 +1,537 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% set pageName = phase.phaseDetails %}
+{% set isSubmitted = phase.status == 'submitted' %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<span class="govuk-caption-xl">{{ site.siteName }} completion</span>
+<h1 class="govuk-heading-xl">{{ phase.phaseDetails }}</h1>
+
+{# ── Summary list header ─────────────────────────────────────────── #}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-8",
+      rows: [
+        {
+          key: { text: "Phase status" },
+          value: {
+            html: govukTag({ text: "Submitted", classes: "govuk-tag--green" }) if isSubmitted else govukTag({ text: "In progress", classes: "govuk-tag--blue" })
+          }
+        },
+        {
+          key: { text: "Grant funded homes" },
+          value: { text: homesCount }
+        },
+        {
+          key: { text: "Phase ID" },
+          value: { text: phase.id }
+        }
+      ]
+    }) }}
+  </div>
+</div>
+
+{# ── Tab 1: Phase details ────────────────────────────────────────── #}
+{% set phaseDetailsHtml %}
+  <h2 class="govuk-heading-m">Phase details</h2>
+
+  {% if isSubmitted %}
+    {# Read-only view when submitted #}
+    {{ govukSummaryList({
+      rows: [
+        { key: { text: "Phase name" }, value: { text: phase.phaseDetails or "—" } },
+        {
+          key: { text: "Practical completion date" },
+          value: { text: (phase.practicalCompletionDate.day + "/" + phase.practicalCompletionDate.month + "/" + phase.practicalCompletionDate.year) if phase.practicalCompletionDate.day else "—" }
+        },
+        { key: { text: "Owner" }, value: { text: phase.owner or "—" } },
+        { key: { text: "Contractor" }, value: { text: phase.contractor or "—" } }
+      ]
+    }) }}
+  {% else %}
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/phase-details">
+
+      {{ govukInput({
+        label: { text: "Phase name" },
+        id: "phase-name",
+        name: "phase-details",
+        value: phase.phaseDetails,
+        classes: "govuk-!-width-two-thirds"
+      }) }}
+
+      {{ govukDateInput({
+        id: "practical-completion-date",
+        namePrefix: "practical-completion-date",
+        fieldset: {
+          legend: { text: "Practical completion date" }
+        },
+        hint: { text: "For example, 27 3 2007" },
+        items: [
+          { name: "day", classes: "govuk-input--width-2", value: phase.practicalCompletionDate.day if phase.practicalCompletionDate else "" },
+          { name: "month", classes: "govuk-input--width-2", value: phase.practicalCompletionDate.month if phase.practicalCompletionDate else "" },
+          { name: "year", classes: "govuk-input--width-4", value: phase.practicalCompletionDate.year if phase.practicalCompletionDate else "" }
+        ]
+      }) }}
+
+      <h3 class="govuk-heading-s govuk-!-margin-top-8">Owner and contractor</h3>
+
+      {{ govukSelect({
+        label: { text: "Who is the owner of the homes at the time of completion?" },
+        id: "owner",
+        name: "owner",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "Choose owner and landlord", disabled: true, selected: not phase.owner },
+          { value: "Ealing Home Society Limited", text: "Ealing Home Society Limited", selected: phase.owner == "Ealing Home Society Limited" },
+          { value: "Abara Group", text: "Abara Group", selected: phase.owner == "Abara Group" },
+          { value: "Peabody Trust", text: "Peabody Trust", selected: phase.owner == "Peabody Trust" },
+          { value: "L&Q", text: "L&Q", selected: phase.owner == "L&Q" },
+          { value: "Metropolitan Thames Valley", text: "Metropolitan Thames Valley", selected: phase.owner == "Metropolitan Thames Valley" }
+        ]
+      }) }}
+
+      {{ govukSelect({
+        label: { text: "Contractor" },
+        id: "contractor",
+        name: "contractor",
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "Choose a contractor", disabled: true, selected: not phase.contractor },
+          { value: "Xxxxxxxxx xxxxxxx", text: "Xxxxxxxxx xxxxxxx", selected: phase.contractor == "Xxxxxxxxx xxxxxxx" },
+          { value: "Barratt Developments", text: "Barratt Developments", selected: phase.contractor == "Barratt Developments" },
+          { value: "Countryside Partnerships", text: "Countryside Partnerships", selected: phase.contractor == "Countryside Partnerships" },
+          { value: "Lovell Partnerships", text: "Lovell Partnerships", selected: phase.contractor == "Lovell Partnerships" }
+        ]
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save" }) }}
+        <a class="govuk-button govuk-button--secondary" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}">Cancel changes</a>
+      </div>
+
+    </form>
+  {% endif %}
+{% endset %}
+
+{# ── Tab 2: Tenure home type list ────────────────────────────────── #}
+{% set tenureHomeTypeListHtml %}
+  <h2 class="govuk-heading-m">Tenure home type list</h2>
+
+  {% if enrichedTHTs.length > 0 %}
+    <!-- Table uses completions-tht-table class to prevent column wrapping,
+         allowing the browser to auto-size columns to fit content. -->
+    <table class="govuk-table govuk-table--small-text-until-tablet completions-tht-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">ID</th>
+          <th scope="col" class="govuk-table__header">Template description</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+          <th scope="col" class="govuk-table__header">Tenure type</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Number of homes</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total grant attributable</th>
+          {% if not isSubmitted %}
+            <th scope="col" class="govuk-table__header"></th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for tht in enrichedTHTs %}
+          {% set hasRentAndSales = tht.rentAndSales and (tht.rentAndSales.marketValuePerHome or tht.rentAndSales.proposedRentPerWeek) %}
+          {% set hasAddresses = tht.addresses and tht.addresses.length > 0 %}
+          {% set isValid = hasRentAndSales and hasAddresses %}
+          {% set addressCount = tht.addresses.length if tht.addresses else 0 %}
+          {% set grantAmount = addressCount * 10000 %}
+
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">
+              <a class="govuk-link" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/{{ tht.id }}/rent-and-sales">{{ tht.id }}</a>
+            </td>
+            <td class="govuk-table__cell">{{ tht.templateDescription }}</td>
+            <td class="govuk-table__cell">
+              {% if isValid %}
+                {{ govukTag({ text: "Valid", classes: "govuk-tag--green" }) }}
+              {% else %}
+                {{ govukTag({ text: "Incomplete", classes: "govuk-tag--yellow" }) }}
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell">{{ tht.tenureType }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ addressCount }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">£{{ grantAmount | toLocaleString }}</td>
+            {% if not isSubmitted %}
+              <td class="govuk-table__cell">
+                <a class="govuk-link completions-delete-link" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/{{ tht.id }}/delete" style="color: #d4351c;">Delete</a>
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    {{ govukTable({
+      head: [
+        { text: "ID" },
+        { text: "Template description" },
+        { text: "Status" },
+        { text: "Tenure type" },
+        { text: "Number of homes", format: "numeric" },
+        { text: "Total grant attributable", format: "numeric" }
+      ],
+      rows: [
+        [{ html: "No tenure home types added yet", colspan: 6 }]
+      ]
+    }) }}
+  {% endif %}
+
+  {% if not isSubmitted %}
+    <a class="govuk-button govuk-button--secondary" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/add">
+      Add tenure home type
+    </a>
+  {% endif %}
+{% endset %}
+
+{# ── Tab 3: Phase costs ──────────────────────────────────────────── #}
+{% set phaseCostsHtml %}
+  <h2 class="govuk-heading-m">Phase costs</h2>
+
+  {% if isSubmitted %}
+    {{ govukSummaryList({
+      rows: [
+        { key: { text: "Gross development value" }, value: { text: "£" + phase.costs.grossDevelopmentValue if phase.costs.grossDevelopmentValue else "—" } },
+        { key: { text: "Acquisition costs" }, value: { text: "£" + phase.costs.acquisitionCosts if phase.costs.acquisitionCosts else "—" } },
+        { key: { text: "Work costs" }, value: { text: "£" + phase.costs.workCosts if phase.costs.workCosts else "—" } },
+        { key: { text: "On costs" }, value: { text: "£" + phase.costs.onCosts if phase.costs.onCosts else "—" } },
+        { key: { text: "Total costs" }, value: { text: "£" + totalCosts } }
+      ]
+    }) }}
+  {% else %}
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/phase-costs">
+
+      <h3 class="govuk-heading-s">Development value</h3>
+
+      {{ govukInput({
+        label: { text: "Gross development value" },
+        id: "gross-development-value",
+        name: "gross-development-value",
+        value: phase.costs.grossDevelopmentValue if phase.costs else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      <h3 class="govuk-heading-s">Cost breakdown</h3>
+
+      {{ govukInput({
+        label: { text: "Acquisition costs" },
+        id: "acquisition-costs",
+        name: "acquisition-costs",
+        value: phase.costs.acquisitionCosts if phase.costs else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Work costs" },
+        id: "work-costs",
+        name: "work-costs",
+        value: phase.costs.workCosts if phase.costs else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "On costs" },
+        id: "on-costs",
+        name: "on-costs",
+        value: phase.costs.onCosts if phase.costs else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      <!-- Total costs: derived read-only value (acquisition + work + on costs) -->
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="total-costs-display">Total costs</label>
+        <p class="govuk-body govuk-!-font-weight-bold" id="total-costs-display"><span id="total-costs-value" aria-live="polite">£{{ totalCosts }}</span></p>
+      </div>
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save" }) }}
+        <a class="govuk-button govuk-button--secondary" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}">Cancel changes</a>
+      </div>
+
+    </form>
+  {% endif %}
+{% endset %}
+
+{# ── Tab 4: Phase contributions ──────────────────────────────────── #}
+{% set phaseContributionsHtml %}
+  <h2 class="govuk-heading-m">Phase contributions</h2>
+
+  {% if isSubmitted %}
+    {{ govukSummaryList({
+      rows: [
+        { key: { text: "Gross development value" }, value: { text: "£" + phase.contributions.grossDevelopmentValue if phase.contributions.grossDevelopmentValue else "—" } },
+        { key: { text: "Total baseline grant" }, value: { text: "£" + phase.contributions.totalBaselineGrant if phase.contributions.totalBaselineGrant else "—" } },
+        { key: { text: "Total community led / rural grant rate" }, value: { text: "£" + phase.contributions.communityLedRuralGrant if phase.contributions.communityLedRuralGrant else "—" } },
+        { key: { text: "Provider's own resources" }, value: { text: "£" + phase.contributions.providersOwnResources if phase.contributions.providersOwnResources else "—" } },
+        { key: { text: "Income from shared ownership sales" }, value: { text: "£" + phase.contributions.incomeFromSharedOwnershipSales if phase.contributions.incomeFromSharedOwnershipSales else "—" } },
+        { key: { text: "Loan supportable from rental income" }, value: { text: "£" + phase.contributions.loanSupportableFromRentalIncome if phase.contributions.loanSupportableFromRentalIncome else "—" } },
+        { key: { text: "RCGF (calculated from addresses)" }, value: { text: "£" + rcgfTotal } },
+        { key: { text: "DPF" }, value: { text: "£" + phase.contributions.dpf if phase.contributions.dpf else "—" } },
+        { key: { text: "Other public subsidy" }, value: { text: "£" + phase.contributions.otherPublicSubsidy if phase.contributions.otherPublicSubsidy else "—" } },
+        { key: { text: "Other" }, value: { text: "£" + phase.contributions.other if phase.contributions.other else "—" } },
+        { key: { text: "Total contributions" }, value: { text: "£" + totalContributions } }
+      ]
+    }) }}
+  {% else %}
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/phase-contributions">
+
+      <h3 class="govuk-heading-s">Capital contributions</h3>
+
+      {{ govukInput({
+        label: { text: "Gross development value" },
+        id: "contributions-gdv",
+        name: "contributions-gdv",
+        value: phase.contributions.grossDevelopmentValue if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Total baseline grant" },
+        id: "total-baseline-grant",
+        name: "total-baseline-grant",
+        value: phase.contributions.totalBaselineGrant if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Total community led / rural grant rate" },
+        id: "community-led-rural-grant",
+        name: "community-led-rural-grant",
+        value: phase.contributions.communityLedRuralGrant if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Provider's own resources" },
+        id: "providers-own-resources",
+        name: "providers-own-resources",
+        value: phase.contributions.providersOwnResources if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Income from shared ownership sales" },
+        id: "income-shared-ownership-sales",
+        name: "income-shared-ownership-sales",
+        value: phase.contributions.incomeFromSharedOwnershipSales if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Loan supportable from rental income" },
+        id: "loan-supportable-rental-income",
+        name: "loan-supportable-rental-income",
+        value: phase.contributions.loanSupportableFromRentalIncome if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      <!-- RCGF: read-only, calculated from address-level RCGF values -->
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="rcgf-display">RCGF (calculated from addresses)</label>
+        <p class="govuk-body govuk-!-font-weight-bold" id="rcgf-display" aria-live="polite">£{{ rcgfTotal }}</p>
+      </div>
+
+      {{ govukInput({
+        label: { text: "DPF" },
+        id: "dpf",
+        name: "dpf",
+        value: phase.contributions.dpf if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Other public subsidy" },
+        id: "other-public-subsidy",
+        name: "other-public-subsidy",
+        value: phase.contributions.otherPublicSubsidy if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      {{ govukInput({
+        label: { text: "Other" },
+        id: "other-contributions",
+        name: "other-contributions",
+        value: phase.contributions.other if phase.contributions else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false
+      }) }}
+
+      <!-- Total contributions: derived read-only value -->
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="total-contributions-display">Total contributions</label>
+        <p class="govuk-body govuk-!-font-weight-bold" id="total-contributions-display" aria-live="polite">£{{ totalContributions }}</p>
+      </div>
+
+      {% if totalContributions > 0 and totalContributions != totalCosts %}
+        {{ govukWarningText({
+          text: "Total contributions (£" + totalContributions + ") does not match total costs (£" + totalCosts + "). These must match before you can submit.",
+          iconFallbackText: "Warning"
+        }) }}
+      {% endif %}
+
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save" }) }}
+        <a class="govuk-button govuk-button--secondary" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}">Cancel changes</a>
+      </div>
+
+    </form>
+  {% endif %}
+{% endset %}
+
+{# ── Tab 5: Review and submit ───────────────────────────────────── #}
+{% set reviewAndSubmitHtml %}
+  <h2 class="govuk-heading-m">Review and submit</h2>
+
+  {% if isSubmitted %}
+    {{ govukWarningText({
+      text: "This phase has been submitted. To make changes, you must unsubmit it first.",
+      iconFallbackText: "Warning"
+    }) }}
+
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/unsubmit">
+      {{ govukButton({
+        text: "Unsubmit phase",
+        classes: "govuk-button--secondary"
+      }) }}
+    </form>
+  {% else %}
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ govukSummaryList({
+      rows: [
+        {
+          key: { text: "Phase name" },
+          value: { html: govukTag({ text: "Complete", classes: "govuk-tag--green" }) if phaseDetailsComplete else govukTag({ text: "Incomplete", classes: "govuk-tag--red" }) }
+        },
+        {
+          key: { text: "Tenure home type list" },
+          value: { html: govukTag({ text: "Complete (" + homesCount + " homes)", classes: "govuk-tag--green completions-tag-nowrap" }) if tenureHomeTypesComplete else govukTag({ text: "Incomplete", classes: "govuk-tag--red" }) }
+        },
+        {
+          key: { text: "Phase costs" },
+          value: { html: govukTag({ text: "Complete", classes: "govuk-tag--green" }) if phaseCostsComplete else govukTag({ text: "Incomplete", classes: "govuk-tag--red" }) }
+        },
+        {
+          key: { text: "Phase contributions" },
+          value: { html: govukTag({ text: "Complete", classes: "govuk-tag--green" }) if phaseContributionsComplete else govukTag({ text: "Totals don't match", classes: "govuk-tag--red" }) }
+        }
+      ]
+    }) }}
+    </div>
+    </div>
+
+    {% if allComplete %}
+      <p class="govuk-body">All sections are complete. Review the information above before submitting this phase to Homes England.</p>
+      <a class="govuk-button" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}/submit">
+        Submit phase
+      </a>
+    {% else %}
+      <button class="govuk-button govuk-button--disabled" aria-disabled="true" disabled>
+        Submit phase
+      </button>
+      <p class="govuk-hint">Complete all sections above before submitting.</p>
+    {% endif %}
+  {% endif %}
+{% endset %}
+
+{# ── Tabs ─────────────────────────────────────────────────────────── #}
+{{ govukTabs({
+  items: [
+    { label: "Phase details", id: "phase-details", panel: { html: phaseDetailsHtml } },
+    { label: "Tenure home type list", id: "tenure-home-type-list", panel: { html: tenureHomeTypeListHtml } },
+    { label: "Phase costs", id: "phase-costs", panel: { html: phaseCostsHtml } },
+    { label: "Phase contributions", id: "phase-contributions", panel: { html: phaseContributionsHtml } },
+    { label: "Review and submit", id: "review-and-submit", panel: { html: reviewAndSubmitHtml } }
+  ]
+}) }}
+
+{% endblock %}
+
+{% block pageScripts %}
+<script>
+  // Live calculation of total costs (acquisition + work + on costs)
+  ;(function () {
+    var acquisitionInput = document.getElementById('acquisition-costs')
+    var workInput = document.getElementById('work-costs')
+    var onInput = document.getElementById('on-costs')
+    var totalDisplay = document.getElementById('total-costs-value')
+
+    if (!acquisitionInput || !totalDisplay) return
+
+    function recalculateCosts() {
+      var total = (parseFloat(acquisitionInput.value) || 0) +
+        (parseFloat(workInput.value) || 0) +
+        (parseFloat(onInput.value) || 0)
+      totalDisplay.textContent = '£' + total
+    }
+
+    acquisitionInput.addEventListener('input', recalculateCosts)
+    workInput.addEventListener('input', recalculateCosts)
+    onInput.addEventListener('input', recalculateCosts)
+  })()
+
+</script>
+{% endblock %}

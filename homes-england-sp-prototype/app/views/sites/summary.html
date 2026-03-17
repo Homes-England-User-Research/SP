@@ -99,10 +99,13 @@
       },
       {
         title: { text: "Completions" },
-        href: "#",
+        href: "/sites/" + site.siteId + "/completions",
         hint: { text: "Requires: Start on Site must be achieved first" },
         status: {
-          text: "Cannot start yet"
+          tag: {
+            text: "Not started",
+            classes: "govuk-tag--blue"
+          }
         }
       }
     ]
@@ -120,7 +123,7 @@
       id: "site-id",
       name: "site-id",
       value: site.siteId,
-      classes: "govuk-!-width-full"
+      classes: "govuk-input--width-10"
     }) }}
 
     {{ govukInput({
@@ -128,14 +131,14 @@
       id: "site-name",
       name: "site-name",
       value: site.siteName,
-      classes: "govuk-!-width-full"
+      classes: "govuk-!-width-two-thirds"
     }) }}
 
     {{ govukSelect({
       label: { text: "Type of site" },
       id: "type-of-site",
       name: "type-of-site",
-      classes: "govuk-!-width-full",
+      classes: "govuk-!-width-two-thirds",
       items: [
         { value: "", text: "---Please select---" },
         { value: "brownfield", text: "Brownfield" },
@@ -148,7 +151,7 @@
       label: { text: "Is the land in a rural area?" },
       id: "rural-area",
       name: "rural-area",
-      classes: "govuk-!-width-full",
+      classes: "govuk-!-width-one-third",
       items: [
         { value: "", text: "---Please select---" },
         { value: "yes", text: "Yes" },
@@ -161,7 +164,7 @@
       id: "local-authority",
       name: "local-authority",
       value: site.localAuthority,
-      classes: "govuk-!-width-full"
+      classes: "govuk-!-width-two-thirds"
     }) }}
 
     {{ govukInput({
@@ -169,14 +172,14 @@
       id: "operating-area",
       name: "operating-area",
       value: site.operatingArea or "",
-      classes: "govuk-!-width-full"
+      classes: "govuk-!-width-two-thirds"
     }) }}
 
     {{ govukSelect({
       label: { text: "Region" },
       id: "region",
       name: "region",
-      classes: "govuk-!-width-full",
+      classes: "govuk-!-width-two-thirds",
       items: [
         { value: "", text: "---Please select---" },
         { value: "east-midlands", text: "East Midlands", selected: site.region == "East Midlands" },
@@ -195,7 +198,7 @@
       label: { text: "Processing route" },
       id: "processing-route",
       name: "processing-route",
-      classes: "govuk-!-width-full",
+      classes: "govuk-!-width-two-thirds",
       items: [
         { value: "", text: "---Please select---" },
         { value: "acquisition-works", text: "Acquisition & Works", selected: site.processingRoute == "acquisition-works" },
@@ -208,7 +211,7 @@
       label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
       id: "regeneration-site",
       name: "regeneration-site",
-      classes: "govuk-!-width-full",
+      classes: "govuk-!-width-one-third",
       items: [
         { value: "", text: "---Please select---" },
         { value: "yes", text: "Yes" },
@@ -319,7 +322,7 @@
 
 {# ── Tab: Total housing output costs ─────────────────────────────── #}
 {% set totalHousingCostsHtml %}
-  <h2 class="govuk-heading-m">Total housing outputs costs</h2>
+  <h2 class="govuk-heading-m">Total housing output costs</h2>
 
   {{ govukTable({
     head: [
@@ -332,7 +335,7 @@
     ],
     rows: [
       [
-        { text: "2026/2027" },
+        { html: "<strong>2026/2027</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£2,601,361", format: "numeric" },
@@ -340,7 +343,7 @@
         { text: "£3,090,415", format: "numeric" }
       ],
       [
-        { text: "2027/2028" },
+        { html: "<strong>2027/2028</strong>" },
         { text: "£1,320,165", format: "numeric" },
         { text: "£4,247,928", format: "numeric" },
         { text: "£1,093,775", format: "numeric" },
@@ -348,7 +351,7 @@
         { text: "£7,756,254", format: "numeric" }
       ],
       [
-        { text: "2028/2029" },
+        { html: "<strong>2028/2029</strong>" },
         { text: "£454,328", format: "numeric" },
         { text: "£25,832", format: "numeric" },
         { text: "£66,690", format: "numeric" },
@@ -356,7 +359,7 @@
         { text: "£550,332", format: "numeric" }
       ],
       [
-        { text: "2029/2030" },
+        { html: "<strong>2029/2030</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
@@ -364,7 +367,7 @@
         { text: "£0", format: "numeric" }
       ],
       [
-        { text: "2030/2031" },
+        { html: "<strong>2030/2031</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
@@ -372,12 +375,12 @@
         { text: "£0", format: "numeric" }
       ],
       [
-        { text: "Site total" },
+        { html: "<strong>Site total</strong>" },
         { text: "", format: "numeric" },
         { text: "", format: "numeric" },
         { text: "", format: "numeric" },
         { text: "", format: "numeric" },
-        { text: "£11,411,337", format: "numeric" }
+        { html: "<strong>£11,411,337</strong>", format: "numeric" }
       ]
     ]
   }) }}

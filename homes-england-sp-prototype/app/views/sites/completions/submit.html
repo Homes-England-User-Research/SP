@@ -1,0 +1,145 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageName = "Submit completion for " + phase.phaseDetails %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions/" + phase.id + "#review-and-submit"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{% if errors %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">{{ site.siteName }} completion</span>
+    <h1 class="govuk-heading-l">Submit completion for {{ phase.phaseDetails }}</h1>
+
+    {# ── Section 1: Phase details (read-only) ────────────────────── #}
+    {{ govukSummaryList({
+      rows: [
+        { key: { text: "Phase name" }, value: { text: phase.phaseDetails or "—" } },
+        {
+          key: { text: "Practical completion date" },
+          value: { text: (phase.practicalCompletionDate.day + "/" + phase.practicalCompletionDate.month + "/" + phase.practicalCompletionDate.year) if phase.practicalCompletionDate.day else "—" }
+        },
+        { key: { text: "Owner of homes" }, value: { text: phase.owner or "—" } },
+        { key: { text: "Contractor" }, value: { text: phase.contractor or "—" } }
+      ]
+    }) }}
+
+    {# ── Section 2: Homes and total grant reported ───────────────── #}
+    <h2 class="govuk-heading-m">Homes and total grant reported</h2>
+
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Tenure type</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Number of homes</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Total grant attributable</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% set totalHomes = 0 %}
+        {% set totalGrant = 0 %}
+        {% for tht in phase.tenureHomeTypes %}
+          {% set addressCount = tht.addresses.length if tht.addresses else 0 %}
+          {% set grantAmount = addressCount * 10000 %}
+          {% set totalHomes = totalHomes + addressCount %}
+          {% set totalGrant = totalGrant + grantAmount %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ tht.tenureType }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ addressCount }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric">£{{ grantAmount | toLocaleString }}</td>
+          </tr>
+        {% endfor %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell"><strong>Total</strong></td>
+          <td class="govuk-table__cell govuk-table__cell--numeric"><strong>{{ totalHomes }}</strong></td>
+          <td class="govuk-table__cell govuk-table__cell--numeric"><strong>£{{ totalGrant | toLocaleString }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    {# ── Section 3: Further phases ───────────────────────────────── #}
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/submit">
+
+      {{ govukRadios({
+        name: "further-phases",
+        fieldset: {
+          legend: {
+            text: "Further phases to report?",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        items: [
+          {
+            value: "final",
+            text: "I confirm this is the only (or final) completion phase for this site",
+            checked: (values["further-phases"] if values) == "final"
+          },
+          {
+            value: "more",
+            text: "There are further completion phases for this site",
+            checked: (values["further-phases"] if values) == "more"
+          }
+        ],
+        errorMessage: { text: "Select whether there are further phases" } if errors and not (values["further-phases"] if values)
+      }) }}
+
+      {# ── Section 4: Certification ──────────────────────────────── #}
+      <h2 class="govuk-heading-m">Certification</h2>
+
+      {{ govukCheckboxes({
+        name: "certification",
+        errorMessage: { text: "You must confirm the certification" } if errors and not (values["certification"] if values),
+        items: [
+          {
+            value: "confirmed",
+            text: "This confirmation is given by the Grant Recipient Senior Officer on behalf of the Grant Recipient and (where applicable) the Relevant Delivery Partner, and confirms (after proper enquiry as has been made) in submitting the Proposed Scheme on " + site.siteName + " for approval by Homes England, the terms set out in Part 2 of Schedule 4 to the Grant Agreement, have been met. Words and phrases defined in the Grant Agreement are acknowledged to have the same meanings when used here.",
+            checked: (values["certification"] if values) == "confirmed"
+          }
+        ]
+      }) }}
+
+      {{ govukTextarea({
+        label: {
+          text: "Comments",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "Optional — add any additional information for Homes England."
+        },
+        id: "comments",
+        name: "comments",
+        value: values["comments"] if values else ""
+      }) }}
+
+      {{ govukButton({
+        text: "Submit"
+      }) }}
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

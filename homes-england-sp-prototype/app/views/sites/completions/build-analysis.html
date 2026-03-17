@@ -1,0 +1,339 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% set pageName = "Build analysis - Completions" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Home", href: "/" },
+      { text: "Sites", href: "/sites" },
+      { text: site.siteName, href: "/sites/" + site.siteId },
+      { text: "Completions", href: "/sites/" + site.siteId + "/completions" },
+      { text: "Build analysis" }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Completions</span>
+    <h1 class="govuk-heading-xl">Build analysis</h1>
+
+    <p class="govuk-body-l">
+      This page documents how the Completions journey was built, how it aligns
+      with the GOV.UK Design System and WCAG 2.1 AA, all custom departures with
+      their justifications, and predicted accessibility tool outcomes.
+    </p>
+
+    {# -- Overview --------------------------------------------------------- #}
+    <h2 class="govuk-heading-l">Overview</h2>
+    <p class="govuk-body">
+      The Completions journey is a 7-screen flow where SP users record phased
+      home completions after practical completion. Users create completion
+      phases, assign tenure home types from the programme's allocated home type
+      list, enter rent and sales data per tenure type, record individual home
+      addresses with RCGF values, enter phase-level costs and contributions,
+      and submit for Homes England review.
+    </p>
+    <p class="govuk-body">
+      The journey follows the IMS (Investment Management System) pattern of
+      dense, data-rich pages with multiple related fields per screen. This is
+      intentional for SP professional users who are experienced data entry
+      specialists. All GDS components used are unmodified unless listed under
+      Custom departures below.
+    </p>
+
+    {# -- Pages covered ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Pages covered</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="/sites/1001/completions">Completions landing</a> -phase table, action links, success banner, pagination</li>
+      <li><a class="govuk-link" href="/sites/1001/completions/add">Add a completion phase</a> -phase details input, practical completion date</li>
+      <li>Phase hub -4-tab dashboard (phase details form, tenure home type list table, phase costs form, phase contributions form), readiness check, submit control</li>
+      <li>Add tenure home type -allocated home type select with progressive reveal, tenure type select, conditional rent terms radios</li>
+      <li>Rent and sales -tenure-type-conditional fields (Shared Ownership: 5 fields, Affordable/Social Rent: 2 fields, Rent to Buy: 3 fields)</li>
+      <li>Add home addresses -inline editable table with dynamic row management, RCGF calculation</li>
+      <li>Submit phase -read-only review, further phases radios, certification checkbox, comments</li>
+    </ul>
+
+    {# -- GDS alignment ---------------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">GDS alignment</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/breadcrumbs/">Breadcrumbs</a> -<code>govukBreadcrumbs()</code>, unmodified. Used on the completions landing page with Sites > [Site name] hierarchy.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/back-link/">Back link</a> -<code>govukBackLink()</code>, unmodified. Used on all sub-pages (add phase, phase hub, tenure home type screens, submit) to provide escape back to the parent screen.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/notification-banner/">Notification banner</a> -<code>govukNotificationBanner()</code> with <code>type: "success"</code>, unmodified. Shown on the landing page after successful phase submission. Also used on the rent and sales page for the conversion note.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/table/">Table</a> -<code>govukTable()</code> and manual <code>govuk-table</code> markup throughout. <code>scope="col"</code> on all column headers. <code>govuk-table__header--numeric</code> and <code>govuk-table__cell--numeric</code> for numeric columns (homes count, grant amounts).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tag/">Tag</a> -<code>govukTag()</code> with colour variants (<code>govuk-tag--blue</code> for in progress, <code>govuk-tag--green</code> for submitted/complete, <code>govuk-tag--yellow</code> for incomplete, <code>govuk-tag--red</code> for readiness check failures). Text always accompanies colour (WCAG 1.4.1).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/tabs/">Tabs</a> -<code>govukTabs()</code>, unmodified. Phase hub uses 4 tabs: Phase details, Tenure home type list, Phase costs, Phase contributions. Auto-initialised by govuk-frontend with full keyboard support (arrow key navigation, Enter/Space activation).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/summary-list/">Summary list</a> -<code>govukSummaryList()</code>, unmodified. Used for: phase header (status, homes, ID), read-only submitted state on all 4 tabs, derived totals (total costs, RCGF, total contributions) displayed as key-value pairs within forms, and the readiness check section.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/input/">Text input</a> -<code>govukInput()</code>, unmodified. Used throughout with <code>prefix: { text: "£" }</code> for currency fields and <code>suffix: { text: "%" }</code> for percentage fields. All numeric inputs use <code>type="text" inputmode="numeric"</code> (never <code>type="number"</code> to avoid JAWS spin button announcement).</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/select/">Select</a> -<code>govukSelect()</code>, unmodified. Used for owner, contractor, and tenure type selects. Default placeholder options use <code>disabled: true</code> with <code>selected</code> conditional on empty value.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/date-input/">Date input</a> -<code>govukDateInput()</code>, unmodified. Day/Month/Year pattern with <code>govuk-input--width-2</code> and <code>govuk-input--width-4</code> classes. Used for practical completion date.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/radios/">Radios</a> -<code>govukRadios()</code>, unmodified. Used on the submit page for further phases question and on the add tenure home type page for rent terms.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/checkboxes/">Checkboxes</a> -<code>govukCheckboxes()</code>, unmodified. Used on the submit page for the certification declaration.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/textarea/">Textarea</a> -<code>govukTextarea()</code>, unmodified. Used on the submit page for optional comments.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/error-summary/">Error summary</a> -<code>govukErrorSummary()</code>, unmodified. Displayed at the top of form pages when validation fails. Error messages link to the relevant field.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/warning-text/">Warning text</a> -<code>govukWarningText()</code>, unmodified. Used for contributions/costs mismatch warning and for the submitted-state lock message.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/button/">Button</a> -<code>govukButton()</code>, unmodified. Primary (Save, Submit), secondary (Add address, Copy last address, Unsubmit phase, Add tenure home type) and disabled variants used throughout.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/components/pagination/">Pagination</a> -<code>govukPagination()</code>, unmodified. Static pagination on the completions landing page.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/spacing/">Spacing</a> -all spacing uses <code>govuk-!</code> utility classes. No custom pixel values.</li>
+      <li><a class="govuk-link" href="https://design-system.service.gov.uk/styles/typography/">Typography</a> -<code>govuk-heading-xl</code> with <code>govuk-caption-xl</code> for site context. Section headings use <code>govuk-heading-m</code> and <code>govuk-heading-s</code>. All standard GDS classes.</li>
+    </ul>
+
+    {# -- Custom departures ------------------------------------------------ #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Custom departures</h2>
+
+    {# -- Inline editable address table ------------------------------------ #}
+    <h3 class="govuk-heading-m">Inline editable address table</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> The Add home addresses page uses an inline
+      editable table where each row contains form inputs inside table cells.
+      Users can add rows, copy the last row, and delete rows dynamically
+      without page reload. A running RCGF total updates live as values change.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> Reuses the inline editable table pattern
+      already established on the Site home forecasts page. SP users enter
+      multiple addresses per tenure home type -a one-address-per-page approach
+      would create an impractical number of page transitions for sites with
+      50+ homes. The IMS system uses a similar tabular entry pattern. GDS
+      guidance permits complex data entry tools where they serve the user need:
+      <em>"there are times when it makes sense to group a few questions on the
+      same page"</em>
+      (<a class="govuk-link" href="https://design-system.service.gov.uk/patterns/question-pages/">GDS question pages pattern</a>).
+    </p>
+    <p class="govuk-body">
+      <strong>Accessibility:</strong>
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Every input has <code>aria-label="Home [n] - [Column name]"</code> matching the visible column header text for Dragon NaturallySpeaking compatibility</li>
+      <li>aria-labels are dynamically updated when rows are added or deleted via the <code>reindexRows()</code> function</li>
+      <li>RCGF total uses <code>aria-live="polite"</code> so screen readers announce the updated total (WCAG 4.1.3)</li>
+      <li>Currency prefix uses <code>aria-hidden="true"</code> to avoid duplicate "pound" announcements</li>
+      <li>All numeric inputs use <code>type="text" inputmode="numeric"</code> -never <code>type="number"</code> (JAWS spin button issue)</li>
+      <li>New row creation moves focus to the first input of the new row for keyboard users</li>
+      <li>Delete requires at least one row to remain -prevents an empty, unrecoverable state</li>
+      <li>Table wrapped in <code>.sp-table-wrapper</code> for horizontal scroll on narrow viewports</li>
+    </ul>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    {# -- Progressive reveal on add tenure home type ----------------------- #}
+    <h3 class="govuk-heading-m">Progressive reveal (Add tenure home type)</h3>
+    <p class="govuk-body">
+      <strong>Departure:</strong> When the user selects an allocated home type
+      from the dropdown, a detail table is progressively revealed showing the
+      home type's specifications (building type, bedrooms, persons, floor area,
+      etc.). The tenure type select conditionally reveals rent terms radios
+      when Affordable Rent or Social Rent is selected.
+    </p>
+    <p class="govuk-body">
+      <strong>Justification:</strong> The allocated home type select is built
+      manually (not via <code>govukSelect</code> macro) because options are
+      dynamically generated from a session data array. The progressive reveal
+      pattern helps users confirm they have selected the correct home type
+      before proceeding, reducing errors. GDS uses conditional reveals in
+      radios and checkboxes -this extends the same principle to select
+      elements.
+    </p>
+    <p class="govuk-body">
+      <strong>Accessibility:</strong>
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Manual select uses standard GDS form group markup (<code>govuk-form-group</code>, <code>govuk-label</code>, <code>govuk-select</code> classes) for consistent styling and label association</li>
+      <li>Error messages include <code>&lt;span class="govuk-visually-hidden"&gt;Error:&lt;/span&gt;</code> prefix for screen readers</li>
+      <li>Revealed content uses the <code>hidden</code> HTML attribute for proper semantics -content is genuinely removed from the accessibility tree when hidden</li>
+      <li>Home type data is embedded via Nunjucks <code>dump</code> filter, avoiding async requests that could cause timing issues for assistive technology</li>
+    </ul>
+
+    {# -- Implementation details ------------------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
+
+    <h3 class="govuk-heading-m">Session-based nested data structure</h3>
+    <p class="govuk-body">
+      The completions journey stores deeply nested session data:
+      <code>completions.phases[].tenureHomeTypes[].addresses[]</code>. Each
+      POST handler manually updates the relevant nested object rather than
+      relying on the Prototype Kit's flat auto-save behaviour. Helper functions
+      (<code>ensureCompletionsSession()</code>, <code>findPhase()</code>,
+      <code>findTenureHomeType()</code>) encapsulate session traversal and
+      initialisation. Phase IDs are generated as <code>CP-001</code>,
+      <code>CP-002</code> etc.; tenure home type IDs as <code>THT-001</code>,
+      <code>THT-002</code>.
+    </p>
+
+    <h3 class="govuk-heading-m">Live auto-calculation (Phase costs)</h3>
+    <p class="govuk-body">
+      The Phase costs tab includes inline JavaScript that auto-calculates the
+      total costs value (acquisition + work + on costs) as the user types.
+      The total is displayed in a <code>govukSummaryList</code> row with the
+      value wrapped in a <code>&lt;span id="total-costs-value"
+      aria-live="polite"&gt;</code>. This follows the same pattern established
+      in the Site home forecasts editable table. The RCGF total on the
+      addresses page uses the same approach. Both are IIFE-wrapped vanilla
+      JavaScript with event delegation.
+    </p>
+
+    <h3 class="govuk-heading-m">Readiness check and gated submission</h3>
+    <p class="govuk-body">
+      The phase hub calculates four readiness checks server-side: phase
+      details complete (owner and contractor set), tenure home types complete
+      (at least one valid THT with rent/sales data and addresses), phase costs
+      complete (all 4 cost fields populated), and phase contributions complete
+      (total contributions matches total costs). The submit button is rendered
+      as a disabled <code>&lt;button&gt;</code> with <code>aria-disabled="true"</code>
+      until all checks pass, at which point it becomes an active link to the
+      submit review page.
+    </p>
+
+    <h3 class="govuk-heading-m">Tab reselection after POST</h3>
+    <p class="govuk-body">
+      Each tab form POSTs to its own route and redirects back to the phase hub.
+      The GDS tabs component responds to URL hash fragments
+      (<code>#phase-details</code>, <code>#phase-costs</code>, etc.), so the
+      redirect includes the appropriate fragment to reselect the correct tab
+      after save. Delete tenure home type redirects with
+      <code>#tenure-home-type-list</code> to return the user to tab 2.
+    </p>
+
+    <h3 class="govuk-heading-m">Route ordering</h3>
+    <p class="govuk-body">
+      All completions routes are defined before the wildcard
+      <code>/sites/:siteId</code> route to prevent Express matching "completions"
+      as a <code>:siteId</code> parameter. Within the completions block, static
+      routes (<code>/completions/add</code>) are defined before parameterised
+      routes (<code>/completions/:phaseId</code>). The phase hub GET route is
+      last because its <code>:phaseId</code> wildcard would match other paths.
+    </p>
+
+    {# -- Recommended accessibility tests ---------------------------------- #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Recommended accessibility tests</h2>
+    <p class="govuk-body">
+      These are the tools and methods GOV.UK teams use when validating new
+      components and patterns. Predicted outcomes are based on the current
+      implementation. Actual results should be populated after testing.
+    </p>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Accessibility test results</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" style="width: 22%">Tool / method</th>
+          <th scope="col" class="govuk-table__header" style="width: 30%">What to check</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Predicted outcome</th>
+          <th scope="col" class="govuk-table__header" style="width: 24%">Actual result</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">axe DevTools (Chrome)</th>
+          <td class="govuk-table__cell">Zero violations on all 7 screens. Run on: landing page, add phase form, phase hub (each tab), add tenure home type (with and without progressive reveal visible), rent and sales (each tenure type variant), addresses table (with multiple rows added), and submit page (with and without errors).</td>
+          <td class="govuk-table__cell">Pass -all ARIA attributes well-formed; no duplicate IDs across tabs (GDS tabs component manages panel IDs); standard GDS macros generate correct label associations; manual select markup follows GDS form group pattern</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">WAVE (WebAIM)</th>
+          <td class="govuk-table__cell">No errors on all screens; check address table inputs have associated labels (aria-label); check error messages linked correctly; verify table headers correctly associated</td>
+          <td class="govuk-table__cell">Pass -<code>aria-label</code> on all address table inputs; <code>scope="col"</code> on all table headers; all <code>govukInput()</code> and <code>govukSelect()</code> macros generate associated <code>&lt;label&gt;</code> elements; error summary links point to correct field IDs</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Colour Contrast Analyser</th>
+          <td class="govuk-table__cell">All text passes 4.5:1 for normal text; 3:1 for large text and UI components (WCAG 1.4.3, 1.4.11). Check tag colour variants (blue, green, yellow, red) against white background. Check delete link red (#d4351c) contrast.</td>
+          <td class="govuk-table__cell">Pass -GDS colour tokens used throughout; all tag colour variants are GDS-approved with documented contrast ratios; delete link red (#d4351c) achieves 4.5:1 against white; currency prefix text uses standard GDS input styling</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Keyboard-only navigation</th>
+          <td class="govuk-table__cell">Tab through all form inputs, buttons, links and tab controls in logical order; Arrow keys switch between tabs on phase hub; Enter/Space activates tabs; no keyboard traps in address table (add row, delete, tab through inputs); focus visible on all interactive elements</td>
+          <td class="govuk-table__cell">Pass -GDS tabs component handles arrow key navigation; all form controls are standard GDS components or have matching keyboard behaviour; address table add/delete buttons are standard HTML buttons; delete links are standard anchors; focus management moves to first input of new row after add</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">NVDA + Chrome</th>
+          <td class="govuk-table__cell">Tabs announced with role, position and selected state; address table inputs announced with aria-label context; auto-calculated totals (costs, RCGF, contributions) announced when values change; error summary announced on form submission; tag status text read (not just colour); summary list key-value pairs announced correctly in submitted state</td>
+          <td class="govuk-table__cell">Pass -GDS tabs component generates correct ARIA roles; <code>aria-label="Home [n] - [Column]"</code> provides cell context; <code>aria-live="polite"</code> on all calculated spans; <code>govukErrorSummary</code> uses <code>role="alert"</code>; tags include text content alongside colour</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">JAWS + Chrome</th>
+          <td class="govuk-table__cell">Same checks as NVDA; verify table navigation mode works in address table and tenure home type list table; verify <code>type="text" inputmode="numeric"</code> does not trigger spin button announcement; verify select placeholder text read correctly</td>
+          <td class="govuk-table__cell">Pass -same rationale as NVDA; <code>type="text"</code> avoids JAWS spin button issue (confirmed pattern from Site home forecasts); <code>inputmode="numeric"</code> triggers numeric keyboard on mobile without affecting JAWS; disabled select options announced as expected</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">VoiceOver + Safari (macOS)</th>
+          <td class="govuk-table__cell">Tab component navigable; address table row/column context announced; progressive reveal content announced when revealed; form labels read on input focus; certification checkbox long text read correctly</td>
+          <td class="govuk-table__cell">Pass -GDS tabs component works with VoiceOver; standard GDS form macros generate correct label associations; <code>hidden</code> attribute properly hides revealed content from accessibility tree until shown; long checkbox text is associated via <code>&lt;label&gt;</code></td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Dragon NaturallySpeaking</th>
+          <td class="govuk-table__cell">"Click Save" submits forms; "Click Add address" adds a row; "Click Copy last address" copies; "Click Delete" removes row; "Click Phase details" activates tab; address inputs speakable via column names in aria-labels; "Click Submit phase" works when enabled</td>
+          <td class="govuk-table__cell">Pass -all interactive elements have visible text labels; all buttons use visible text that matches their accessible name; aria-labels on address inputs mirror column header text ("Home 1 - Address line 1"); tab labels match visible text; disabled submit button uses <code>aria-disabled</code> (still discoverable by Dragon)</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">400% zoom (WCAG 1.4.10 Reflow)</th>
+          <td class="govuk-table__cell">All form pages reflow to single column at 1280px viewport zoomed to 400%; phase hub tabs stack vertically; address table scrolls horizontally in <code>.sp-table-wrapper</code> container; summary lists reflow; no content clipped or overlapping</td>
+          <td class="govuk-table__cell">Pass -all form layouts use <code>govuk-grid-column-two-thirds</code> which collapses at mobile breakpoint; GDS tabs component stacks tabs vertically at narrow widths; address table uses <code>overflow-x: auto</code> wrapper; summary list key-value pairs stack vertically at narrow widths</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">200% text-only zoom</th>
+          <td class="govuk-table__cell">Text resizes to 200% using browser text size settings without loss of content or functionality (WCAG 1.4.4); address table column widths accommodate larger text; tag text does not overflow</td>
+          <td class="govuk-table__cell">Pass -no text sizes fixed in px on content; GDS body uses rem units; tag text scales with body text; address table column widths use relative sizing except constrained columns (60px number, 100px postcode) which accommodate up to 200% text</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Windows High Contrast Mode</th>
+          <td class="govuk-table__cell">All text, borders, focus indicators and button states visible in both Light and Dark high contrast modes; tag status distinguishable (text content provides meaning, not colour alone); currency prefix visible; delete link visible</td>
+          <td class="govuk-table__cell">Pass -GDS components include forced-colors CSS; tags use text to convey status (not colour alone); readiness check uses text labels (Complete/Incomplete/Totals don't match) alongside colour; <code>govuk-input__prefix</code> uses border which is preserved in high contrast</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+        <tr class="govuk-table__row">
+          <th scope="row" class="govuk-table__header">Reduced motion (<code>prefers-reduced-motion</code>)</th>
+          <td class="govuk-table__cell">No animations or transitions on any of the 7 screens; tab switching is instant</td>
+          <td class="govuk-table__cell">Pass -no CSS transitions or animations defined; GDS tabs component uses instant panel switching; address table row add/delete is instant DOM manipulation with no animation; all JavaScript calculations update synchronously</td>
+          <td class="govuk-table__cell"></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-4">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink({
+      text: "Back to Completions",
+      href: "/sites/" + site.siteId + "/completions"
+    }) }}
+  </div>
+</div>
+
+{% endblock %}

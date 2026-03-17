@@ -1,0 +1,121 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
+
+{% set pageName = site.siteName + " completions" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Sites", href: "/sites" },
+      { text: site.siteName, href: "/sites/" + site.siteId }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{# ── Success notification banner ──────────────────────────────────── #}
+{% if success %}
+  {{ govukNotificationBanner({
+    type: "success",
+    html: "<p class='govuk-notification-banner__heading'>" + success + " has been submitted.</p>"
+  }) }}
+{% endif %}
+
+<h1 class="govuk-heading-xl">{{ site.siteName }} completions</h1>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body">This is where you can add your phased completions.</p>
+    <p class="govuk-body">If all homes are completing at the same time (that is, if all homes have the same practical completion date), you'll only need to add one phase.  If the site will be completed in phases then add a new phase for each one.</p>
+  </div>
+</div>
+
+<div class="govuk-!-margin-bottom-3"></div>
+
+<p class="govuk-body govuk-!-margin-bottom-1">
+  <a class="govuk-link" href="/sites/{{ site.siteId }}/completions/add">Add a new completion</a>
+</p>
+<p class="govuk-body govuk-!-margin-bottom-4">Add an individual completion phase.</p>
+
+<p class="govuk-body govuk-!-margin-bottom-1">
+  <a class="govuk-link" href="#">Add multiple new completions</a>
+</p>
+<p class="govuk-body govuk-!-margin-bottom-8">Upload a spreadsheet to register multiple completions at once.</p>
+
+{# ── Completions table ────────────────────────────────────────────── #}
+{% if phases.length > 0 %}
+  {% set tableRows = [] %}
+  {% for phase in phases %}
+    {% set statusTag %}
+      {% if phase.status == 'submitted' %}
+        {{ govukTag({ text: "Submitted", classes: "govuk-tag--green" }) }}
+      {% else %}
+        {{ govukTag({ text: "In progress", classes: "govuk-tag--blue" }) }}
+      {% endif %}
+    {% endset %}
+
+    {% set homesCount = 0 %}
+    {% for tht in phase.tenureHomeTypes %}
+      {% set homesCount = homesCount + (tht.addresses.length if tht.addresses else 0) %}
+    {% endfor %}
+
+    {% set phaseDate %}
+      {% if phase.practicalCompletionDate and phase.practicalCompletionDate.day %}
+        {{ phase.practicalCompletionDate.day | default("") }}/{{ phase.practicalCompletionDate.month | default("") }}/{{ phase.practicalCompletionDate.year | default("") }}
+      {% else %}
+        —
+      {% endif %}
+    {% endset %}
+
+    {% set tableRows = (tableRows.push([
+      { html: "<a class='govuk-link' href='/sites/" + site.siteId + "/completions/" + phase.id + "'>" + phase.id + "</a>" },
+      { text: phase.phaseDetails },
+      { html: statusTag },
+      { text: phaseDate | trim },
+      { text: homesCount, format: "numeric" }
+    ]), tableRows) %}
+  {% endfor %}
+
+  {{ govukTable({
+    head: [
+      { text: "ID" },
+      { text: "Phase name" },
+      { text: "Status" },
+      { text: "Practical completion date" },
+      { text: "Homes", format: "numeric" }
+    ],
+    rows: tableRows
+  }) }}
+{% else %}
+  {{ govukTable({
+    head: [
+      { text: "ID" },
+      { text: "Phase name" },
+      { text: "Status" },
+      { text: "Practical completion date" },
+      { text: "Homes", format: "numeric" }
+    ],
+    rows: [
+      [{ html: "No completions added yet", colspan: 5 }]
+    ]
+  }) }}
+{% endif %}
+
+<!-- Static pagination — page 1 of 1 for prototype purposes -->
+{{ govukPagination({
+  items: [
+    { number: 1, current: true, href: "#" }
+  ]
+}) }}
+
+<a class="govuk-button govuk-button--secondary" href="/sites/{{ site.siteId }}/completions/build-analysis">
+  Build analysis
+</a>
+
+{% endblock %}

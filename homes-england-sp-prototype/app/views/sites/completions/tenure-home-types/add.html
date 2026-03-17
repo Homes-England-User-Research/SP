@@ -1,0 +1,148 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageName = "Add tenure home type" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions/" + phase.id + "#tenure-home-type-list"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{% if errors %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">{{ site.siteName }} completion</span>
+    <h1 class="govuk-heading-l">Add tenure home type</h1>
+
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/add">
+
+      <!-- Allocated home type select — built manually because options come from
+           a session data array. Uses GDS form group markup directly. -->
+      <div class="govuk-form-group{% if errors and not (values['allocated-home-type'] if values) %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label govuk-label--m" for="allocated-home-type">
+          Allocated home type
+        </label>
+        {% if errors and not (values['allocated-home-type'] if values) %}
+          <p id="allocated-home-type-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> Select an allocated home type
+          </p>
+        {% endif %}
+        <select class="govuk-select govuk-!-width-two-thirds{% if errors and not (values['allocated-home-type'] if values) %} govuk-select--error{% endif %}" id="allocated-home-type" name="allocated-home-type">
+          <option value="" disabled {% if not (values["allocated-home-type"] if values) %}selected{% endif %}>Choose home type</option>
+          {% for ht in allocatedHomeTypes %}
+            <option value="{{ ht.id }}" {% if (values["allocated-home-type"] if values) == ht.id %}selected{% endif %}>{{ ht.description }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Progressive reveal: home type details (hidden by default, shown via JS) -->
+      <div id="home-type-details" class="govuk-!-margin-top-4 govuk-!-margin-bottom-8" hidden>
+        <table class="govuk-table">
+          <caption class="govuk-table__caption govuk-visually-hidden">Home type details</caption>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Building type</th><td class="govuk-table__cell" id="ht-building-type"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Number of bedrooms</th><td class="govuk-table__cell" id="ht-bedrooms"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Number of persons</th><td class="govuk-table__cell" id="ht-persons"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Type of housing</th><td class="govuk-table__cell" id="ht-housing-type"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Internal floor area m²</th><td class="govuk-table__cell" id="ht-floor-area"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Facilities</th><td class="govuk-table__cell" id="ht-facilities"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Work type</th><td class="govuk-table__cell" id="ht-work-type"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Meets wheelchair standards</th><td class="govuk-table__cell" id="ht-wheelchair"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Meets NDSS</th><td class="govuk-table__cell" id="ht-ndss"></td></tr>
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">Community led development</th><td class="govuk-table__cell" id="ht-community-led"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      {{ govukSelect({
+        label: {
+          text: "Tenure type",
+          classes: "govuk-label--m"
+        },
+        id: "tenure-type",
+        name: "tenure-type",
+        formGroup: { classes: "govuk-!-margin-bottom-8" },
+        classes: "govuk-!-width-two-thirds",
+        items: [
+          { value: "", text: "Choose a tenure type", disabled: true, selected: not (values["tenure-type"] if values) },
+          { value: "Tier 1 – Affordable Rent", text: "Tier 1 – Affordable Rent", selected: (values["tenure-type"] if values) == "Tier 1 – Affordable Rent" },
+          { value: "Tier 1 – Rent to Buy", text: "Tier 1 – Rent to Buy", selected: (values["tenure-type"] if values) == "Tier 1 – Rent to Buy" },
+          { value: "Tier 1 – Social Rent", text: "Tier 1 – Social Rent", selected: (values["tenure-type"] if values) == "Tier 1 – Social Rent" },
+          { value: "Tier 1 – Shared Ownership", text: "Tier 1 – Shared Ownership", selected: (values["tenure-type"] if values) == "Tier 1 – Shared Ownership" },
+          { value: "Tier 1 – Older Persons Shared Ownership", text: "Tier 1 – Older Persons Shared Ownership", selected: (values["tenure-type"] if values) == "Tier 1 – Older Persons Shared Ownership" },
+          { value: "Tier 2 – Affordable Rent", text: "Tier 2 – Affordable Rent", selected: (values["tenure-type"] if values) == "Tier 2 – Affordable Rent" },
+          { value: "Tier 2 – Social Rent", text: "Tier 2 – Social Rent", selected: (values["tenure-type"] if values) == "Tier 2 – Social Rent" }
+        ],
+        errorMessage: { text: "Select a tenure type" } if errors and not (values["tenure-type"] if values)
+      }) }}
+
+      <div class="govuk-button-group govuk-!-margin-top-6">
+        {{ govukButton({
+          text: "Save and continue"
+        }) }}
+        <a class="govuk-link" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}#tenure-home-type-list">Cancel</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+<script>
+  // Home type data embedded from session for progressive reveal
+  var homeTypesData = {{ allocatedHomeTypes | dump | safe }};
+
+  ;(function () {
+    var select = document.getElementById('allocated-home-type')
+    var detailsPanel = document.getElementById('home-type-details')
+
+    if (!select || !detailsPanel) return
+
+    select.addEventListener('change', function () {
+      var selectedId = select.value
+      var ht = homeTypesData.find(function (h) { return h.id === selectedId })
+
+      if (ht) {
+        document.getElementById('ht-building-type').textContent = ht.buildingType
+        document.getElementById('ht-bedrooms').textContent = ht.bedrooms
+        document.getElementById('ht-persons').textContent = ht.persons
+        document.getElementById('ht-housing-type').textContent = ht.housingType
+        document.getElementById('ht-floor-area').textContent = ht.floorAreaM2
+        document.getElementById('ht-facilities').textContent = ht.facilities
+        document.getElementById('ht-work-type').textContent = ht.workType
+        document.getElementById('ht-wheelchair').textContent = ht.meetsWheelchairStandards
+        document.getElementById('ht-ndss').textContent = ht.meetsNDSS
+        document.getElementById('ht-community-led').textContent = ht.communityLedDevelopment
+        detailsPanel.hidden = false
+      } else {
+        detailsPanel.hidden = true
+      }
+    })
+
+    // Trigger home type reveal on page load if a value is already selected
+    if (select.value) {
+      select.dispatchEvent(new Event('change'))
+    }
+  })()
+</script>
+{% endblock %}

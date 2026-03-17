@@ -433,6 +433,16 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
   GDS alignments, custom departures (stat cards, multi-field form)
   and 12-row accessibility test predictions table.
 
+### Completions phase hub
+- Readiness check and submit button moved into a 5th GDS tab: "Review and submit"
+  (id: `review-and-submit`). Previously sat below the tabs as standalone content.
+  Consolidates all phase hub content within the tabs component.
+- Review tab uses `govukSummaryList` (not `govukTaskList`) for section completion
+  status — simpler layout with green/red tags, no action links.
+- Submit page back link targets `#review-and-submit` hash fragment.
+- All POST redirects use hash fragments (`#phase-details`, `#phase-costs`, etc.)
+  to reselect the correct tab after save.
+
 ### Deployment
 - Railway deployment uses `railway.json` at repo root with `rootDirectory: "homes-england-sp-prototype"`
 - Inner prototype `.git` folder removed to flatten into outer repo so Railway can

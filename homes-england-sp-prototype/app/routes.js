@@ -567,6 +567,599 @@ router.post('/sites/allocate-home-types/remove/:homeTypeId', function (req, res)
   res.redirect('/sites/allocate-home-types')
 })
 
+// =============================================================================
+// Completions — phase-based completions journey for a site
+// =============================================================================
+
+/**
+ * Helper — ensure completions session structure exists.
+ */
+function ensureCompletionsSession(req) {
+  if (!req.session.data.completions) {
+    req.session.data.completions = { phases: [] }
+  }
+  return req.session.data.completions
+}
+
+/**
+ * Helper — find a phase by ID within the completions session.
+ */
+function findPhase(req, phaseId) {
+  var completions = ensureCompletionsSession(req)
+  return completions.phases.find(function (p) { return p.id === phaseId })
+}
+
+/**
+ * Helper — find a tenure home type within a phase.
+ */
+function findTenureHomeType(phase, thtId) {
+  return phase.tenureHomeTypes.find(function (t) { return t.id === thtId })
+}
+
+/**
+ * Helper — count total addresses across all tenure home types in a phase.
+ */
+function countPhaseHomes(phase) {
+  return phase.tenureHomeTypes.reduce(function (sum, tht) {
+    return sum + (tht.addresses ? tht.addresses.length : 0)
+  }, 0)
+}
+
+/**
+ * Helper — format {day, month, year} object to DD/MM/YYYY string.
+ */
+function formatCompletionDate(dateObj) {
+  if (!dateObj || !dateObj.day) return ''
+  return String(dateObj.day).padStart(2, '0') + '/' +
+    String(dateObj.month).padStart(2, '0') + '/' +
+    dateObj.year
+}
+
+/**
+ * Helper — enrich a site from seedSites with mock detail data.
+ */
+function enrichSite(site) {
+  return Object.assign({}, site, {
+    typeOfSite: 'greenfield',
+    ruralArea: 'no',
+    operatingArea: 'South East',
+    processingRoute: 'acquisition-works',
+    regenerationSite: 'no',
+    postcode: 'XXXX XXX',
+    xCoordinate: '',
+    yCoordinate: '',
+    typeOfContractor: 'in-house',
+    contractor: '---',
+    ownershipStatus: 'conditional',
+    planningStatus: 'detailed-no-steps',
+    buildingContractStatus: 'conditional-let',
+    startOnSiteStatus: 'forecast',
+    forecastCompletionDay: '27',
+    forecastCompletionMonth: '3',
+    forecastCompletionYear: '2027'
+  })
+}
+
+/**
+ * GET /sites/:siteId/completions
+ *
+ * Completions landing page — lists all completion phases for a site.
+ */
+router.get('/sites/:siteId/completions', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var completions = ensureCompletionsSession(req)
+
+  res.render('sites/completions/index', {
+    site: enrichSite(site),
+    phases: completions.phases,
+    success: req.query.success || null
+  })
+})
+
+/**
+ * GET /sites/:siteId/completions/build-analysis
+ *
+ * Build analysis page documenting the completions journey.
+ */
+router.get('/sites/:siteId/completions/build-analysis', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  res.render('sites/completions/build-analysis', {
+    site: enrichSite(site)
+  })
+})
+
+/**
+ * GET /sites/:siteId/completions/add
+ *
+ * Add a new completion phase — form with phase details and date.
+ */
+router.get('/sites/:siteId/completions/add', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  res.render('sites/completions/add', {
+    site: enrichSite(site),
+    errors: null
+  })
+})
+
+/**
+ * POST /sites/:siteId/completions/add
+ *
+ * Creates a new phase in session and redirects to the phase hub.
+ */
+router.post('/sites/:siteId/completions/add', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phaseDetails = (req.body['phase-details'] || '').trim()
+  var day = (req.body['practical-completion-date-day'] || '').trim()
+  var month = (req.body['practical-completion-date-month'] || '').trim()
+  var year = (req.body['practical-completion-date-year'] || '').trim()
+
+  // Validation
+  var errors = []
+  if (!phaseDetails) errors.push({ text: 'Enter a phase name', href: '#phase-details' })
+  if (!day) errors.push({ text: 'Enter a day', href: '#practical-completion-date-day' })
+  if (!month) errors.push({ text: 'Enter a month', href: '#practical-completion-date-month' })
+  if (!year) errors.push({ text: 'Enter a year', href: '#practical-completion-date-year' })
+
+  if (errors.length > 0) {
+    return res.render('sites/completions/add', {
+      site: enrichSite(site),
+      errors: errors,
+      values: req.body
+    })
+  }
+
+  var completions = ensureCompletionsSession(req)
+  var nextNum = completions.phases.length + 1
+  var phaseId = 'CP-' + String(nextNum).padStart(3, '0')
+
+  completions.phases.push({
+    id: phaseId,
+    phaseDetails: phaseDetails,
+    practicalCompletionDate: { day: day, month: month, year: year },
+    owner: '',
+    contractor: '',
+    status: 'in-progress',
+    tenureHomeTypes: [],
+    costs: {
+      grossDevelopmentValue: '',
+      acquisitionCosts: '',
+      workCosts: '',
+      onCosts: ''
+    },
+    contributions: {
+      grossDevelopmentValue: '',
+      totalBaselineGrant: '',
+      communityLedRuralGrant: '',
+      providersOwnResources: '',
+      incomeFromSharedOwnershipSales: '',
+      loanSupportableFromRentalIncome: '',
+      rcgf: '',
+      dpf: '',
+      otherPublicSubsidy: '',
+      other: ''
+    }
+  })
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + phaseId)
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/phase-details
+ *
+ * Saves phase details tab form and redirects back to hub.
+ */
+router.post('/sites/:siteId/completions/:phaseId/phase-details', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  phase.phaseDetails = (req.body['phase-details'] || '').trim()
+  phase.practicalCompletionDate = {
+    day: (req.body['practical-completion-date-day'] || '').trim(),
+    month: (req.body['practical-completion-date-month'] || '').trim(),
+    year: (req.body['practical-completion-date-year'] || '').trim()
+  }
+  phase.owner = req.body['owner'] || ''
+  phase.contractor = req.body['contractor'] || ''
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#phase-details')
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/phase-costs
+ *
+ * Saves phase costs tab form and redirects back to hub.
+ */
+router.post('/sites/:siteId/completions/:phaseId/phase-costs', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  phase.costs = {
+    grossDevelopmentValue: (req.body['gross-development-value'] || '').trim(),
+    acquisitionCosts: (req.body['acquisition-costs'] || '').trim(),
+    workCosts: (req.body['work-costs'] || '').trim(),
+    onCosts: (req.body['on-costs'] || '').trim()
+  }
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#phase-costs')
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/phase-contributions
+ *
+ * Saves phase contributions tab form and redirects back to hub.
+ */
+router.post('/sites/:siteId/completions/:phaseId/phase-contributions', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  phase.contributions = {
+    grossDevelopmentValue: (req.body['contributions-gdv'] || '').trim(),
+    totalBaselineGrant: (req.body['total-baseline-grant'] || '').trim(),
+    communityLedRuralGrant: (req.body['community-led-rural-grant'] || '').trim(),
+    providersOwnResources: (req.body['providers-own-resources'] || '').trim(),
+    incomeFromSharedOwnershipSales: (req.body['income-shared-ownership-sales'] || '').trim(),
+    loanSupportableFromRentalIncome: (req.body['loan-supportable-rental-income'] || '').trim(),
+    rcgf: (req.body['rcgf'] || '').trim(),
+    dpf: (req.body['dpf'] || '').trim(),
+    otherPublicSubsidy: (req.body['other-public-subsidy'] || '').trim(),
+    other: (req.body['other-contributions'] || '').trim()
+  }
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#phase-contributions')
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId/tenure-home-types/add
+ *
+ * Add tenure home type — select home type and tenure type.
+ */
+router.get('/sites/:siteId/completions/:phaseId/tenure-home-types/add', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  res.render('sites/completions/tenure-home-types/add', {
+    site: enrichSite(site),
+    phase: phase,
+    allocatedHomeTypes: req.session.data.allocatedHomeTypes || [],
+    errors: null
+  })
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/tenure-home-types/add
+ *
+ * Creates a new tenure home type record and redirects to rent-and-sales.
+ */
+router.post('/sites/:siteId/completions/:phaseId/tenure-home-types/add', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var allocatedHomeTypeId = req.body['allocated-home-type'] || ''
+  var tenureType = req.body['tenure-type'] || ''
+
+  // Validation
+  var errors = []
+  if (!allocatedHomeTypeId) errors.push({ text: 'Select an allocated home type', href: '#allocated-home-type' })
+  if (!tenureType) errors.push({ text: 'Select a tenure type', href: '#tenure-type' })
+
+  if (errors.length > 0) {
+    return res.render('sites/completions/tenure-home-types/add', {
+      site: enrichSite(site),
+      phase: phase,
+      allocatedHomeTypes: req.session.data.allocatedHomeTypes || [],
+      errors: errors,
+      values: req.body
+    })
+  }
+
+  var nextNum = phase.tenureHomeTypes.length + 1
+  var thtId = 'HE-' + String(nextNum).padStart(2, '0')
+
+  phase.tenureHomeTypes.push({
+    id: thtId,
+    allocatedHomeTypeId: allocatedHomeTypeId,
+    tenureType: tenureType,
+    rentAndSales: {},
+    addresses: []
+  })
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '/tenure-home-types/' + thtId + '/rent-and-sales')
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/rent-and-sales
+ *
+ * Rent and sales form — fields vary by tenure type.
+ */
+router.get('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/rent-and-sales', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var tht = findTenureHomeType(phase, req.params.thtId)
+  if (!tht) return res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+
+  res.render('sites/completions/tenure-home-types/rent-and-sales', {
+    site: enrichSite(site),
+    phase: phase,
+    tht: tht,
+    errors: null
+  })
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/rent-and-sales
+ *
+ * Saves rent and sales data and redirects to addresses page.
+ */
+router.post('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/rent-and-sales', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var tht = findTenureHomeType(phase, req.params.thtId)
+  if (!tht) return res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+
+  tht.rentAndSales = {
+    // Common
+    marketValuePerHome: (req.body['market-value-per-home'] || '').trim(),
+    proposedRentPerWeek: (req.body['proposed-rent-per-week'] || '').trim(),
+    // Shared Ownership / OPSO
+    assumedAverageInitialSale: (req.body['assumed-average-initial-sale'] || '').trim(),
+    firstTrancheSalesReceipt: (req.body['first-tranche-sales-receipt'] || '').trim(),
+    rentPercentUnsoldShare: (req.body['rent-percent-unsold-share'] || '').trim(),
+    // OPSO / Affordable Rent / Rent to Buy
+    serviceChargePerWeek: (req.body['service-charge-per-week'] || '').trim(),
+    // Affordable Rent / Rent to Buy
+    marketRentPerWeek: (req.body['market-rent-per-week'] || '').trim(),
+    rentPercentMarketRent: (req.body['rent-percent-market-rent'] || '').trim(),
+    lhaRate: (req.body['lha-rate'] || '').trim(),
+    exceeds80Percent: (req.body['exceeds-80-percent'] || '').trim()
+  }
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '/tenure-home-types/' + req.params.thtId + '/addresses')
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/addresses
+ *
+ * Add home addresses — inline editable table.
+ */
+router.get('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/addresses', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var tht = findTenureHomeType(phase, req.params.thtId)
+  if (!tht) return res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+
+  res.render('sites/completions/tenure-home-types/addresses', {
+    site: enrichSite(site),
+    phase: phase,
+    tht: tht,
+    errors: null
+  })
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/addresses
+ *
+ * Saves address rows and redirects back to phase hub.
+ */
+router.post('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/addresses', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var tht = findTenureHomeType(phase, req.params.thtId)
+  if (!tht) return res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+
+  // Parse address rows from form data
+  var addresses = req.body.addresses || []
+  if (!Array.isArray(addresses)) addresses = [addresses]
+
+  // Filter out completely empty rows
+  tht.addresses = addresses.filter(function (addr) {
+    return (addr.addressLine1 && addr.addressLine1.trim()) || (addr.postcode && addr.postcode.trim())
+  }).map(function (addr) {
+    return {
+      number: (addr.number || '').trim(),
+      addressLine1: (addr.addressLine1 || '').trim(),
+      addressLine2: (addr.addressLine2 || '').trim(),
+      county: (addr.county || '').trim(),
+      postcode: (addr.postcode || '').trim(),
+      rcgf: (addr.rcgf || '').trim()
+    }
+  })
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/delete
+ *
+ * Deletes a tenure home type and redirects back to phase hub.
+ */
+router.get('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/delete', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (phase) {
+    phase.tenureHomeTypes = phase.tenureHomeTypes.filter(function (t) {
+      return t.id !== req.params.thtId
+    })
+  }
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#tenure-home-type-list')
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId/submit
+ *
+ * Submit completion phase — review page with certification.
+ */
+router.get('/sites/:siteId/completions/:phaseId/submit', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  res.render('sites/completions/submit', {
+    site: enrichSite(site),
+    phase: phase,
+    errors: null
+  })
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/submit
+ *
+ * Submits the phase and redirects to completions landing with success.
+ */
+router.post('/sites/:siteId/completions/:phaseId/submit', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  var furtherPhases = req.body['further-phases'] || ''
+  var certification = req.body['certification'] || ''
+
+  // Validation
+  var errors = []
+  if (!furtherPhases) errors.push({ text: 'Select whether there are further phases', href: '#further-phases' })
+  if (!certification) errors.push({ text: 'You must confirm the certification', href: '#certification' })
+
+  if (errors.length > 0) {
+    var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+    return res.render('sites/completions/submit', {
+      site: enrichSite(site),
+      phase: phase,
+      errors: errors,
+      values: req.body
+    })
+  }
+
+  phase.status = 'submitted'
+  res.redirect('/sites/' + req.params.siteId + '/completions?success=' + encodeURIComponent(phase.phaseDetails))
+})
+
+/**
+ * POST /sites/:siteId/completions/:phaseId/unsubmit
+ *
+ * Unsubmits a phase — sets status back to in-progress.
+ */
+router.post('/sites/:siteId/completions/:phaseId/unsubmit', function (req, res) {
+  var phase = findPhase(req, req.params.phaseId)
+  if (phase) {
+    phase.status = 'in-progress'
+  }
+
+  res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId)
+})
+
+/**
+ * GET /sites/:siteId/completions/:phaseId
+ *
+ * Phase hub — central screen with tabs for phase details, tenure home types,
+ * costs, and contributions. Must be defined AFTER all other /completions/:phaseId/* routes.
+ */
+router.get('/sites/:siteId/completions/:phaseId', function (req, res) {
+  var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
+  if (!site) return res.redirect('/sites')
+
+  var phase = findPhase(req, req.params.phaseId)
+  if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
+
+  // Calculate derived values
+  var homesCount = countPhaseHomes(phase)
+
+  // Calculate total costs
+  var totalCosts = 0
+  if (phase.costs) {
+    totalCosts = (parseFloat(phase.costs.acquisitionCosts) || 0) +
+      (parseFloat(phase.costs.workCosts) || 0) +
+      (parseFloat(phase.costs.onCosts) || 0)
+  }
+
+  // Calculate RCGF from addresses
+  var rcgfTotal = 0
+  phase.tenureHomeTypes.forEach(function (tht) {
+    if (tht.addresses) {
+      tht.addresses.forEach(function (addr) {
+        rcgfTotal += parseFloat(addr.rcgf) || 0
+      })
+    }
+  })
+
+  // Calculate total contributions
+  var totalContributions = 0
+  if (phase.contributions) {
+    totalContributions =
+      (parseFloat(phase.contributions.grossDevelopmentValue) || 0) +
+      (parseFloat(phase.contributions.totalBaselineGrant) || 0) +
+      (parseFloat(phase.contributions.communityLedRuralGrant) || 0) +
+      (parseFloat(phase.contributions.providersOwnResources) || 0) +
+      (parseFloat(phase.contributions.incomeFromSharedOwnershipSales) || 0) +
+      (parseFloat(phase.contributions.loanSupportableFromRentalIncome) || 0) +
+      rcgfTotal +
+      (parseFloat(phase.contributions.dpf) || 0) +
+      (parseFloat(phase.contributions.otherPublicSubsidy) || 0) +
+      (parseFloat(phase.contributions.other) || 0)
+  }
+
+  // Readiness check
+  var phaseDetailsComplete = phase.owner && phase.contractor
+  var tenureHomeTypesComplete = phase.tenureHomeTypes.some(function (tht) {
+    var hasRentAndSales = tht.rentAndSales && Object.values(tht.rentAndSales).some(function (v) { return v })
+    var hasAddresses = tht.addresses && tht.addresses.length > 0
+    return hasRentAndSales && hasAddresses
+  })
+  var phaseCostsComplete = phase.costs &&
+    phase.costs.grossDevelopmentValue &&
+    phase.costs.acquisitionCosts &&
+    phase.costs.workCosts &&
+    phase.costs.onCosts
+  var phaseContributionsComplete = totalContributions > 0 && totalContributions === totalCosts
+
+  // Find allocated home type details for each THT
+  var allocatedHomeTypes = req.session.data.allocatedHomeTypes || []
+  var enrichedTHTs = phase.tenureHomeTypes.map(function (tht) {
+    var allocatedHT = allocatedHomeTypes.find(function (ht) { return ht.id === tht.allocatedHomeTypeId })
+    return Object.assign({}, tht, {
+      templateDescription: allocatedHT ? allocatedHT.description : tht.allocatedHomeTypeId
+    })
+  })
+
+  res.render('sites/completions/phase-hub', {
+    site: enrichSite(site),
+    phase: phase,
+    enrichedTHTs: enrichedTHTs,
+    homesCount: homesCount,
+    totalCosts: totalCosts,
+    rcgfTotal: rcgfTotal,
+    totalContributions: totalContributions,
+    phaseDetailsComplete: phaseDetailsComplete,
+    tenureHomeTypesComplete: tenureHomeTypesComplete,
+    phaseCostsComplete: phaseCostsComplete,
+    phaseContributionsComplete: phaseContributionsComplete,
+    allComplete: phaseDetailsComplete && tenureHomeTypesComplete && phaseCostsComplete && phaseContributionsComplete
+  })
+})
+
 /**
  * GET /sites/:siteId
  *

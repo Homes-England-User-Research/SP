@@ -1,0 +1,551 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{# Determine tenure category for conditional field rendering #}
+{% set isOPSO = "Older Persons Shared Ownership" in tht.tenureType %}
+{% set isSharedOwnership = ("Shared Ownership" in tht.tenureType) and not isOPSO %}
+{% set isRentToBuy = "Rent to Buy" in tht.tenureType %}
+{% set isAffordableRent = "Affordable Rent" in tht.tenureType %}
+{% set isSocialRent = ("Social Rent" in tht.tenureType) and not isRentToBuy %}
+
+{# Dynamic page title matching CME pattern — "[Tenure type] details" #}
+{% if isSharedOwnership %}
+  {% set tenureTitle = "Shared Ownership details" %}
+{% elif isOPSO %}
+  {% set tenureTitle = "Older Persons Shared Ownership (OPSO) details" %}
+{% elif isRentToBuy %}
+  {% set tenureTitle = "Rent to Buy details" %}
+{% elif isAffordableRent %}
+  {% set tenureTitle = "Affordable Rent details" %}
+{% else %}
+  {% set tenureTitle = "Social Rent details" %}
+{% endif %}
+
+{% set pageName = tenureTitle %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions/" + phase.id + "/tenure-home-types/add"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{% if errors %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">{{ site.siteName }} completion</span>
+    <h1 class="govuk-heading-l">{{ tenureTitle }}</h1>
+
+    <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/{{ tht.id }}/rent-and-sales">
+
+      {# ── Market value (all tenure types) ──────────────────────── #}
+      {{ govukInput({
+        label: { text: "Enter the market value of each home", classes: "govuk-label--m" },
+        hint: { text: "Enter the market value in pounds only." },
+        id: "market-value-per-home",
+        name: "market-value-per-home",
+        value: tht.rentAndSales.marketValuePerHome if tht.rentAndSales else "",
+        prefix: { text: "£" },
+        classes: "govuk-input--width-10",
+        inputmode: "numeric",
+        spellcheck: false,
+        formGroup: { classes: "govuk-!-margin-top-8 govuk-!-margin-bottom-8" }
+      }) }}
+
+      {# ══════════════════════════════════════════════════════════ #}
+      {# SOCIAL RENT                                               #}
+      {# ══════════════════════════════════════════════════════════ #}
+      {% if isSocialRent %}
+        {{ govukInput({
+          label: { text: "Enter the rent per week", classes: "govuk-label--m" },
+          hint: { text: "Enter the rent in pounds and pence. This is exclusive of any service charges." },
+          id: "proposed-rent-per-week",
+          name: "proposed-rent-per-week",
+          value: tht.rentAndSales.proposedRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+      {% endif %}
+
+      {# ══════════════════════════════════════════════════════════ #}
+      {# SHARED OWNERSHIP                                          #}
+      {# ══════════════════════════════════════════════════════════ #}
+      {% if isSharedOwnership %}
+        {{ govukInput({
+          label: { text: "Enter the assumed average first tranche sale percentage", classes: "govuk-label--m" },
+          hint: { text: "This is the average percentage share that you are assuming your purchasers will buy in their initial purchase (must be between 10% and 75%)." },
+          id: "assumed-average-initial-sale",
+          name: "assumed-average-initial-sale",
+          value: tht.rentAndSales.assumedAverageInitialSale if tht.rentAndSales else "",
+          suffix: { text: "%" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+
+        <!-- Calculated field: first tranche sales receipt (no input — computed from
+             market value × initial sale %) -->
+        <h2 class="govuk-heading-m">Assumed first tranche sales receipt</h2>
+        <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
+          {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
+            £{{ tht.rentAndSales.firstTrancheSalesReceipt }}
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="first-tranche-sales-receipt" id="first-tranche-hidden" value="{{ tht.rentAndSales.firstTrancheSalesReceipt if tht.rentAndSales else '' }}">
+
+        {{ govukInput({
+          label: { text: "Enter the Shared Ownership rent per week", classes: "govuk-label--m" },
+          hint: { text: "Enter the rent in pounds and pence. This is inclusive of all charges." },
+          id: "proposed-rent-per-week",
+          name: "proposed-rent-per-week",
+          value: tht.rentAndSales.proposedRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+
+        <!-- Calculated field: rent as % of unsold share (no input — computed from
+             rent per week ÷ unsold share value) -->
+        <h2 class="govuk-heading-m">Shared Ownership rent as percentage of the unsold share</h2>
+        <p class="govuk-hint">This is calculated by dividing the rent by the market value of the home left after the assumed first tranche sale. This must not be more than 3%.</p>
+        <p class="govuk-hint">To calculate the Shared Ownership rent as percentage of the unsold share, enter the rent per week once you have found the assumed first tranche sales receipt. Then select the calculate button.</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="calc-rent-percent-unsold" aria-live="polite">
+          {%- if tht.rentAndSales.rentPercentUnsoldShare -%}
+            {{ tht.rentAndSales.rentPercentUnsoldShare }}%
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="rent-percent-unsold-share" id="rent-percent-unsold-hidden" value="{{ tht.rentAndSales.rentPercentUnsoldShare if tht.rentAndSales else '' }}">
+
+        {{ govukButton({
+          text: "Calculate",
+          classes: "govuk-button--secondary",
+          type: "button",
+          id: "calculate-tenure"
+        }) }}
+      {% endif %}
+
+      {# ══════════════════════════════════════════════════════════ #}
+      {# OLDER PERSONS SHARED OWNERSHIP (OPSO)                    #}
+      {# Same as Shared Ownership but with service charge field    #}
+      {# ══════════════════════════════════════════════════════════ #}
+      {% if isOPSO %}
+        {{ govukInput({
+          label: { text: "Enter the assumed average first tranche sale percentage", classes: "govuk-label--m" },
+          hint: { text: "This is the average percentage share that you are assuming your purchasers will buy in their initial purchase (must be between 10% and 75%)." },
+          id: "assumed-average-initial-sale",
+          name: "assumed-average-initial-sale",
+          value: tht.rentAndSales.assumedAverageInitialSale if tht.rentAndSales else "",
+          suffix: { text: "%" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+
+        <h2 class="govuk-heading-m">Assumed first tranche sales receipt</h2>
+        <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
+          {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
+            £{{ tht.rentAndSales.firstTrancheSalesReceipt }}
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="first-tranche-sales-receipt" id="first-tranche-hidden" value="{{ tht.rentAndSales.firstTrancheSalesReceipt if tht.rentAndSales else '' }}">
+
+        {{ govukInput({
+          label: { text: "Enter the rent per week", classes: "govuk-label--m" },
+          hint: { text: "Enter the rent in pounds and pence. This is inclusive of all charges." },
+          id: "proposed-rent-per-week",
+          name: "proposed-rent-per-week",
+          value: tht.rentAndSales.proposedRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the service charge per week", classes: "govuk-label--m" },
+          hint: { text: "Enter an amount in pounds and pence." },
+          id: "service-charge-per-week",
+          name: "service-charge-per-week",
+          value: tht.rentAndSales.serviceChargePerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false
+        }) }}
+
+        <h2 class="govuk-heading-m">Rent as percentage of the unsold share</h2>
+        <p class="govuk-hint">This is calculated by dividing the rent by the market value of the home left after the assumed first tranche sale. This must not be more than 3%.</p>
+        <p class="govuk-hint">To calculate the rent as percentage of the unsold share, enter the rent per week once you have found the assumed first tranche sales receipt. Then select the calculate button.</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="calc-rent-percent-unsold" aria-live="polite">
+          {%- if tht.rentAndSales.rentPercentUnsoldShare -%}
+            {{ tht.rentAndSales.rentPercentUnsoldShare }}%
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="rent-percent-unsold-share" id="rent-percent-unsold-hidden" value="{{ tht.rentAndSales.rentPercentUnsoldShare if tht.rentAndSales else '' }}">
+
+        {{ govukButton({
+          text: "Calculate",
+          classes: "govuk-button--secondary",
+          type: "button",
+          id: "calculate-tenure"
+        }) }}
+      {% endif %}
+
+      {# ══════════════════════════════════════════════════════════ #}
+      {# AFFORDABLE RENT                                           #}
+      {# ══════════════════════════════════════════════════════════ #}
+      {% if isAffordableRent %}
+        <!-- Calculated result heading — placed before inputs to match CME layout -->
+        <h2 class="govuk-heading-m govuk-!-margin-top-9">Affordable Rent as percentage of market rent</h2>
+        <p class="govuk-hint">To calculate the Affordable Rent as a percentage of market rent, enter the market rent per week, Affordable Rent per week and service charge per week. Then select the calculate button.</p>
+
+        {{ govukInput({
+          label: { text: "Enter the market rent per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the market rent in pounds and pence, excluding the service charge." },
+          id: "market-rent-per-week",
+          name: "market-rent-per-week",
+          value: tht.rentAndSales.marketRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the Affordable Rent per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the rent in pounds and pence." },
+          id: "proposed-rent-per-week",
+          name: "proposed-rent-per-week",
+          value: tht.rentAndSales.proposedRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the service charge per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the service charge in pounds and pence." },
+          id: "service-charge-per-week",
+          name: "service-charge-per-week",
+          value: tht.rentAndSales.serviceChargePerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukButton({
+          text: "Calculate",
+          classes: "govuk-button--secondary",
+          type: "button",
+          id: "calculate-tenure"
+        }) }}
+
+        <p class="govuk-body govuk-!-margin-top-2" id="calc-rent-percent-market" aria-live="polite">
+          {%- if tht.rentAndSales.rentPercentMarketRent -%}
+            Affordable Rent as percentage of market rent: <strong>{{ tht.rentAndSales.rentPercentMarketRent }}%</strong>
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="rent-percent-market-rent" id="rent-percent-market-hidden" value="{{ tht.rentAndSales.rentPercentMarketRent if tht.rentAndSales else '' }}">
+
+        {{ govukRadios({
+          name: "lha-rate",
+          fieldset: {
+            legend: {
+              text: "Is the proposed rent level at or below the Local Housing Allowance (LHA) rate?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: { html: "These rates are used to work out Housing Benefit. Read more about <a href='https://www.gov.uk/government/publications/understanding-local-housing-allowances-rates-broad-rental-market-areas' class='govuk-link' target='_blank'>LHA rates (opens in new tab)</a>." },
+          formGroup: { classes: "govuk-!-margin-top-8" },
+          items: [
+            { value: "yes", text: "Yes", checked: (tht.rentAndSales.lhaRate if tht.rentAndSales) == "yes" },
+            { value: "no", text: "No", checked: (tht.rentAndSales.lhaRate if tht.rentAndSales) == "no" }
+          ]
+        }) }}
+
+        {{ govukRadios({
+          name: "exceeds-80-percent",
+          fieldset: {
+            legend: {
+              text: "Would the target rent plus service charge for these homes exceed 80% of market rent?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            html: govukDetails({
+              summaryText: "Help with target rent",
+              html: "Target rent is also known as 'formula rent'. Find out more information on our <a href='https://www.gov.uk/government/publications/direction-on-the-rent-standard-from-1-april-2020/policy-statement-on-rents-for-social-housing' class='govuk-link' target='_blank'>Rent Policy Statement (opens in a new tab)</a>."
+            })
+          },
+          formGroup: { classes: "govuk-!-margin-top-8" },
+          items: [
+            { value: "yes", text: "Yes", checked: (tht.rentAndSales.exceeds80Percent if tht.rentAndSales) == "yes" },
+            { value: "no", text: "No", checked: (tht.rentAndSales.exceeds80Percent if tht.rentAndSales) == "no" }
+          ]
+        }) }}
+      {% endif %}
+
+      {# ══════════════════════════════════════════════════════════ #}
+      {# RENT TO BUY                                               #}
+      {# ══════════════════════════════════════════════════════════ #}
+      {% if isRentToBuy %}
+        <h2 class="govuk-heading-m govuk-!-margin-top-9">Rent as percentage of market rent</h2>
+        <p class="govuk-hint">To calculate the rent as percentage of market rent, enter the market rent per week, the rent per week and service charge per week. Then select the calculate button.</p>
+
+        {{ govukInput({
+          label: { text: "Enter the market rent per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the market rent in pounds and pence, excluding the service charge." },
+          id: "market-rent-per-week",
+          name: "market-rent-per-week",
+          value: tht.rentAndSales.marketRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the rent per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the rent in pounds and pence." },
+          id: "proposed-rent-per-week",
+          name: "proposed-rent-per-week",
+          value: tht.rentAndSales.proposedRentPerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the service charge per week", classes: "govuk-label--s" },
+          hint: { text: "Enter the service charge in pounds and pence." },
+          id: "service-charge-per-week",
+          name: "service-charge-per-week",
+          value: tht.rentAndSales.serviceChargePerWeek if tht.rentAndSales else "",
+          prefix: { text: "£" },
+          suffix: { text: "per week" },
+          classes: "govuk-input--width-5",
+          inputmode: "numeric",
+          spellcheck: false,
+          formGroup: { classes: "govuk-!-margin-top-6" }
+        }) }}
+
+        {{ govukButton({
+          text: "Calculate",
+          classes: "govuk-button--secondary",
+          type: "button",
+          id: "calculate-tenure"
+        }) }}
+
+        <p class="govuk-body govuk-!-margin-top-2" id="calc-rent-percent-market" aria-live="polite">
+          {%- if tht.rentAndSales.rentPercentMarketRent -%}
+            Rent as percentage of market rent: <strong>{{ tht.rentAndSales.rentPercentMarketRent }}%</strong>
+          {%- endif -%}
+        </p>
+        <input type="hidden" name="rent-percent-market-rent" id="rent-percent-market-hidden" value="{{ tht.rentAndSales.rentPercentMarketRent if tht.rentAndSales else '' }}">
+
+        {{ govukRadios({
+          name: "lha-rate",
+          fieldset: {
+            legend: {
+              text: "Is the proposed rent level at or below the Local Housing Allowance (LHA) rate?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: { html: "These rates are used to work out Housing Benefit. Read more about <a href='https://www.gov.uk/government/publications/understanding-local-housing-allowances-rates-broad-rental-market-areas' class='govuk-link' target='_blank'>LHA rates (opens in new tab)</a>." },
+          formGroup: { classes: "govuk-!-margin-top-8" },
+          items: [
+            { value: "yes", text: "Yes", checked: (tht.rentAndSales.lhaRate if tht.rentAndSales) == "yes" },
+            { value: "no", text: "No", checked: (tht.rentAndSales.lhaRate if tht.rentAndSales) == "no" }
+          ]
+        }) }}
+
+        {{ govukRadios({
+          name: "exceeds-80-percent",
+          fieldset: {
+            legend: {
+              text: "Would the target rent plus service charge for these homes exceed 80% of market rent?",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            html: govukDetails({
+              summaryText: "Help with target rent",
+              html: "Target rent is also known as 'formula rent'. Find out more information on our <a href='https://www.gov.uk/government/publications/direction-on-the-rent-standard-from-1-april-2020/policy-statement-on-rents-for-social-housing' class='govuk-link' target='_blank'>Rent Policy Statement (opens in a new tab)</a>."
+            })
+          },
+          formGroup: { classes: "govuk-!-margin-top-8" },
+          items: [
+            { value: "yes", text: "Yes", checked: (tht.rentAndSales.exceeds80Percent if tht.rentAndSales) == "yes" },
+            { value: "no", text: "No", checked: (tht.rentAndSales.exceeds80Percent if tht.rentAndSales) == "no" }
+          ]
+        }) }}
+      {% endif %}
+
+      <div class="govuk-button-group govuk-!-margin-top-9">
+        {{ govukButton({
+          text: "Save and continue"
+        }) }}
+        <a class="govuk-link" href="/sites/{{ site.siteId }}/completions/{{ phase.id }}#tenure-home-type-list">Save and return to application</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+<script>
+  ;(function () {
+    // ── Live thousand-separator formatting on numeric inputs ──
+    // Formats values like 1000 → 1,000 as the user types.
+    // Commas are stripped before form submission so clean numbers are POSTed.
+    function formatWithCommas (str) {
+      var parts = str.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    }
+
+    var numericInputs = document.querySelectorAll('input[inputmode="numeric"]')
+    numericInputs.forEach(function (input) {
+      input.addEventListener('input', function () {
+        var raw = input.value.replace(/[^0-9.]/g, '')
+        // Prevent multiple decimal points
+        var dotIndex = raw.indexOf('.')
+        if (dotIndex !== -1) {
+          raw = raw.slice(0, dotIndex + 1) + raw.slice(dotIndex + 1).replace(/\./g, '')
+        }
+        var formatted = formatWithCommas(raw)
+        if (formatted !== input.value) {
+          // Preserve cursor position relative to digits
+          var cursorPos = input.selectionStart
+          var digitsBeforeCursor = input.value.slice(0, cursorPos).replace(/[^0-9.]/g, '').length
+          input.value = formatted
+          // Restore cursor to the same digit position
+          var newPos = 0
+          var count = 0
+          while (newPos < formatted.length && count < digitsBeforeCursor) {
+            if (formatted[newPos] !== ',') count++
+            newPos++
+          }
+          input.setSelectionRange(newPos, newPos)
+        }
+      })
+
+      // Format on page load if value already exists
+      if (input.value) {
+        var raw = input.value.replace(/[^0-9.]/g, '')
+        if (raw) input.value = formatWithCommas(raw)
+      }
+    })
+
+    // Strip commas before form submission so clean numbers are saved
+    var form = document.querySelector('form')
+    if (form) {
+      form.addEventListener('submit', function () {
+        numericInputs.forEach(function (input) {
+          input.value = input.value.replace(/,/g, '')
+        })
+      })
+    }
+
+    // ── Helper: parse numeric value from input ────────────────
+    function parseNum (id) {
+      var el = document.getElementById(id)
+      if (!el) return NaN
+      return parseFloat(el.value.replace(/[^0-9.]/g, ''))
+    }
+
+    // ── Tenure-specific Calculate button ──────────────────────
+    var calcBtn = document.getElementById('calculate-tenure')
+    if (!calcBtn) return
+
+    calcBtn.addEventListener('click', function () {
+      // Shared Ownership / OPSO calculations
+      var firstTrancheEl = document.getElementById('calc-first-tranche')
+      if (firstTrancheEl) {
+        var marketValue = parseNum('market-value-per-home')
+        var initialSale = parseNum('assumed-average-initial-sale')
+        var rentPW = parseNum('proposed-rent-per-week')
+
+        if (!isNaN(marketValue) && !isNaN(initialSale)) {
+          var firstTranche = marketValue * (initialSale / 100)
+          firstTrancheEl.innerHTML = '£' + formatWithCommas(firstTranche.toFixed(2))
+          document.getElementById('first-tranche-hidden').value = firstTranche.toFixed(2)
+
+          // Rent as % of unsold share
+          var unsoldShare = marketValue - firstTranche
+          var rentPercentEl = document.getElementById('calc-rent-percent-unsold')
+          var rentPercentHidden = document.getElementById('rent-percent-unsold-hidden')
+          if (unsoldShare > 0 && !isNaN(rentPW)) {
+            var rentPercent = (rentPW * 52) / unsoldShare * 100
+            rentPercentEl.innerHTML = rentPercent.toFixed(2) + '%'
+            rentPercentHidden.value = rentPercent.toFixed(2)
+          }
+        }
+        return
+      }
+
+      // Affordable Rent / Rent to Buy calculations
+      var percentMarketEl = document.getElementById('calc-rent-percent-market')
+      if (percentMarketEl) {
+        var marketRent = parseNum('market-rent-per-week')
+        var rent = parseNum('proposed-rent-per-week')
+        var serviceCharge = parseNum('service-charge-per-week')
+
+        if (!isNaN(marketRent) && marketRent > 0 && !isNaN(rent)) {
+          var sc = isNaN(serviceCharge) ? 0 : serviceCharge
+          var percent = ((rent + sc) / marketRent) * 100
+
+          // Determine label based on page heading
+          var heading = document.querySelector('h1')
+          var label = (heading && heading.textContent.indexOf('Affordable') !== -1)
+            ? 'Affordable Rent as percentage of market rent'
+            : 'Rent as percentage of market rent'
+
+          percentMarketEl.innerHTML = label + ': <strong>' + percent.toFixed(0) + '%</strong>'
+          document.getElementById('rent-percent-market-hidden').value = percent.toFixed(0)
+        }
+      }
+    })
+  })()
+</script>
+{% endblock %}

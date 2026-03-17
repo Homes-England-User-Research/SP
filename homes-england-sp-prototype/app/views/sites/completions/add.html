@@ -1,0 +1,92 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageName = "Add a completion phase" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{% if errors %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">{{ site.siteName }}</span>
+    <h1 class="govuk-heading-l">Add a completion phase</h1>
+
+    <form method="post" action="/sites/{{ site.siteId }}/completions/add">
+
+      {{ govukInput({
+        label: {
+          text: "Phase name",
+          classes: "govuk-label--m"
+        },
+        hint: {
+          text: "Give this phase a name to help you identify it, for example 'Phase 1' or 'Old Brewery plots 26\u201342'."
+        },
+        id: "phase-details",
+        name: "phase-details",
+        value: values["phase-details"] if values else "",
+        errorMessage: { text: "Enter a phase name" } if errors and not (values["phase-details"] | trim)
+      }) }}
+
+      {{ govukDateInput({
+        id: "practical-completion-date",
+        namePrefix: "practical-completion-date",
+        fieldset: {
+          legend: {
+            text: "Practical completion date",
+            classes: "govuk-fieldset__legend--m"
+          }
+        },
+        hint: {
+          text: "For example, 27 3 2007"
+        },
+        items: [
+          {
+            name: "day",
+            classes: "govuk-input--width-2",
+            value: values["practical-completion-date-day"] if values else ""
+          },
+          {
+            name: "month",
+            classes: "govuk-input--width-2",
+            value: values["practical-completion-date-month"] if values else ""
+          },
+          {
+            name: "year",
+            classes: "govuk-input--width-4",
+            value: values["practical-completion-date-year"] if values else ""
+          }
+        ]
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Save and continue"
+        }) }}
+        <a class="govuk-link" href="/sites/{{ site.siteId }}/completions">Cancel</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

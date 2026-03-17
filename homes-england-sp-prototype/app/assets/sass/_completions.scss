@@ -1,0 +1,54 @@
+// Completions journey styles
+// Address table compact inputs — matches editable table pattern from _editable-table.scss
+
+.completions-address-table {
+  .govuk-input {
+    margin-bottom: 0;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
+  // Narrow number column
+  .completions-col-number {
+    width: 60px;
+  }
+
+  // Postcode column
+  .completions-col-postcode {
+    width: 100px;
+  }
+
+  // Inline prefix wrapper inside table cells
+  .govuk-input__wrapper {
+    margin-bottom: 0;
+  }
+}
+
+// Converter calculator — inline input + button layout
+.converter-input-group {
+  display: flex;
+  align-items: flex-end;
+  gap: govuk-spacing(3);
+}
+
+// Tenure home type list table — prevent column text wrapping so the table
+// auto-sizes columns to fit content width rather than wrapping to two lines.
+.completions-tht-table {
+  th,
+  td {
+    white-space: nowrap;
+  }
+}
+
+// Prevent long status tags from wrapping in the review summary list
+.completions-tag-nowrap {
+  white-space: nowrap;
+}
+
+// Delete link in address table — red, matches GDS destructive action pattern
+.delete-row-link {
+  color: govuk-colour("red");
+  white-space: nowrap;
+}

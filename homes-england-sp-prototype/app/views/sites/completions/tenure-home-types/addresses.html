@@ -1,0 +1,335 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% set pageName = "Add home addresses" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/" + site.siteId + "/completions/" + phase.id + "/tenure-home-types/" + tht.id + "/rent-and-sales"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{% if errors %}
+  {{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: errors
+  }) }}
+{% endif %}
+
+<span class="govuk-caption-l">{{ site.siteName }} completion</span>
+<h1 class="govuk-heading-l">Add home addresses</h1>
+
+<form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/{{ tht.id }}/addresses">
+
+  <!-- Inline editable address table — uses the same pattern established
+       in the Site homes forecast page. Each row is an editable form row
+       with GDS-styled inputs inside table cells. -->
+  <div class="sp-table-wrapper">
+    <table class="govuk-table completions-address-table" id="address-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header completions-col-number">Number</th>
+          <th scope="col" class="govuk-table__header">Address line 1</th>
+          <th scope="col" class="govuk-table__header">Address line 2</th>
+          <th scope="col" class="govuk-table__header">Town or city</th>
+          <th scope="col" class="govuk-table__header completions-col-postcode">Postcode</th>
+          <th scope="col" class="govuk-table__header">RCGF</th>
+          <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body" id="address-tbody">
+        {% if tht.addresses and tht.addresses.length > 0 %}
+          {% for addr in tht.addresses %}
+            <tr class="govuk-table__row address-row" data-index="{{ loop.index0 }}">
+              <td class="govuk-table__cell">
+                <input class="govuk-input govuk-input--width-2" type="text" inputmode="numeric"
+                  name="addresses[{{ loop.index0 }}][number]" value="{{ addr.number }}"
+                  aria-label="Home {{ loop.index }} - Number">
+              </td>
+              <td class="govuk-table__cell">
+                <input class="govuk-input" type="text"
+                  name="addresses[{{ loop.index0 }}][addressLine1]" value="{{ addr.addressLine1 }}"
+                  aria-label="Home {{ loop.index }} - Address line 1">
+              </td>
+              <td class="govuk-table__cell">
+                <input class="govuk-input" type="text"
+                  name="addresses[{{ loop.index0 }}][addressLine2]" value="{{ addr.addressLine2 }}"
+                  aria-label="Home {{ loop.index }} - Address line 2">
+              </td>
+              <td class="govuk-table__cell">
+                <input class="govuk-input" type="text"
+                  name="addresses[{{ loop.index0 }}][county]" value="{{ addr.county }}"
+                  aria-label="Home {{ loop.index }} - Town or city">
+              </td>
+              <td class="govuk-table__cell">
+                <input class="govuk-input govuk-input--width-5" type="text"
+                  name="addresses[{{ loop.index0 }}][postcode]" value="{{ addr.postcode }}"
+                  aria-label="Home {{ loop.index }} - Postcode">
+              </td>
+              <td class="govuk-table__cell">
+                <div class="govuk-input__wrapper">
+                  <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                  <input class="govuk-input govuk-input--width-5 rcgf-input" type="text" inputmode="numeric"
+                    name="addresses[{{ loop.index0 }}][rcgf]" value="{{ addr.rcgf }}"
+                    aria-label="Home {{ loop.index }} - RCGF">
+                </div>
+              </td>
+              <td class="govuk-table__cell">
+                <a href="#" class="govuk-link delete-row-link" style="color: #d4351c;">Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <!-- Start with one blank row -->
+          <tr class="govuk-table__row address-row" data-index="0">
+            <td class="govuk-table__cell">
+              <input class="govuk-input govuk-input--width-2" type="text" inputmode="numeric"
+                name="addresses[0][number]" value=""
+                aria-label="Home 1 - Number">
+            </td>
+            <td class="govuk-table__cell">
+              <input class="govuk-input" type="text"
+                name="addresses[0][addressLine1]" value=""
+                aria-label="Home 1 - Address line 1">
+            </td>
+            <td class="govuk-table__cell">
+              <input class="govuk-input" type="text"
+                name="addresses[0][addressLine2]" value=""
+                aria-label="Home 1 - Address line 2">
+            </td>
+            <td class="govuk-table__cell">
+              <input class="govuk-input" type="text"
+                name="addresses[0][county]" value=""
+                aria-label="Home 1 - Town or city">
+            </td>
+            <td class="govuk-table__cell">
+              <input class="govuk-input govuk-input--width-5" type="text"
+                name="addresses[0][postcode]" value=""
+                aria-label="Home 1 - Postcode">
+            </td>
+            <td class="govuk-table__cell">
+              <div class="govuk-input__wrapper">
+                <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                <input class="govuk-input govuk-input--width-5 rcgf-input" type="text" inputmode="numeric"
+                  name="addresses[0][rcgf]" value=""
+                  aria-label="Home 1 - RCGF">
+              </div>
+            </td>
+            <td class="govuk-table__cell">
+              <a href="#" class="govuk-link delete-row-link" style="color: #d4351c;">Delete</a>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="govuk-button-group govuk-!-margin-bottom-4">
+    <button type="button" class="govuk-button govuk-button--secondary" id="add-address-btn">
+      Add address
+    </button>
+    <button type="button" class="govuk-button govuk-button--secondary" id="copy-last-btn">
+      Copy last address
+    </button>
+    {{ govukButton({
+      text: "Save"
+    }) }}
+  </div>
+
+  <!-- Total RCGF: running total updated live -->
+  <p class="govuk-body govuk-!-font-weight-bold">
+    Total RCGF: <span id="rcgf-total" aria-live="polite">£0</span>
+  </p>
+
+</form>
+
+{% endblock %}
+
+{% block pageScripts %}
+<script>
+  ;(function () {
+    var tbody = document.getElementById('address-tbody')
+    var addBtn = document.getElementById('add-address-btn')
+    var copyBtn = document.getElementById('copy-last-btn')
+    var rcgfTotalDisplay = document.getElementById('rcgf-total')
+
+    if (!tbody) return
+
+    // ── Live thousand-separator formatting on numeric inputs ──
+    function formatWithCommas (str) {
+      var parts = str.split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    }
+
+    function attachFormatter (input) {
+      input.addEventListener('input', function () {
+        if (!input.classList.contains('rcgf-input')) return
+        var raw = input.value.replace(/[^0-9.]/g, '')
+        var dotIndex = raw.indexOf('.')
+        if (dotIndex !== -1) {
+          raw = raw.slice(0, dotIndex + 1) + raw.slice(dotIndex + 1).replace(/\./g, '')
+        }
+        var formatted = formatWithCommas(raw)
+        if (formatted !== input.value) {
+          var cursorPos = input.selectionStart
+          var digitsBeforeCursor = input.value.slice(0, cursorPos).replace(/[^0-9.]/g, '').length
+          input.value = formatted
+          var newPos = 0
+          var count = 0
+          while (newPos < formatted.length && count < digitsBeforeCursor) {
+            if (formatted[newPos] !== ',') count++
+            newPos++
+          }
+          input.setSelectionRange(newPos, newPos)
+        }
+      })
+    }
+
+    // Attach formatter to existing RCGF inputs
+    tbody.querySelectorAll('.rcgf-input').forEach(function (input) {
+      attachFormatter(input)
+      // Format on page load if value already exists
+      if (input.value) {
+        var raw = input.value.replace(/[^0-9.]/g, '')
+        if (raw) input.value = formatWithCommas(raw)
+      }
+    })
+
+    // Strip commas before form submission so clean numbers are saved
+    var form = document.querySelector('form')
+    if (form) {
+      form.addEventListener('submit', function () {
+        tbody.querySelectorAll('.rcgf-input').forEach(function (input) {
+          input.value = input.value.replace(/,/g, '')
+        })
+      })
+    }
+
+    /**
+     * Get the next row index based on current row count.
+     */
+    function getNextIndex() {
+      return tbody.querySelectorAll('.address-row').length
+    }
+
+    /**
+     * Recalculate and display the RCGF total.
+     */
+    function recalculateRcgf() {
+      var total = 0
+      tbody.querySelectorAll('.rcgf-input').forEach(function (input) {
+        total += parseFloat(input.value.replace(/,/g, '')) || 0
+      })
+      rcgfTotalDisplay.textContent = '£' + formatWithCommas(total.toString())
+    }
+
+    /**
+     * Update all row indices and aria-labels after add/delete.
+     */
+    function reindexRows() {
+      var rows = tbody.querySelectorAll('.address-row')
+      rows.forEach(function (row, i) {
+        row.setAttribute('data-index', i)
+        var homeNum = i + 1
+        row.querySelectorAll('input').forEach(function (input) {
+          // Update name attribute index
+          var name = input.getAttribute('name')
+          if (name) {
+            input.setAttribute('name', name.replace(/addresses\[\d+\]/, 'addresses[' + i + ']'))
+          }
+          // Update aria-label home number
+          var label = input.getAttribute('aria-label')
+          if (label) {
+            input.setAttribute('aria-label', label.replace(/Home \d+/, 'Home ' + homeNum))
+          }
+        })
+      })
+    }
+
+    /**
+     * Create a new blank row.
+     */
+    function createRow(index) {
+      var homeNum = index + 1
+      var tr = document.createElement('tr')
+      tr.className = 'govuk-table__row address-row'
+      tr.setAttribute('data-index', index)
+      tr.innerHTML =
+        '<td class="govuk-table__cell"><input class="govuk-input govuk-input--width-2" type="text" inputmode="numeric" name="addresses[' + index + '][number]" value="" aria-label="Home ' + homeNum + ' - Number"></td>' +
+        '<td class="govuk-table__cell"><input class="govuk-input" type="text" name="addresses[' + index + '][addressLine1]" value="" aria-label="Home ' + homeNum + ' - Address line 1"></td>' +
+        '<td class="govuk-table__cell"><input class="govuk-input" type="text" name="addresses[' + index + '][addressLine2]" value="" aria-label="Home ' + homeNum + ' - Address line 2"></td>' +
+        '<td class="govuk-table__cell"><input class="govuk-input" type="text" name="addresses[' + index + '][county]" value="" aria-label="Home ' + homeNum + ' - Town or city"></td>' +
+        '<td class="govuk-table__cell"><input class="govuk-input govuk-input--width-5" type="text" name="addresses[' + index + '][postcode]" value="" aria-label="Home ' + homeNum + ' - Postcode"></td>' +
+        '<td class="govuk-table__cell"><div class="govuk-input__wrapper"><div class="govuk-input__prefix" aria-hidden="true">£</div><input class="govuk-input govuk-input--width-5 rcgf-input" type="text" inputmode="numeric" name="addresses[' + index + '][rcgf]" value="" aria-label="Home ' + homeNum + ' - RCGF"></div></td>' +
+        '<td class="govuk-table__cell"><a href="#" class="govuk-link delete-row-link" style="color: #d4351c;">Delete</a></td>'
+      return tr
+    }
+
+    // Add address button
+    addBtn.addEventListener('click', function () {
+      var newRow = createRow(getNextIndex())
+      tbody.appendChild(newRow)
+      // Attach comma formatter to the new RCGF input
+      var rcgfInput = newRow.querySelector('.rcgf-input')
+      if (rcgfInput) attachFormatter(rcgfInput)
+      // Focus the first input of the new row
+      newRow.querySelector('input').focus()
+    })
+
+    // Copy last address button
+    copyBtn.addEventListener('click', function () {
+      var rows = tbody.querySelectorAll('.address-row')
+      if (rows.length === 0) return
+
+      var lastRow = rows[rows.length - 1]
+      var newIndex = getNextIndex()
+      var newRow = createRow(newIndex)
+
+      // Copy values from last row (except Number field)
+      var lastInputs = lastRow.querySelectorAll('input')
+      var newInputs = newRow.querySelectorAll('input')
+
+      for (var i = 1; i < lastInputs.length && i < newInputs.length; i++) {
+        newInputs[i].value = lastInputs[i].value
+      }
+
+      tbody.appendChild(newRow)
+      // Attach comma formatter to the new RCGF input
+      var rcgfInput = newRow.querySelector('.rcgf-input')
+      if (rcgfInput) attachFormatter(rcgfInput)
+      newRow.querySelector('input').focus()
+      recalculateRcgf()
+    })
+
+    // Delete row — event delegation
+    tbody.addEventListener('click', function (e) {
+      if (e.target.classList.contains('delete-row-link')) {
+        e.preventDefault()
+        var row = e.target.closest('.address-row')
+        if (row && tbody.querySelectorAll('.address-row').length > 1) {
+          row.remove()
+          reindexRows()
+          recalculateRcgf()
+        }
+      }
+    })
+
+    // Live RCGF total — event delegation on input
+    tbody.addEventListener('input', function (e) {
+      if (e.target.classList.contains('rcgf-input')) {
+        recalculateRcgf()
+      }
+    })
+
+    // Initial calculation
+    recalculateRcgf()
+  })()
+</script>
+{% endblock %}
