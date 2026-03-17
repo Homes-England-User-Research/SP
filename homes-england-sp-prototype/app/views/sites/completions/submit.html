@@ -47,7 +47,7 @@
     }) }}
 
     {# ── Section 2: Homes and total grant reported ───────────────── #}
-    <h2 class="govuk-heading-m">Homes and total grant reported</h2>
+    <h2 class="govuk-heading-m govuk-!-margin-top-8">Homes and total grant reported</h2>
 
     <table class="govuk-table">
       <thead class="govuk-table__head">
@@ -84,6 +84,9 @@
 
       {{ govukRadios({
         name: "further-phases",
+        formGroup: {
+          classes: "govuk-!-margin-top-8"
+        },
         fieldset: {
           legend: {
             text: "Further phases to report?",
@@ -106,7 +109,7 @@
       }) }}
 
       {# ── Section 4: Certification ──────────────────────────────── #}
-      <h2 class="govuk-heading-m">Certification</h2>
+      <h2 class="govuk-heading-m govuk-!-margin-top-8">Certification</h2>
 
       {{ govukCheckboxes({
         name: "certification",
@@ -121,6 +124,9 @@
       }) }}
 
       {{ govukTextarea({
+        formGroup: {
+          classes: "govuk-!-margin-top-8"
+        },
         label: {
           text: "Comments",
           classes: "govuk-label--m"
