@@ -12,3 +12,12 @@ addFilter('toLocaleString', function (value) {
   return Number(value).toLocaleString('en-GB')
 })
 
+// Format a number as currency with £ sign and thousands separators (e.g. 50000 → "£50,000")
+addFilter('currency', function (value) {
+  var num = parseFloat(value) || 0
+  return '£' + num.toLocaleString('en-GB', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  })
+})
+

@@ -442,6 +442,16 @@ Automated tools catch approximately 30-40% of issues. Manual testing is always r
 - Submit page back link targets `#review-and-submit` hash fragment.
 - All POST redirects use hash fragments (`#phase-details`, `#phase-costs`, etc.)
   to reselect the correct tab after save.
+- `currency` Nunjucks filter added to `app/filters.js` — formats numbers as
+  `£X,XXX` with thousands separators. Applied to all read-only currency displays
+  (total costs, total contributions, RCGF, submitted-state summary lists, grant
+  attributable values, first tranche sales receipt). Input field values remain
+  unformatted raw numbers — commas in inputs would break `parseFloat()`.
+- Live JS total costs calculation also formats with `toLocaleString('en-GB')`.
+- Phase contributions tab restructured into 3 groups separated by GDS section
+  breaks: "Grant and development" (GDV, baseline grant, community led grant),
+  "Other contributions" (7 fields including read-only RCGF), and an ungrouped
+  total section with mismatch warning. Group headings use `<h3 class="govuk-heading-s">`.
 
 ### Deployment
 - Railway deployment uses `railway.json` at repo root with `rootDirectory: "homes-england-sp-prototype"`

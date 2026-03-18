@@ -121,36 +121,6 @@
       <li>Table wrapped in <code>.sp-table-wrapper</code> for horizontal scroll on narrow viewports</li>
     </ul>
 
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-    {# -- Progressive reveal on add tenure home type ----------------------- #}
-    <h3 class="govuk-heading-m">Progressive reveal (Add tenure home type)</h3>
-    <p class="govuk-body">
-      <strong>Departure:</strong> When the user selects an allocated home type
-      from the dropdown, a detail table is progressively revealed showing the
-      home type's specifications (building type, bedrooms, persons, floor area,
-      etc.). The tenure type select conditionally reveals rent terms radios
-      when Affordable Rent or Social Rent is selected.
-    </p>
-    <p class="govuk-body">
-      <strong>Justification:</strong> The allocated home type select is built
-      manually (not via <code>govukSelect</code> macro) because options are
-      dynamically generated from a session data array. The progressive reveal
-      pattern helps users confirm they have selected the correct home type
-      before proceeding, reducing errors. GDS uses conditional reveals in
-      radios and checkboxes -this extends the same principle to select
-      elements.
-    </p>
-    <p class="govuk-body">
-      <strong>Accessibility:</strong>
-    </p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li>Manual select uses standard GDS form group markup (<code>govuk-form-group</code>, <code>govuk-label</code>, <code>govuk-select</code> classes) for consistent styling and label association</li>
-      <li>Error messages include <code>&lt;span class="govuk-visually-hidden"&gt;Error:&lt;/span&gt;</code> prefix for screen readers</li>
-      <li>Revealed content uses the <code>hidden</code> HTML attribute for proper semantics -content is genuinely removed from the accessibility tree when hidden</li>
-      <li>Home type data is embedded via Nunjucks <code>dump</code> filter, avoiding async requests that could cause timing issues for assistive technology</li>
-    </ul>
-
     {# -- Implementation details ------------------------------------------- #}
     <h2 class="govuk-heading-l govuk-!-margin-top-8">Implementation details</h2>
 

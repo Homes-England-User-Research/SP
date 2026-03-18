@@ -107,7 +107,7 @@
         <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
           {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
-            £{{ tht.rentAndSales.firstTrancheSalesReceipt }}
+            {{ tht.rentAndSales.firstTrancheSalesReceipt | currency }}
           {%- endif -%}
         </p>
         <input type="hidden" name="first-tranche-sales-receipt" id="first-tranche-hidden" value="{{ tht.rentAndSales.firstTrancheSalesReceipt if tht.rentAndSales else '' }}">
@@ -166,7 +166,7 @@
         <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
           {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
-            £{{ tht.rentAndSales.firstTrancheSalesReceipt }}
+            {{ tht.rentAndSales.firstTrancheSalesReceipt | currency }}
           {%- endif -%}
         </p>
         <input type="hidden" name="first-tranche-sales-receipt" id="first-tranche-hidden" value="{{ tht.rentAndSales.firstTrancheSalesReceipt if tht.rentAndSales else '' }}">

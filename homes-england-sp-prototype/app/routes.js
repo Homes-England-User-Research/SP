@@ -582,6 +582,14 @@ function ensureCompletionsSession(req) {
 }
 
 /**
+ * Helper — strip commas from a form value so parseFloat works correctly.
+ * Currency inputs may contain thousands separators from client-side formatting.
+ */
+function stripCommas(value) {
+  return (value || '').replace(/,/g, '').trim()
+}
+
+/**
  * Helper — find a phase by ID within the completions session.
  */
 function findPhase(req, phaseId) {
@@ -782,10 +790,10 @@ router.post('/sites/:siteId/completions/:phaseId/phase-costs', function (req, re
   if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
 
   phase.costs = {
-    grossDevelopmentValue: (req.body['gross-development-value'] || '').trim(),
-    acquisitionCosts: (req.body['acquisition-costs'] || '').trim(),
-    workCosts: (req.body['work-costs'] || '').trim(),
-    onCosts: (req.body['on-costs'] || '').trim()
+    grossDevelopmentValue: stripCommas(req.body['gross-development-value']),
+    acquisitionCosts: stripCommas(req.body['acquisition-costs']),
+    workCosts: stripCommas(req.body['work-costs']),
+    onCosts: stripCommas(req.body['on-costs'])
   }
 
   res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#phase-costs')
@@ -801,16 +809,16 @@ router.post('/sites/:siteId/completions/:phaseId/phase-contributions', function 
   if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
 
   phase.contributions = {
-    grossDevelopmentValue: (req.body['contributions-gdv'] || '').trim(),
-    totalBaselineGrant: (req.body['total-baseline-grant'] || '').trim(),
-    communityLedRuralGrant: (req.body['community-led-rural-grant'] || '').trim(),
-    providersOwnResources: (req.body['providers-own-resources'] || '').trim(),
-    incomeFromSharedOwnershipSales: (req.body['income-shared-ownership-sales'] || '').trim(),
-    loanSupportableFromRentalIncome: (req.body['loan-supportable-rental-income'] || '').trim(),
-    rcgf: (req.body['rcgf'] || '').trim(),
-    dpf: (req.body['dpf'] || '').trim(),
-    otherPublicSubsidy: (req.body['other-public-subsidy'] || '').trim(),
-    other: (req.body['other-contributions'] || '').trim()
+    grossDevelopmentValue: stripCommas(req.body['contributions-gdv']),
+    totalBaselineGrant: stripCommas(req.body['total-baseline-grant']),
+    communityLedRuralGrant: stripCommas(req.body['community-led-rural-grant']),
+    providersOwnResources: stripCommas(req.body['providers-own-resources']),
+    incomeFromSharedOwnershipSales: stripCommas(req.body['income-shared-ownership-sales']),
+    loanSupportableFromRentalIncome: stripCommas(req.body['loan-supportable-rental-income']),
+    rcgf: stripCommas(req.body['rcgf']),
+    dpf: stripCommas(req.body['dpf']),
+    otherPublicSubsidy: stripCommas(req.body['other-public-subsidy']),
+    other: stripCommas(req.body['other-contributions'])
   }
 
   res.redirect('/sites/' + req.params.siteId + '/completions/' + req.params.phaseId + '#phase-contributions')
@@ -917,18 +925,18 @@ router.post('/sites/:siteId/completions/:phaseId/tenure-home-types/:thtId/rent-a
 
   tht.rentAndSales = {
     // Common
-    marketValuePerHome: (req.body['market-value-per-home'] || '').trim(),
-    proposedRentPerWeek: (req.body['proposed-rent-per-week'] || '').trim(),
+    marketValuePerHome: stripCommas(req.body['market-value-per-home']),
+    proposedRentPerWeek: stripCommas(req.body['proposed-rent-per-week']),
     // Shared Ownership / OPSO
-    assumedAverageInitialSale: (req.body['assumed-average-initial-sale'] || '').trim(),
-    firstTrancheSalesReceipt: (req.body['first-tranche-sales-receipt'] || '').trim(),
-    rentPercentUnsoldShare: (req.body['rent-percent-unsold-share'] || '').trim(),
+    assumedAverageInitialSale: stripCommas(req.body['assumed-average-initial-sale']),
+    firstTrancheSalesReceipt: stripCommas(req.body['first-tranche-sales-receipt']),
+    rentPercentUnsoldShare: stripCommas(req.body['rent-percent-unsold-share']),
     // OPSO / Affordable Rent / Rent to Buy
-    serviceChargePerWeek: (req.body['service-charge-per-week'] || '').trim(),
+    serviceChargePerWeek: stripCommas(req.body['service-charge-per-week']),
     // Affordable Rent / Rent to Buy
-    marketRentPerWeek: (req.body['market-rent-per-week'] || '').trim(),
-    rentPercentMarketRent: (req.body['rent-percent-market-rent'] || '').trim(),
-    lhaRate: (req.body['lha-rate'] || '').trim(),
+    marketRentPerWeek: stripCommas(req.body['market-rent-per-week']),
+    rentPercentMarketRent: stripCommas(req.body['rent-percent-market-rent']),
+    lhaRate: stripCommas(req.body['lha-rate']),
     exceeds80Percent: (req.body['exceeds-80-percent'] || '').trim()
   }
 

@@ -216,11 +216,11 @@
   {% if isSubmitted %}
     {{ govukSummaryList({
       rows: [
-        { key: { text: "Gross development value" }, value: { text: "£" + phase.costs.grossDevelopmentValue if phase.costs.grossDevelopmentValue else "—" } },
-        { key: { text: "Acquisition costs" }, value: { text: "£" + phase.costs.acquisitionCosts if phase.costs.acquisitionCosts else "—" } },
-        { key: { text: "Work costs" }, value: { text: "£" + phase.costs.workCosts if phase.costs.workCosts else "—" } },
-        { key: { text: "On costs" }, value: { text: "£" + phase.costs.onCosts if phase.costs.onCosts else "—" } },
-        { key: { text: "Total costs" }, value: { text: "£" + totalCosts } }
+        { key: { text: "Gross development value" }, value: { text: (phase.costs.grossDevelopmentValue | currency) if phase.costs.grossDevelopmentValue else "—" } },
+        { key: { text: "Acquisition costs" }, value: { text: (phase.costs.acquisitionCosts | currency) if phase.costs.acquisitionCosts else "—" } },
+        { key: { text: "Work costs" }, value: { text: (phase.costs.workCosts | currency) if phase.costs.workCosts else "—" } },
+        { key: { text: "On costs" }, value: { text: (phase.costs.onCosts | currency) if phase.costs.onCosts else "—" } },
+        { key: { text: "Total costs" }, value: { text: totalCosts | currency } }
       ]
     }) }}
   {% else %}
@@ -277,7 +277,7 @@
       <!-- Total costs: derived read-only value (acquisition + work + on costs) -->
       <div class="govuk-form-group">
         <label class="govuk-label" for="total-costs-display">Total costs</label>
-        <p class="govuk-body govuk-!-font-weight-bold" id="total-costs-display"><span id="total-costs-value" aria-live="polite">£{{ totalCosts }}</span></p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="total-costs-display"><span id="total-costs-value" aria-live="polite">{{ totalCosts | currency }}</span></p>
       </div>
 
       <div class="govuk-button-group">
@@ -296,23 +296,23 @@
   {% if isSubmitted %}
     {{ govukSummaryList({
       rows: [
-        { key: { text: "Gross development value" }, value: { text: "£" + phase.contributions.grossDevelopmentValue if phase.contributions.grossDevelopmentValue else "—" } },
-        { key: { text: "Total baseline grant" }, value: { text: "£" + phase.contributions.totalBaselineGrant if phase.contributions.totalBaselineGrant else "—" } },
-        { key: { text: "Total community led / rural grant rate" }, value: { text: "£" + phase.contributions.communityLedRuralGrant if phase.contributions.communityLedRuralGrant else "—" } },
-        { key: { text: "Provider's own resources" }, value: { text: "£" + phase.contributions.providersOwnResources if phase.contributions.providersOwnResources else "—" } },
-        { key: { text: "Income from shared ownership sales" }, value: { text: "£" + phase.contributions.incomeFromSharedOwnershipSales if phase.contributions.incomeFromSharedOwnershipSales else "—" } },
-        { key: { text: "Loan supportable from rental income" }, value: { text: "£" + phase.contributions.loanSupportableFromRentalIncome if phase.contributions.loanSupportableFromRentalIncome else "—" } },
-        { key: { text: "RCGF (calculated from addresses)" }, value: { text: "£" + rcgfTotal } },
-        { key: { text: "DPF" }, value: { text: "£" + phase.contributions.dpf if phase.contributions.dpf else "—" } },
-        { key: { text: "Other public subsidy" }, value: { text: "£" + phase.contributions.otherPublicSubsidy if phase.contributions.otherPublicSubsidy else "—" } },
-        { key: { text: "Other" }, value: { text: "£" + phase.contributions.other if phase.contributions.other else "—" } },
-        { key: { text: "Total contributions" }, value: { text: "£" + totalContributions } }
+        { key: { text: "Gross development value" }, value: { text: (phase.contributions.grossDevelopmentValue | currency) if phase.contributions.grossDevelopmentValue else "—" } },
+        { key: { text: "Total baseline grant" }, value: { text: (phase.contributions.totalBaselineGrant | currency) if phase.contributions.totalBaselineGrant else "—" } },
+        { key: { text: "Total community led / rural grant rate" }, value: { text: (phase.contributions.communityLedRuralGrant | currency) if phase.contributions.communityLedRuralGrant else "—" } },
+        { key: { text: "Provider's own resources" }, value: { text: (phase.contributions.providersOwnResources | currency) if phase.contributions.providersOwnResources else "—" } },
+        { key: { text: "Income from shared ownership sales" }, value: { text: (phase.contributions.incomeFromSharedOwnershipSales | currency) if phase.contributions.incomeFromSharedOwnershipSales else "—" } },
+        { key: { text: "Loan supportable from rental income" }, value: { text: (phase.contributions.loanSupportableFromRentalIncome | currency) if phase.contributions.loanSupportableFromRentalIncome else "—" } },
+        { key: { text: "RCGF (calculated from addresses)" }, value: { text: rcgfTotal | currency } },
+        { key: { text: "DPF" }, value: { text: (phase.contributions.dpf | currency) if phase.contributions.dpf else "—" } },
+        { key: { text: "Other public subsidy" }, value: { text: (phase.contributions.otherPublicSubsidy | currency) if phase.contributions.otherPublicSubsidy else "—" } },
+        { key: { text: "Other" }, value: { text: (phase.contributions.other | currency) if phase.contributions.other else "—" } },
+        { key: { text: "Total contributions" }, value: { text: totalContributions | currency } }
       ]
     }) }}
   {% else %}
     <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/phase-contributions">
 
-      <h3 class="govuk-heading-s">Capital contributions</h3>
+      <h3 class="govuk-heading-s">Grant and development</h3>
 
       {{ govukInput({
         label: { text: "Gross development value" },
@@ -346,6 +346,10 @@
         inputmode: "numeric",
         spellcheck: false
       }) }}
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+
+      <h3 class="govuk-heading-s">Other contributions</h3>
 
       {{ govukInput({
         label: { text: "Provider's own resources" },
@@ -383,7 +387,7 @@
       <!-- RCGF: read-only, calculated from address-level RCGF values -->
       <div class="govuk-form-group">
         <label class="govuk-label" for="rcgf-display">RCGF (calculated from addresses)</label>
-        <p class="govuk-body govuk-!-font-weight-bold" id="rcgf-display" aria-live="polite">£{{ rcgfTotal }}</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="rcgf-display" aria-live="polite">{{ rcgfTotal | currency }}</p>
       </div>
 
       {{ govukInput({
@@ -419,15 +423,17 @@
         spellcheck: false
       }) }}
 
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6">
+
       <!-- Total contributions: derived read-only value -->
       <div class="govuk-form-group">
         <label class="govuk-label" for="total-contributions-display">Total contributions</label>
-        <p class="govuk-body govuk-!-font-weight-bold" id="total-contributions-display" aria-live="polite">£{{ totalContributions }}</p>
+        <p class="govuk-body govuk-!-font-weight-bold" id="total-contributions-display" aria-live="polite">{{ totalContributions | currency }}</p>
       </div>
 
       {% if totalContributions > 0 and totalContributions != totalCosts %}
         {{ govukWarningText({
-          text: "Total contributions (£" + totalContributions + ") does not match total costs (£" + totalCosts + "). These must match before you can submit.",
+          text: "Total contributions (" + (totalContributions | currency) + ") does not match total costs (" + (totalCosts | currency) + "). These must match before you can submit.",
           iconFallbackText: "Warning"
         }) }}
       {% endif %}
@@ -512,6 +518,52 @@
 
 {% block pageScripts %}
 <script>
+  // Format currency inputs with thousands separators on blur, strip on focus.
+  // On form submit, strip commas so parseFloat works server-side.
+  ;(function () {
+    function formatWithCommas(value) {
+      var num = parseFloat(String(value).replace(/,/g, ''))
+      if (isNaN(num)) return value
+      return num.toLocaleString('en-GB')
+    }
+
+    function stripCommas(value) {
+      return String(value).replace(/,/g, '')
+    }
+
+    // All currency inputs use prefix £ — select by the GDS prefix wrapper
+    var currencyInputs = document.querySelectorAll('.govuk-input--width-10[inputmode="numeric"]')
+
+    currencyInputs.forEach(function (input) {
+      // Format on page load if value exists
+      if (input.value) {
+        input.value = formatWithCommas(input.value)
+      }
+
+      // On focus: strip commas so user can edit raw number
+      input.addEventListener('focus', function () {
+        input.value = stripCommas(input.value)
+      })
+
+      // On blur: re-add commas for display
+      input.addEventListener('blur', function () {
+        if (input.value) {
+          input.value = formatWithCommas(input.value)
+        }
+      })
+    })
+
+    // Before form submit: strip commas from all currency inputs
+    var forms = document.querySelectorAll('form')
+    forms.forEach(function (form) {
+      form.addEventListener('submit', function () {
+        currencyInputs.forEach(function (input) {
+          input.value = stripCommas(input.value)
+        })
+      })
+    })
+  })()
+
   // Live calculation of total costs (acquisition + work + on costs)
   ;(function () {
     var acquisitionInput = document.getElementById('acquisition-costs')
@@ -521,11 +573,13 @@
 
     if (!acquisitionInput || !totalDisplay) return
 
+    function parseVal(input) {
+      return parseFloat(String(input.value).replace(/,/g, '')) || 0
+    }
+
     function recalculateCosts() {
-      var total = (parseFloat(acquisitionInput.value) || 0) +
-        (parseFloat(workInput.value) || 0) +
-        (parseFloat(onInput.value) || 0)
-      totalDisplay.textContent = '£' + total
+      var total = parseVal(acquisitionInput) + parseVal(workInput) + parseVal(onInput)
+      totalDisplay.textContent = '£' + total.toLocaleString('en-GB')
     }
 
     acquisitionInput.addEventListener('input', recalculateCosts)
