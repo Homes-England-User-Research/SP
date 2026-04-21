@@ -51,8 +51,14 @@ homes-england-sp-prototype/
 │   ├── routes.js                            ← all GET/POST routes
 │   ├── views/
 │   │   ├── layouts/
-│   │   │   └── main.html                    ← extends govuk-branded.njk; overrides
-│   │   │                                       govukServiceNavigation block for custom nav
+│   │   │   ├── main.html                    ← extends govuk-branded.njk; overrides
+│   │   │   │                                   govukServiceNavigation block for custom nav
+│   │   │   └── forecasting.html             ← SP programme nav layout; reads
+│   │   │                                       data.activePrototype for dynamic nav URLs
+│   │   ├── prototype-1/
+│   │   │   └── start.html                   ← Option A start page (service overview)
+│   │   ├── prototype-2/
+│   │   │   └── start.html                   ← Option B start page (service overview)
 │   │   ├── components/
 │   │   │   ├── index.html                   ← component library index (8-card grid)
 │   │   │   ├── accessible-chart.html        ← detail page
@@ -88,8 +94,82 @@ homes-england-sp-prototype/
 
 ---
 
-## Navigation (current)
+## A/B prototype architecture
+
+The prototype is structured for A/B user research testing. The index page (`/`)
+is a hub with two green GDS buttons — **Option A** and **Option B** — that route
+users into two parallel prototype experiences.
+
+### How it works
+
+1. **Entry point** — User clicks Option A (`/prototype-1`) or Option B (`/prototype-2`)
+2. **Session variable** — The route sets `req.session.data['activePrototype']` to `'1'` or `'2'`
+3. **Dynamic navigation** — All layouts read `data.activePrototype` to determine nav URLs
+   (e.g. Overview → `/prototype-1` or `/prototype-2`, Forecasting → option 1 or v2 URL)
+4. **Shared pages** — The actual content pages (forecasting, sites, etc.) are shared across
+   both prototypes. Only the nav links differ, driven by the session variable.
+
+### Navigation
+
+Each prototype presents the full SP programme nav bar:
+Overview | Agreed provider profile | Sites | Forecasting | Quarterly expenditure | Payments | Sign out
+
+Links that have prototype pages built point to real routes. Links without built
+pages point to `#`. As new pages are built, update the nav links in the relevant
+layout(s) and the start page templates.
+
+### Current A/B differences
+
+| Nav item | Option A (`activePrototype = '1'`) | Option B (`activePrototype = '2'`) |
+|---|---|---|
+| Overview | `/prototype-1` | `/prototype-2` |
+| Forecasting (nav) | `/forecasting/submitted-forecasts` | `/forecasting/submitted-forecasts-v2` |
+| Forecasting (start page body) | `/forecasting/submitted-forecasts` | `/forecasting/submitted-forecasts-v2` |
+| Grant funded delivery (start page body) | `/forecasting/grant-funded-delivery` | `/forecasting/grant-funded-delivery-v2` |
+| All other links | `#` | `#` |
+
+### How to add a new page to a prototype
+
+1. Create the view template (e.g. `views/sites/my-page.html`)
+2. Add a route in `routes.js`
+3. If the page needs the SP programme nav, extend a layout that reads
+   `data.activePrototype` (e.g. `layouts/forecasting.html`) or override
+   `govukServiceNavigation` in the template using the same pattern:
+   ```nunjucks
+   {% set overviewUrl = "/prototype-2" if data.activePrototype == "2" else "/prototype-1" %}
+   {% set forecastingNavUrl = "/forecasting/submitted-forecasts-v2" if data.activePrototype == "2" else "/forecasting/submitted-forecasts" %}
+   ```
+4. Update the start page templates (`prototype-1/start.html` and
+   `prototype-2/start.html`) to link to the new page from the body menu
+5. If the page should differ between options, create two versions and
+   use `data.activePrototype` in the layout or route to select the right one
+
+### Key files
+
+| File | Purpose |
+|---|---|
+| `views/index.html` | Hub page with Option A / Option B buttons |
+| `views/prototype-1/start.html` | Option A start page (service overview) |
+| `views/prototype-2/start.html` | Option B start page (service overview) |
+| `layouts/forecasting.html` | Shared layout for forecasting pages — reads `data.activePrototype` for dynamic nav |
+| `routes.js` | Sets `activePrototype` session var on `/prototype-1` and `/prototype-2` |
+
+### Layouts that support activePrototype
+
+- `layouts/forecasting.html` — reads `data.activePrototype` for Overview and Forecasting nav URLs
+- `prototype-1/start.html` / `prototype-2/start.html` — override nav inline (hardcoded per prototype)
+
+When creating new layouts for other sections (e.g. Sites, Payments), follow the
+same pattern as `layouts/forecasting.html`: derive nav URLs from `data.activePrototype`.
+
+---
+
+## Navigation (legacy — component library and old prototypes)
 Home | Overview | Sites | Components
+
+This nav is defined in `layouts/main.html` and is shown on pages that are NOT
+part of the A/B prototype flow (e.g. component library, old overview pages).
+The A/B prototypes override this nav entirely via their own layouts.
 
 Active state controlled via `res.locals.currentPath` middleware in routes.js.
 `"/components" in currentPath` (Nunjucks `in` operator) matches all /components/* pages.
@@ -97,31 +177,23 @@ Active state controlled via `res.locals.currentPath` middleware in routes.js.
 
 ---
 
-## Current routes
+## Current routes (selected)
 | Method | Route | Handler |
 |---|---|---|
-| GET | `/` | kit default → `index.html` |
+| GET | `/` | hub page with Option A / Option B buttons |
+| GET | `/prototype-1` | sets `activePrototype = '1'`, renders start page |
+| GET | `/prototype-2` | sets `activePrototype = '2'`, renders start page |
+| GET | `/forecasting/submitted-forecasts` | Option A forecasting landing |
+| GET | `/forecasting/submitted-forecasts-v2` | Option B forecasting landing |
+| GET | `/forecasting/grant-funded-delivery` | Option A grant funded delivery |
+| GET | `/forecasting/grant-funded-delivery-v2` | Option B grant funded delivery |
 | GET | `/site-units-forecast` | seeds mock session data, renders forecast page |
 | POST | `/site-units-forecast` | kit auto-saves POST body to session, redirects to confirmation |
-| GET | `/site-units-forecast-confirmation` | kit default render |
-| GET | `/site-units-forecast-build-analysis` | renders build analysis page |
 | GET | `/sites` | passes seed sites + session new site to template |
-| GET | `/sites/add/step-1` | renders add new site step 1 form |
-| POST | `/sites/add/step-1` | saves step 1 to session, redirects to step 2 |
-| GET | `/sites/add/step-2` | renders add new site step 2 form |
-| POST | `/sites/add/step-2` | saves step 2, sets newSiteAdded, redirects to /sites?success=true |
-| GET | `/sites/build-analysis` | renders build analysis page for Sites flow |
 | GET | `/components` | renders component library index |
-| GET | `/components/accessible-chart` | |
-| GET | `/components/date-picker` | |
-| GET | `/components/editable-table` | seeds mock data so example table has values |
-| GET | `/components/important-notification-banner` | |
-| GET | `/components/multi-column-form` | |
-| GET | `/components/role-switcher` | |
-| GET | `/components/stat-card` | |
-| GET | `/components/year-tabs` | |
 
-Routes follow REST conventions: GET to render, POST to save, always redirect after POST.
+See `routes.js` for the full route list. Routes follow REST conventions:
+GET to render, POST to save, always redirect after POST.
 
 ---
 

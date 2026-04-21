@@ -1,0 +1,307 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Site milestones - Add a new site" %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/add-site.js"></script>
+{% endblock %}
+
+{% block content %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/add/step-3"
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Step 4 of 5</span>
+    <h1 class="govuk-heading-l">Site milestones</h1>
+
+    <form method="post" action="/sites/add/step-4">
+
+      {# -- Section: Land acquisition -- #}
+      <h2 class="govuk-heading-m">Land acquisition</h2>
+      <p class="govuk-body">You must have an unconditional secure legal interest in the land before you claim any grant against expenditure related to this site. <a class="govuk-link" href="#" rel="noreferrer noopener" target="_blank">Read more about the land acquisition milestone in the Capital Funding Guide, from section 4 Grant claims (opens in a new tab).</a></p>
+
+      {{ govukSelect({
+        label: {
+          text: "What is the status of your land acquisition?",
+          classes: "govuk-label--s"
+        },
+        id: "land-acquisition-status",
+        name: "land-acquisition-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select status" },
+          { value: "unconditional-acquisition", text: "Unconditional acquisition of freehold or long leasehold interest has occurred", selected: data['land-acquisition-status'] == "unconditional-acquisition" },
+          { value: "conditional-acquisition", text: "Conditional acquisition, land option or heads of terms", selected: data['land-acquisition-status'] == "conditional-acquisition" },
+          { value: "negotiations-underway", text: "Land purchase negotiations underway", selected: data['land-acquisition-status'] == "negotiations-underway" },
+          { value: "land-identified", text: "Land identified but purchase negotiations not yet started", selected: data['land-acquisition-status'] == "land-identified" }
+        ]
+      }) }}
+
+      <!-- Conditional: acquisition date — revealed by add-site.js when
+           land-acquisition-status is set to "unconditional-acquisition".
+           Uses data-conditional-select pattern for dropdown-driven reveals. -->
+      <div class="js-conditional-select-content" id="land-acquisition-date-group" data-conditional-for="land-acquisition-status" data-conditional-value="unconditional-acquisition" {% if data['land-acquisition-status'] != "unconditional-acquisition" %}hidden{% endif %}>
+        {{ govukDateInput({
+          id: "land-acquisition-date",
+          namePrefix: "land-acquisition-date",
+          fieldset: {
+            legend: {
+              text: "What is the acquisition date?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: { text: "This date could be a forecast or an actual date. Enter a date, for example, 27 3 2007" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: data['land-acquisition-date-day'] },
+            { name: "month", classes: "govuk-input--width-2", value: data['land-acquisition-date-month'] },
+            { name: "year",  classes: "govuk-input--width-4", value: data['land-acquisition-date-year'] }
+          ]
+        }) }}
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+
+      {# -- Section: Planning -- #}
+      <h2 class="govuk-heading-m">Planning</h2>
+
+      {{ govukSelect({
+        label: {
+          text: "What is the planning status of the site?",
+          classes: "govuk-label--s"
+        },
+        id: "planning-status",
+        name: "planning-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select status" },
+          { value: "detailed-approval-granted", text: "Detailed planning approval granted", selected: data['planning-status'] == "detailed-approval-granted" },
+          { value: "outline-granted", text: "Outline planning approval granted", selected: data['planning-status'] == "outline-granted" },
+          { value: "outline-submitted", text: "Outline planning submitted", selected: data['planning-status'] == "outline-submitted" },
+          { value: "detailed-submitted", text: "Detailed planning submitted", selected: data['planning-status'] == "detailed-submitted" },
+          { value: "discussion-underway", text: "Planning discussion underway with planning office", selected: data['planning-status'] == "discussion-underway" },
+          { value: "no-planning-required", text: "No planning required", selected: data['planning-status'] == "no-planning-required" },
+          { value: "no-progress", text: "No progress yet on planning application", selected: data['planning-status'] == "no-progress" }
+        ]
+      }) }}
+
+      <!-- Conditional: planning details — revealed when planning-status
+           is "detailed-approval-granted". -->
+      <div class="js-conditional-select-content" id="planning-details-group" data-conditional-for="planning-status" data-conditional-value="detailed-approval-granted" {% if data['planning-status'] != "detailed-approval-granted" %}hidden{% endif %}>
+        {{ govukDateInput({
+          id: "planning-approval-date",
+          namePrefix: "planning-approval-date",
+          fieldset: {
+            legend: {
+              text: "Enter when the detailed planning approval was granted",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: { text: "Enter a date, for example, 27 3 2007" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: data['planning-approval-date-day'] },
+            { name: "month", classes: "govuk-input--width-2", value: data['planning-approval-date-month'] },
+            { name: "year",  classes: "govuk-input--width-4", value: data['planning-approval-date-year'] }
+          ]
+        }) }}
+
+        {{ govukInput({
+          label: {
+            text: "Enter your planning reference",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: "This can be found on any correspondence from your local authority regarding your planning permission."
+          },
+          id: "planning-reference",
+          name: "planning-reference",
+          value: data['planning-reference'],
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukRadios({
+          name: "grant-funding-all-homes",
+          fieldset: {
+            legend: {
+              text: "Are you applying for grant funding for all of the homes covered by this planning application?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          items: [
+            { value: "yes", text: "Yes", checked: data['grant-funding-all-homes'] == "yes" },
+            { value: "no", text: "No", checked: data['grant-funding-all-homes'] == "no" }
+          ]
+        }) }}
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+
+      {# -- Section: Works contracting -- #}
+      <h2 class="govuk-heading-m">Works contracting</h2>
+
+      {{ govukSelect({
+        label: {
+          text: "What progress have you made in the tendering for your main works contract?",
+          classes: "govuk-label--s"
+        },
+        id: "works-contract-status",
+        name: "works-contract-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select status" },
+          { value: "unconditional-let", text: "Unconditional works contract let", selected: data['works-contract-status'] == "unconditional-let" },
+          { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract", selected: data['works-contract-status'] == "conditional-let" },
+          { value: "tender-out", text: "Tender for works contract out for competition", selected: data['works-contract-status'] == "tender-out" },
+          { value: "not-begun", text: "Works contracting process not yet begun", selected: data['works-contract-status'] == "not-begun" }
+        ]
+      }) }}
+
+      <!-- Conditional: building contract date — revealed when
+           works-contract-status is "unconditional-let". -->
+      <div class="js-conditional-select-content" id="works-contract-date-group" data-conditional-for="works-contract-status" data-conditional-value="unconditional-let" {% if data['works-contract-status'] != "unconditional-let" %}hidden{% endif %}>
+        {{ govukDateInput({
+          id: "building-contract-date",
+          namePrefix: "building-contract-date",
+          fieldset: {
+            legend: {
+              text: "What is the building contract date?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: { text: "This could be a forecast or an actual date. Enter a date, for example, 27 3 2007" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: data['building-contract-date-day'] },
+            { name: "month", classes: "govuk-input--width-2", value: data['building-contract-date-month'] },
+            { name: "year",  classes: "govuk-input--width-4", value: data['building-contract-date-year'] }
+          ]
+        }) }}
+      </div>
+
+      {{ govukSelect({
+        label: {
+          text: "What type of contractor do you intend to work with?",
+          classes: "govuk-label--s"
+        },
+        id: "contractor-type",
+        name: "contractor-type",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select status" },
+          { value: "in-house", text: "In house contractor", selected: data['contractor-type'] == "in-house" },
+          { value: "external", text: "External contractor", selected: data['contractor-type'] == "external" },
+          { value: "mixed", text: "Mixed", selected: data['contractor-type'] == "mixed" }
+        ]
+      }) }}
+
+      {{ govukInput({
+        label: {
+          text: "Enter the name of the contractor you intend to work with on this development",
+          classes: "govuk-label--s"
+        },
+        hint: {
+          text: "If you're using your own in-house team, enter 'In-house team'."
+        },
+        id: "contractor-name",
+        name: "contractor-name",
+        value: data['contractor-name'],
+        classes: "govuk-!-width-full"
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+
+      {# -- Section: Start on site -- #}
+      <h2 class="govuk-heading-m">Start on site</h2>
+      <p class="govuk-body">The start on site milestone applies as a payment event only to eligible schemes where start on site is achieved. It is triggered when:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>the provider and the building contractor have entered into a building contract</li>
+        <li>the building contractor takes possession of the site or property</li>
+        <li>the works have commenced</li>
+      </ul>
+      <p class="govuk-body"><a class="govuk-link" href="#" rel="noreferrer noopener" target="_blank">Read more about the start on site milestone in the Capital Funding Guide, from 4.1 (opens in a new tab).</a></p>
+
+      {{ govukSelect({
+        label: {
+          text: "What is the status of the start on site?",
+          classes: "govuk-label--s"
+        },
+        id: "start-on-site-status",
+        name: "start-on-site-status",
+        classes: "govuk-!-width-full",
+        items: [
+          { value: "", text: "Select status" },
+          { value: "actual", text: "Actual", selected: data['start-on-site-status'] == "actual" },
+          { value: "forecast", text: "Forecast", selected: data['start-on-site-status'] == "forecast" }
+        ]
+      }) }}
+
+      <!-- Conditional: start on site date — revealed when
+           start-on-site-status is "actual". -->
+      <div class="js-conditional-select-content" id="start-on-site-date-group" data-conditional-for="start-on-site-status" data-conditional-value="actual" {% if data['start-on-site-status'] != "actual" %}hidden{% endif %}>
+        {{ govukDateInput({
+          id: "start-on-site-date",
+          namePrefix: "start-on-site-date",
+          fieldset: {
+            legend: {
+              text: "What is the start on site date?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: { text: "This could be a forecast or an actual date. Enter a date, for example, 27 3 2007" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: data['start-on-site-date-day'] },
+            { name: "month", classes: "govuk-input--width-2", value: data['start-on-site-date-month'] },
+            { name: "year",  classes: "govuk-input--width-4", value: data['start-on-site-date-year'] }
+          ]
+        }) }}
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+
+      {# -- Section: Practical completion -- #}
+      <h2 class="govuk-heading-m">Practical completion</h2>
+      <p class="govuk-body">Practical completion is when the last dwelling has been handed over, with all homes approved as fit for occupation in accordance with the relevant certifications and requirements. <a class="govuk-link" href="#" rel="noreferrer noopener" target="_blank">Read more about the practical completion milestone in the Capital Funding Guide, from 4.1 (opens in a new tab).</a></p>
+
+      {{ govukDateInput({
+        id: "practical-completion-date",
+        namePrefix: "practical-completion-date",
+        fieldset: {
+          legend: {
+            text: "What is the forecast practical completion date?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: { text: "Enter a date, for example, 27 3 2007" },
+        items: [
+          { name: "day",   classes: "govuk-input--width-2", value: data['practical-completion-date-day'] },
+          { name: "month", classes: "govuk-input--width-2", value: data['practical-completion-date-month'] },
+          { name: "year",  classes: "govuk-input--width-4", value: data['practical-completion-date-year'] }
+        ]
+      }) }}
+
+      {# -- Buttons -- #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

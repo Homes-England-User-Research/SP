@@ -177,8 +177,7 @@
   border: 1px solid #b1b4b6;
   border-bottom: none;
   padding: govuk-spacing(2) govuk-spacing(4);
-  font-size: 1rem;
-  font-family: inherit;
+  @include govuk-font($size: 16);
   cursor: pointer;
   margin-right: govuk-spacing(1);
 

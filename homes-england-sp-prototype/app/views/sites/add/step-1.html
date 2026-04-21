@@ -1,224 +1,273 @@
 {% extends "layouts/sites.html" %}
 
-{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Add new site - Step 1 of 2" %}
+{% set pageName = "Site details - Add a new site" %}
+
+{% block pageScripts %}
+  <link rel="stylesheet" href="/public/javascripts/accessible-autocomplete.min.css">
+  <script src="/public/javascripts/accessible-autocomplete.min.js"></script>
+  <script src="/public/javascripts/local-authority-lookup.js"></script>
+{% endblock %}
 
 {% block content %}
 
-{{ govukBreadcrumbs({
-  items: [{ text: "Sites", href: "/sites" }]
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites"
 }) }}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 1 of 2</span>
-    <h1 class="govuk-heading-xl">Add new site</h1>
+    <span class="govuk-caption-l">Step 1 of 5</span>
+    <h1 class="govuk-heading-l">Site details</h1>
 
-    <!-- Custom departure: multi-field form.
-         Multiple related fields presented on a single page across two steps,
-         rather than one question per page. SP users are experienced data entry
-         users already familiar with the IMS system. The fields are grouped by
-         subject area (site details, location, contractor). A single-question-
-         per-page approach would create an excessively long journey for a user
-         completing this task routinely. GDS guidance explicitly allows grouping
-         questions where appropriate: "there are times when it makes sense to
-         group a few questions on the same page." -->
     <form method="post" action="/sites/add/step-1">
 
-      {# ── Section: Site details ──────────────────────────────────────────── #}
-      <h2 class="govuk-heading-m">Site details</h2>
+      {# -- Section: Site information -- #}
+      <h2 class="govuk-heading-m">Site information</h2>
 
-      {# Row 1: Site ID + Site name #}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Site ID" },
-            id: "site-id",
-            name: "site-id",
-            classes: "govuk-!-width-full"
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Site name" },
-            id: "site-name",
-            name: "site-name",
-            classes: "govuk-!-width-full"
-          }) }}
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: {
+            text: "Name your site",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: "Each site must have a unique name."
+          },
+          id: "site-name",
+          name: "site-name",
+          value: data['site-name'],
+          classes: "govuk-!-width-full"
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukRadios({
+          name: "site-type",
+          fieldset: {
+            legend: {
+              text: "What type of site is this?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: {
+            text: "Brownfield land is previously developed land. Greenfield land is land that has not previously been developed."
+          },
+          items: [
+            { value: "brownfield", text: "Brownfield", checked: data['site-type'] == "brownfield" },
+            { value: "greenfield", text: "Greenfield", checked: data['site-type'] == "greenfield" },
+            { value: "not-applicable", text: "Not applicable", checked: data['site-type'] == "not-applicable" }
+          ]
+        }) }}
+      </div>
+
+      <!-- Local authority lookup: uses GOV.UK accessible-autocomplete
+           component to enhance a <select> into a typeahead search box.
+           On selection, JavaScript (local-authority-lookup.js) auto-populates
+           the Region and Homes England region read-only displays below.
+           This matches the GDS autocomplete pattern. -->
+      <div class="govuk-!-margin-bottom-7">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--s" for="local-authority">
+            What is your local authority?
+          </label>
+          <p class="govuk-hint" id="local-authority-hint">
+            Start typing the name of your local authority and select it from the list.
+          </p>
+          <p class="govuk-hint">
+            If your site is located in more than one local authority, enter the one where you have planning permission. If your local authority is not listed, your affordable housing lead can add this for you later.
+          </p>
+          <div id="local-authority-autocomplete-container"></div>
+          <input type="hidden" id="local-authority" name="local-authority" value="{{ data['local-authority'] }}">
         </div>
       </div>
 
-      {# Row 2: Type of site + Rural area #}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukSelect({
-            label: { text: "Type of site" },
-            id: "type-of-site",
-            name: "type-of-site",
-            classes: "govuk-!-width-full",
-            items: [
-              { value: "", text: "---Please select---" },
-              { value: "brownfield", text: "Brownfield" },
-              { value: "greenfield", text: "Greenfield" },
-              { value: "mixed", text: "Mixed" }
-            ]
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukSelect({
-            label: { text: "Is the land in a rural area?" },
-            id: "rural-area",
-            name: "rural-area",
-            classes: "govuk-!-width-full",
-            items: [
-              { value: "", text: "---Please select---" },
-              { value: "yes", text: "Yes" },
-              { value: "no", text: "No" }
-            ]
-          }) }}
+      <!-- Region and Homes England region — read-only displays that
+           auto-populate when a local authority is selected. Not editable
+           input fields. Hidden <input type="hidden"> stores the value
+           for session persistence on form POST. Hint text hidden by JS
+           after a local authority has been selected. -->
+      <div class="govuk-!-margin-bottom-7">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--s">
+            Region
+          </label>
+          <p class="govuk-hint" id="region-hint">Select a local authority to display a region.</p>
+          <p class="govuk-body" id="region-display">{{ data['region'] if data['region'] else "" }}</p>
+          <input type="hidden" id="region" name="region" value="{{ data['region'] }}">
         </div>
       </div>
 
-      {# Row 3: Local authority + Operating area #}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Local authority" },
-            id: "local-authority",
-            name: "local-authority",
-            classes: "govuk-!-width-full"
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Operating area" },
-            id: "operating-area",
-            name: "operating-area",
-            classes: "govuk-!-width-full"
-          }) }}
+      <div class="govuk-!-margin-bottom-7">
+        <div class="govuk-form-group">
+          <label class="govuk-label govuk-label--s">
+            Homes England region
+          </label>
+          <p class="govuk-hint" id="he-region-hint">Select a local authority to display a Homes England region.</p>
+          <p class="govuk-body" id="he-region-display">{{ data['he-region'] if data['he-region'] else "" }}</p>
+          <input type="hidden" id="he-region" name="he-region" value="{{ data['he-region'] }}">
         </div>
       </div>
 
-      {# Row 4: Region + Processing route #}
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukSelect({
-            label: { text: "Region" },
-            id: "region",
-            name: "region",
-            classes: "govuk-!-width-full",
-            items: [
-              { value: "", text: "---Please select---" },
-              { value: "east-midlands", text: "East Midlands" },
-              { value: "east-of-england", text: "East of England" },
-              { value: "london", text: "London" },
-              { value: "north-east", text: "North East" },
-              { value: "north-west", text: "North West" },
-              { value: "south-east", text: "South East" },
-              { value: "south-west", text: "South West" },
-              { value: "west-midlands", text: "West Midlands" },
-              { value: "yorkshire", text: "Yorkshire and the Humber" }
-            ]
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukSelect({
-            label: { text: "Processing route" },
-            id: "processing-route",
-            name: "processing-route",
-            classes: "govuk-!-width-full",
-            items: [
-              { value: "", text: "---Please select---" },
-              { value: "acquisition-works", text: "Acquisition & Works" },
-              { value: "works-only", text: "Works only" },
-              { value: "acquisition-only", text: "Acquisition only" }
-            ]
-          }) }}
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukRadios({
+          name: "procurement-route",
+          fieldset: {
+            legend: {
+              text: "What is your site procurement route?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: {
+            html: "Each site should have only one procurement route.<br><a class='govuk-link' href='#' rel='noreferrer noopener' target='_blank'>Read about the different route options in the Capital Funding Guide, from 3.2.2 (opens in a new tab)</a>"
+          },
+          items: [
+            { value: "acquisition-and-works", text: "Acquisition and works", checked: data['procurement-route'] == "acquisition-and-works" },
+            { value: "off-the-shelf", text: "Off the shelf", checked: data['procurement-route'] == "off-the-shelf" },
+            { value: "works-only", text: "Works only", checked: data['procurement-route'] == "works-only" },
+            { value: "land-inclusive-package", text: "Land inclusive package (package deal)", checked: data['procurement-route'] == "land-inclusive-package" }
+          ]
+        }) }}
+      </div>
+
+      {# -- Section: Rural details -- #}
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">Rural details</h2>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukRadios({
+          name: "rural-settlement",
+          fieldset: {
+            legend: {
+              text: "Is this site within a rural settlement?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: {
+            text: "A rural settlement has a population of 3000 or less."
+          },
+          items: [
+            { value: "yes", text: "Yes", checked: data['rural-settlement'] == "yes" },
+            { value: "no", text: "No", checked: data['rural-settlement'] == "no" }
+          ]
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        <div class="govuk-form-group">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              Is this a rural exception site?
+            </legend>
+            {{ govukDetails({
+              summaryText: "What are rural exception sites?",
+              html: "<p class='govuk-body'>Rural exception sites are small sites on the edge of existing rural settlements, given planning permission for affordable housing only.</p><p class='govuk-body'>Exception sites are exempt from:</p><ul class='govuk-list govuk-list--bullet'><li>some planning requirements</li><li>Homes England's requirement that there are no local restrictions on Shared Ownership.</li></ul>"
+            }) }}
+            {{ govukRadios({
+              name: "rural-exception-site",
+              items: [
+                { value: "yes", text: "Yes", checked: data['rural-exception-site'] == "yes" },
+                { value: "no", text: "No", checked: data['rural-exception-site'] == "no" }
+              ]
+            }) }}
+          </fieldset>
         </div>
       </div>
 
-      {# Row 5: Regeneration site - full width due to long label #}
-      {{ govukSelect({
-        label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
-        id: "regeneration-site",
-        name: "regeneration-site",
-        classes: "govuk-!-width-full",
-        items: [
-          { value: "", text: "---Please select---" },
-          { value: "yes", text: "Yes" },
-          { value: "no", text: "No" }
-        ]
-      }) }}
+      {# -- Section: Site location -- #}
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
-      {# ── Section: Site location ─────────────────────────────────────────── #}
-      <h2 class="govuk-heading-m govuk-!-margin-top-6">Site location</h2>
+      <h2 class="govuk-heading-m">Site location</h2>
 
-      {{ govukInput({
-        label: { text: "Postcode (optional)" },
-        id: "postcode",
-        name: "postcode",
-        classes: "govuk-input--width-10"
-      }) }}
-
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "X coordinate (optional if known)" },
-            id: "x-coordinate",
-            name: "x-coordinate",
-            classes: "govuk-!-width-full"
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Y coordinate (optional if known)" },
-            id: "y-coordinate",
-            name: "y-coordinate",
-            classes: "govuk-!-width-full"
-          }) }}
-        </div>
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "Address line 1" },
+          id: "address-line-1",
+          name: "address-line-1",
+          value: data['address-line-1'],
+          classes: "govuk-!-width-full",
+          autocomplete: "address-line1"
+        }) }}
       </div>
 
-      {# ── Section: Contractor details ────────────────────────────────────── #}
-      <h2 class="govuk-heading-m govuk-!-margin-top-6">Contractor details</h2>
-
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
-          {{ govukSelect({
-            label: { text: "Type of contractor" },
-            id: "type-of-contractor",
-            name: "type-of-contractor",
-            classes: "govuk-!-width-full",
-            items: [
-              { value: "", text: "---Please select---" },
-              { value: "in-house", text: "In house contractor" },
-              { value: "external", text: "External contractor" },
-              { value: "mixed", text: "Mixed" }
-            ]
-          }) }}
-        </div>
-        <div class="govuk-grid-column-one-half">
-          {{ govukInput({
-            label: { text: "Contractor" },
-            id: "contractor",
-            name: "contractor",
-            classes: "govuk-!-width-full"
-          }) }}
-        </div>
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "Address line 2 (optional)" },
+          id: "address-line-2",
+          name: "address-line-2",
+          value: data['address-line-2'],
+          classes: "govuk-!-width-full",
+          autocomplete: "address-line2"
+        }) }}
       </div>
 
-      {# ── Buttons ────────────────────────────────────────────────────────── #}
-      {{ govukButton({ text: "Continue" }) }}
-      {{ govukButton({
-        text: "Save as draft",
-        classes: "govuk-button--secondary govuk-!-margin-left-3",
-        href: "/sites"
-      }) }}
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "Town or city (optional)" },
+          id: "town-or-city",
+          name: "town-or-city",
+          value: data['town-or-city'],
+          classes: "govuk-!-width-two-thirds"
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "County (optional)" },
+          id: "county",
+          name: "county",
+          value: data['county'],
+          classes: "govuk-!-width-two-thirds"
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "Postcode (optional)" },
+          id: "postcode",
+          name: "postcode",
+          value: data['postcode'],
+          classes: "govuk-input--width-10"
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "X coordinate (optional)" },
+          id: "x-coordinate",
+          name: "x-coordinate",
+          value: data['x-coordinate'],
+          classes: "govuk-!-width-full"
+        }) }}
+      </div>
+
+      <div class="govuk-!-margin-bottom-7">
+        {{ govukInput({
+          label: { text: "Y coordinate (optional)" },
+          id: "y-coordinate",
+          name: "y-coordinate",
+          value: data['y-coordinate'],
+          classes: "govuk-!-width-full"
+        }) }}
+      </div>
+
+      {# -- Buttons -- #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites"
+        }) }}
+      </div>
 
     </form>
 

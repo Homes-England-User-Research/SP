@@ -1,0 +1,129 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Design and sustainability - Add a new site" %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/add-site.js"></script>
+{% endblock %}
+
+{% block content %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/add/step-2"
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Step 3 of 5</span>
+    <h1 class="govuk-heading-l">Design and sustainability</h1>
+
+    <form method="post" action="/sites/add/step-3">
+
+      {# -- MMC question -- #}
+      {% set mmcConditionalHtml %}
+
+        {{ govukCheckboxes({
+          name: "mmc-categories",
+          fieldset: {
+            legend: {
+              text: "Which categories are you using?",
+              classes: "govuk-fieldset__legend--s"
+            }
+          },
+          hint: { text: "Select all that apply" },
+          items: [
+            { value: "category-1", text: "Category 1: Pre-manufacturing: 3D primary structural systems", checked: data['mmc-categories'] and "category-1" in data['mmc-categories'] },
+            { value: "category-2", text: "Category 2: Pre-manufacturing: 2D primary structural systems", checked: data['mmc-categories'] and "category-2" in data['mmc-categories'] },
+            { value: "category-3", text: "Category 3: Pre-manufactured component: Non-systemised primary structure", checked: data['mmc-categories'] and "category-3" in data['mmc-categories'] },
+            { value: "category-4", text: "Category 4: Additive manufacturing: structuring and non-structural", checked: data['mmc-categories'] and "category-4" in data['mmc-categories'] },
+            { value: "category-5", text: "Category 5: Pre-manufacturing: Non-structural assemblies and sub-assemblies", checked: data['mmc-categories'] and "category-5" in data['mmc-categories'] },
+            { value: "category-6", text: "Category 6: Traditional building product-led site labour reduction or productivity improvements", checked: data['mmc-categories'] and "category-6" in data['mmc-categories'] },
+            { value: "category-7", text: "Category 7: Site process-led labour reduction, productivity or assurance improvements", checked: data['mmc-categories'] and "category-7" in data['mmc-categories'] }
+          ]
+        }) }}
+
+        <!-- Sub-category sections revealed by JavaScript (add-site.js) when
+             parent category checkboxes are checked. Uses progressive
+             enhancement — all sub-categories are visible without JS. -->
+
+        <div class="govuk-!-margin-top-6" id="mmc-sub-category-1" data-mmc-parent="category-1">
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+          {{ govukCheckboxes({
+            name: "mmc-cat1-subs",
+            fieldset: {
+              legend: {
+                text: "Category 1: Which of these sub-categories of 3D primary structural systems are you using?",
+                classes: "govuk-fieldset__legend--s"
+              }
+            },
+            hint: { text: "Select all that apply" },
+            items: [
+              { value: "cat1-chassis-no-internal", text: "Structural chassis only, without internal fittings", checked: data['mmc-cat1-subs'] and "cat1-chassis-no-internal" in data['mmc-cat1-subs'] },
+              { value: "cat1-chassis-internally-fitted", text: "Structural chassis and internally fitted out", checked: data['mmc-cat1-subs'] and "cat1-chassis-internally-fitted" in data['mmc-cat1-subs'] },
+              { value: "cat1-chassis-external-cladding", text: "Structural chassis, internally fitted out and external cladding or roofing completed", checked: data['mmc-cat1-subs'] and "cat1-chassis-external-cladding" in data['mmc-cat1-subs'] },
+              { value: "cat1-chassis-podded-room", text: "Structural chassis, internally fitted out and 'podded room assembled', for example, bathrooms and kitchens", checked: data['mmc-cat1-subs'] and "cat1-chassis-podded-room" in data['mmc-cat1-subs'] }
+            ]
+          }) }}
+        </div>
+
+        <div class="govuk-!-margin-top-6" id="mmc-sub-category-2" data-mmc-parent="category-2">
+          <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+          {{ govukCheckboxes({
+            name: "mmc-cat2-subs",
+            fieldset: {
+              legend: {
+                text: "Category 2: Which of these sub-categories of 2D primary structural systems are you using?",
+                classes: "govuk-fieldset__legend--s"
+              }
+            },
+            hint: { text: "Select all that apply" },
+            items: [
+              { value: "cat2-open-panels", text: "Open panels", checked: data['mmc-cat2-subs'] and "cat2-open-panels" in data['mmc-cat2-subs'] },
+              { value: "cat2-closed-panels", text: "Closed panels", checked: data['mmc-cat2-subs'] and "cat2-closed-panels" in data['mmc-cat2-subs'] },
+              { value: "cat2-frames", text: "Frames", checked: data['mmc-cat2-subs'] and "cat2-frames" in data['mmc-cat2-subs'] }
+            ]
+          }) }}
+        </div>
+
+      {% endset %}
+
+      {{ govukRadios({
+        name: "mmc-used",
+        fieldset: {
+          legend: {
+            text: "Are you using modern methods of construction (MMC) on this site?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          html: "The MMC definition framework contains seven categories. It enables a full and future-proofed range of 'modern methods of construction' to be used in home building.<br><br><a class='govuk-link' href='#' rel='noreferrer noopener' target='_blank'>Read more about the framework (opens in new tab).</a>"
+        },
+        items: [
+          { value: "yes", text: "Yes", checked: data['mmc-used'] == "yes", conditional: { html: mmcConditionalHtml } },
+          { value: "no", text: "No", checked: data['mmc-used'] == "no" }
+        ]
+      }) }}
+
+      {# -- Buttons -- #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

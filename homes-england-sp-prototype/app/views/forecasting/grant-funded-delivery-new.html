@@ -1,0 +1,342 @@
+{% extends "layouts/forecasting.html" %}
+
+{% set pageName = "New forecast" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/forecasting/grant-funded-delivery"
+  }) }}
+{% endblock %}
+
+{#
+  Macro to render an editable forecast table.
+  Mixes read-only pre-populated cells with editable input cells.
+
+  Parameters:
+    tableName     (string, required)  — "capex", "grant", "starts", "completions"
+    caption       (string, required)  — visible table caption
+    data          (object, required)  — { forecast: [q1,q2,q3,q4], actual: [q1,q2,q3,q4] }
+    isCurrency    (boolean, required) — true for £-prefixed inputs
+    readOnlyQs    (array, required)   — quarter indices that are read-only, e.g. [0, 1] for Q1/Q2
+    editableQs    (array, required)   — quarter indices that are editable, e.g. [2, 3] for Q3/Q4
+    actualLabel   (string, optional)  — override "Actual" row label (e.g. "Active Start on Sites")
+#}
+{% macro editableForecastTable(tableName, caption, tableData, isCurrency, readOnlyQs, editableQs, sessionData, actualLabel) %}
+  {% set actualRowLabel = actualLabel if actualLabel else "Actual" %}
+  {% set currencySuffix = " (£)" if isCurrency else "" %}
+
+  <table class="govuk-table govuk-!-margin-bottom-6 sp-editable-table"
+         data-module="forecasting-table" data-table="{{ tableName }}"
+         data-currency="{{ 'true' if isCurrency else 'false' }}">
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">{{ caption }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q1{{ currencySuffix }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q2{{ currencySuffix }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q3{{ currencySuffix }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q4{{ currencySuffix }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Yearly total{{ currencySuffix }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Overall total{{ currencySuffix }}</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+
+      {# ── Forecast row (mix of read-only and editable) ──────────────────── #}
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">Forecast</th>
+        {% for q in [0, 1, 2, 3] %}
+          <td class="govuk-table__cell govuk-table__cell--numeric sp-input-cell">
+            {% if q in readOnlyQs %}
+              <span data-value="{{ tableData.forecast[q] }}" data-table="{{ tableName }}" data-row="forecast" data-quarter="q{{ q + 1 }}">
+                {%- if isCurrency %}{{ tableData.forecast[q] | currency }}{% else %}{{ tableData.forecast[q] | toLocaleString }}{% endif -%}
+              </span>
+            {% else %}
+              <input class="govuk-input sp-table-input forecasting-input"
+                     type="text" inputmode="numeric"
+                     id="{{ tableName }}-forecast-q{{ q + 1 }}"
+                     name="{{ tableName }}-forecast-q{{ q + 1 }}"
+                     value="{{ sessionData[tableName + '-forecast-q' + (q + 1)] or '0' }}"
+                     aria-label="{{ caption }} forecast - Q{{ q + 1 }}"
+                     data-table="{{ tableName }}" data-row="forecast" data-quarter="q{{ q + 1 }}">
+            {% endif %}
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span aria-live="polite" data-table="{{ tableName }}" data-calculated="yearly-forecast">0</span>
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span aria-live="polite" data-table="{{ tableName }}" data-calculated="overall-forecast">0</span>
+        </td>
+      </tr>
+
+      {# ── Actual row (always read-only) ─────────────────────────────────── #}
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">{{ actualRowLabel }}</th>
+        {% for q in [0, 1, 2, 3] %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            <span data-value="{{ tableData.actual[q] }}" data-table="{{ tableName }}" data-row="actual" data-quarter="q{{ q + 1 }}">
+              {%- if isCurrency %}{{ tableData.actual[q] | currency }}{% else %}{{ tableData.actual[q] | toLocaleString }}{% endif -%}
+            </span>
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span data-table="{{ tableName }}" data-calculated="yearly-actual">0</span>
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span data-table="{{ tableName }}" data-calculated="overall-actual">0</span>
+        </td>
+      </tr>
+
+      {# ── Variance row (always auto-calculated) ─────────────────────────── #}
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">Variance</th>
+        {% for q in [0, 1, 2, 3] %}
+          <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+            <span aria-live="polite" data-table="{{ tableName }}" data-calculated="variance-q{{ q + 1 }}">0</span>
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span aria-live="polite" data-table="{{ tableName }}" data-calculated="yearly-variance">0</span>
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric sp-calculated-cell">
+          <span aria-live="polite" data-table="{{ tableName }}" data-calculated="overall-variance">0</span>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-8">New forecast: Version {{ nextVersion }}</h1>
+
+    {# ── Version metadata ─────────────────────────────────────────────────── #}
+    {% set statusTagHtml %}
+      {{ govukTag({ text: "Draft", classes: "govuk-tag--yellow" }) }}
+    {% endset %}
+
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-8",
+      rows: [
+        {
+          key: { text: "Version status" },
+          value: { html: statusTagHtml }
+        },
+        {
+          key: { text: "Version created by" },
+          value: { text: "Oscar Swanson" }
+        }
+      ]
+    }) }}
+
+    <form method="post" action="/forecasting/grant-funded-delivery/new" data-module="forecasting-tables">
+
+      {# ── Year tabs ──────────────────────────────────────────────────────── #}
+      {#
+        Standard GDS govuk-tabs component. Uses anchor links which do not
+        trigger form submission (unlike <button> elements inside a form).
+      #}
+      <div class="govuk-tabs" data-module="govuk-tabs">
+        <h3 class="govuk-tabs__title">Financial years</h3>
+        <ul class="govuk-tabs__list">
+          {% set years = [
+            { id: "2026", label: "2026-27" },
+            { id: "2027", label: "27-28" },
+            { id: "2028", label: "28-29" },
+            { id: "2029", label: "29-30" },
+            { id: "2030", label: "30-31" },
+            { id: "2031", label: "31-32" },
+            { id: "2032", label: "32-33" },
+            { id: "2033", label: "33-34" },
+            { id: "2034", label: "34-35" },
+            { id: "2035", label: "35-36" },
+            { id: "totals", label: "Totals" }
+          ] %}
+          {% for year in years %}
+            <li class="govuk-tabs__list-item{% if loop.first %} govuk-tabs__list-item--selected{% endif %}">
+              <a class="govuk-tabs__tab" href="#panel-{{ year.id }}">{{ year.label }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+
+        {# ── 2026-27 panel (Q1/Q2 pre-populated read-only, Q3/Q4 editable) ── #}
+        <div class="govuk-tabs__panel" id="panel-2026">
+
+          {{ editableForecastTable(
+            "capex", "Eligible expenditure",
+            forecastData.capex, true, [0, 1], [2, 3], data
+          ) }}
+
+          <div class="govuk-inset-text">
+            The variance row shows the difference between your new forecasts and the most recent approved forecasts.
+          </div>
+
+          {{ editableForecastTable(
+            "grant", "Grant drawdown",
+            forecastData.grant, true, [0, 1], [2, 3], data
+          ) }}
+
+          {{ editableForecastTable(
+            "starts", "Home starts",
+            forecastData.starts, false, [0, 1], [2, 3], data,
+            "Active Start on Sites"
+          ) }}
+
+          {{ editableForecastTable(
+            "completions", "Home completions",
+            forecastData.completions, false, [0, 1], [2, 3], data
+          ) }}
+
+        </div>
+
+        {# ── Future year panels (all editable, all zeros) ─────────────────── #}
+        {#
+          Future year panels use zero data and all quarters are editable.
+          For the prototype these are included to show the full tab structure
+          but are not expected to be filled during UR sessions.
+        #}
+        {% set zeroTableData = { forecast: [0, 0, 0, 0], actual: [0, 0, 0, 0] } %}
+        {% for yearId in ["2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"] %}
+          <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="panel-{{ yearId }}">
+
+            {{ editableForecastTable(
+              "capex-" ~ yearId, "Eligible expenditure",
+              zeroTableData, true, [], [0, 1, 2, 3], data
+            ) }}
+
+            <div class="govuk-inset-text">
+              The variance row shows the difference between your new forecasts and the most recent approved forecasts.
+            </div>
+
+            {{ editableForecastTable(
+              "grant-" ~ yearId, "Grant drawdown",
+              zeroTableData, true, [], [0, 1, 2, 3], data
+            ) }}
+
+            {{ editableForecastTable(
+              "starts-" ~ yearId, "Home starts",
+              zeroTableData, false, [], [0, 1, 2, 3], data,
+              "Active Start on Sites"
+            ) }}
+
+            {{ editableForecastTable(
+              "completions-" ~ yearId, "Home completions",
+              zeroTableData, false, [], [0, 1, 2, 3], data
+            ) }}
+
+          </div>
+        {% endfor %}
+
+        {# ── Totals panel (read-only, auto-calculated across all years) ──── #}
+        <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="panel-totals">
+
+          {% set yearLabels = {
+            "2026": "2026-27",
+            "2027": "27-28",
+            "2028": "28-29",
+            "2029": "29-30",
+            "2030": "30-31",
+            "2031": "31-32",
+            "2032": "32-33",
+            "2033": "33-34",
+            "2034": "34-35",
+            "2035": "35-36"
+          } %}
+
+          {% for tableInfo in [
+            { name: "capex", caption: "Eligible expenditure", isCurrency: true },
+            { name: "grant", caption: "Grant drawdown", isCurrency: true },
+            { name: "starts", caption: "Home starts", isCurrency: false },
+            { name: "completions", caption: "Home completions", isCurrency: false }
+          ] %}
+            <table class="govuk-table govuk-!-margin-bottom-6 sp-editable-table">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th scope="col" class="govuk-table__header">{{ tableInfo.caption }}</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q1</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q2</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q3</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q4</th>
+                  <th scope="col" class="govuk-table__header govuk-table__header--numeric">Yearly total</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                {% for yearId in ["2026", "2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"] %}
+                  <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">{{ yearLabels[yearId] }}</th>
+                    {% for q in ["q1", "q2", "q3", "q4"] %}
+                      <td class="govuk-table__cell govuk-table__cell--numeric">
+                        <span data-totals-base="{{ tableInfo.name }}" data-totals-year="{{ yearId }}" data-totals-col="{{ q }}">0</span>
+                      </td>
+                    {% endfor %}
+                    <td class="govuk-table__cell govuk-table__cell--numeric">
+                      <span aria-live="polite" data-totals-base="{{ tableInfo.name }}" data-totals-year="{{ yearId }}" data-totals-col="yearly">0</span>
+                    </td>
+                  </tr>
+                {% endfor %}
+                {# ── Overall total row ────────────────────────────────────── #}
+                <tr class="govuk-table__row">
+                  <th scope="row" class="govuk-table__header">Overall total</th>
+                  <td class="govuk-table__cell govuk-table__cell--numeric" colspan="4"></td>
+                  <td class="govuk-table__cell govuk-table__cell--numeric">
+                    <span aria-live="polite" data-totals-base="{{ tableInfo.name }}" data-totals-calc="overall-forecast">0</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            {% if tableInfo.name == "capex" %}
+              <div class="govuk-inset-text">
+                The variance row shows the difference between your new forecasts and the most recent approved forecasts.
+              </div>
+            {% endif %}
+          {% endfor %}
+
+        </div>
+      </div>
+
+      {# ── Comments ───────────────────────────────────────────────────────── #}
+      <div class="govuk-!-margin-top-6">
+        {{ govukTextarea({
+          name: "forecast-comments",
+          id: "forecast-comments",
+          label: {
+            text: "Comments",
+            classes: "govuk-label--m"
+          }
+        }) }}
+      </div>
+
+      {# ── Submit / Save as draft ─────────────────────────────────────────── #}
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Submit"
+        }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          name: "action",
+          value: "draft"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/forecasting-table.js"></script>
+{% endblock %}

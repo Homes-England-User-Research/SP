@@ -17,6 +17,32 @@ router.use(function (req, res, next) {
 })
 
 // =============================================================================
+// Prototype start pages — A/B testing entry points
+// =============================================================================
+
+/**
+ * GET /prototype-1
+ *
+ * Start page for Prototype 1. Service overview/landing page mimicking the
+ * real SP allocation service. Forecasting links point to Option 1 layout.
+ */
+router.get('/prototype-1', function (req, res) {
+  req.session.data['activePrototype'] = '1'
+  res.render('prototype-1/start')
+})
+
+/**
+ * GET /prototype-2
+ *
+ * Start page for Prototype 2. Same service overview but Forecasting links
+ * point to Option 2 layout (submitted-forecasts-v2).
+ */
+router.get('/prototype-2', function (req, res) {
+  req.session.data['activePrototype'] = '2'
+  res.render('prototype-2/start')
+})
+
+// =============================================================================
 // Site Units Forecast — Strategic Partnerships
 // =============================================================================
 
@@ -274,8 +300,23 @@ router.get('/sites', function (req, res) {
   var activeStatuses = activeStatusSlugs.map(function (s) { return statusParamMap[s] }).filter(Boolean)
   var activeRegions = activeRegionSlugs.map(function (s) { return regionParamMap[s] }).filter(Boolean)
 
+  // --- Prepend new site from session if one was just added ---
+  var allSites = seedSites.slice()
+  if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
+    var ns = req.session.data['newSite']
+    allSites.unshift({
+      siteId: String(2000 + Math.floor(Math.random() * 1000)),
+      siteName: ns.siteName || 'New site',
+      status: 'Not started',
+      homes: 0,
+      statusInDeal: 'Active',
+      localAuthority: ns.localAuthority || '',
+      region: ns.region || ''
+    })
+  }
+
   // --- Filter ---
-  var filtered = seedSites.filter(function (site) {
+  var filtered = allSites.filter(function (site) {
     return activeStatuses.indexOf(site.status) !== -1
       && activeRegions.indexOf(site.region) !== -1
   })
@@ -332,40 +373,63 @@ router.get('/sites', function (req, res) {
     totalHomes: totalHomes,
     completedSites: completedSites,
     activeStatusSlugs: activeStatusSlugs,
-    activeRegionSlugs: activeRegionSlugs
+    activeRegionSlugs: activeRegionSlugs,
+    activeProgressSlugs: req.query.progress ? req.query.progress.split(',') : [],
+    activeStatusInDealSlugs: req.query.statusInDeal ? req.query.statusInDeal.split(',') : []
   })
 })
 
 /**
  * GET /sites/add/step-1
+ *
+ * Clears all add-site session fields so each new site starts with a
+ * blank form. Without this, navigating back to step 1 after submitting
+ * a site would show the previous site's data in every field.
+ *
+ * Only clears when arriving fresh (no ?back param). Back navigation
+ * from step 2 passes ?back=true to preserve in-progress data.
  */
 router.get('/sites/add/step-1', function (req, res) {
+  if (!req.query.back) {
+    var addSiteFields = [
+      'site-name', 'site-type', 'local-authority', 'region', 'he-region',
+      'procurement-route', 'rural-settlement', 'rural-exception-site',
+      'address-line-1', 'address-line-2', 'town-or-city', 'county',
+      'postcode', 'x-coordinate', 'y-coordinate',
+      'strategic-site', 'strategic-site-name', 'green-belt',
+      'regeneration-site', 'regeneration-plans', 'regeneration-benefits',
+      'regeneration-funding', 'historical-grant', 'historical-grant-amount',
+      'historical-grant-scheme-ids', 'historical-grant-notified',
+      'occupancy-status', 'vacancy-date-day', 'vacancy-date-month',
+      'vacancy-date-year', 'decanting-steps',
+      'mmc-used', 'mmc-categories', 'mmc-cat1-subs', 'mmc-cat2-subs',
+      'land-acquisition-status', 'land-acquisition-date-day',
+      'land-acquisition-date-month', 'land-acquisition-date-year',
+      'planning-status', 'planning-approval-date-day',
+      'planning-approval-date-month', 'planning-approval-date-year',
+      'planning-reference', 'grant-funding-all-homes',
+      'works-contract-status', 'building-contract-date-day',
+      'building-contract-date-month', 'building-contract-date-year',
+      'contractor-type', 'contractor-name',
+      'start-on-site-status', 'start-on-site-date-day',
+      'start-on-site-date-month', 'start-on-site-date-year',
+      'practical-completion-date-day', 'practical-completion-date-month',
+      'practical-completion-date-year'
+    ]
+    addSiteFields.forEach(function (key) {
+      delete req.session.data[key]
+    })
+  }
   res.render('sites/add/step-1')
 })
 
 /**
  * POST /sites/add/step-1
  *
- * Saves step 1 fields to session and redirects to step 2.
+ * Prototype Kit auto-stores all POSTed fields in session.data,
+ * so we just redirect to step 2.
  */
 router.post('/sites/add/step-1', function (req, res) {
-  req.session.data['newSite'] = {
-    ...req.session.data['newSite'],
-    siteId: req.body['site-id'],
-    siteName: req.body['site-name'],
-    typeOfSite: req.body['type-of-site'],
-    ruralArea: req.body['rural-area'],
-    localAuthority: req.body['local-authority'],
-    operatingArea: req.body['operating-area'],
-    region: req.body['region'],
-    processingRoute: req.body['processing-route'],
-    regenerationSite: req.body['regeneration-site'],
-    postcode: req.body['postcode'],
-    xCoordinate: req.body['x-coordinate'],
-    yCoordinate: req.body['y-coordinate'],
-    typeOfContractor: req.body['type-of-contractor'],
-    contractor: req.body['contractor']
-  }
   res.redirect('/sites/add/step-2')
 })
 
@@ -378,18 +442,63 @@ router.get('/sites/add/step-2', function (req, res) {
 
 /**
  * POST /sites/add/step-2
- *
- * Saves step 2 fields, marks the new site as complete, and redirects
- * to the Sites page with a success banner.
  */
 router.post('/sites/add/step-2', function (req, res) {
+  res.redirect('/sites/add/step-3')
+})
+
+/**
+ * GET /sites/add/step-3
+ */
+router.get('/sites/add/step-3', function (req, res) {
+  res.render('sites/add/step-3')
+})
+
+/**
+ * POST /sites/add/step-3
+ */
+router.post('/sites/add/step-3', function (req, res) {
+  res.redirect('/sites/add/step-4')
+})
+
+/**
+ * GET /sites/add/step-4
+ */
+router.get('/sites/add/step-4', function (req, res) {
+  res.render('sites/add/step-4')
+})
+
+/**
+ * POST /sites/add/step-4
+ */
+router.post('/sites/add/step-4', function (req, res) {
+  res.redirect('/sites/add/step-5')
+})
+
+/**
+ * GET /sites/add/step-5
+ */
+router.get('/sites/add/step-5', function (req, res) {
+  res.render('sites/add/step-5')
+})
+
+/**
+ * POST /sites/add/step-5
+ *
+ * Final step — saves the new site to the session newSite object
+ * and redirects to the Sites page with a success banner.
+ */
+router.post('/sites/add/step-5', function (req, res) {
   req.session.data['newSite'] = {
-    ...req.session.data['newSite'],
-    ownershipStatus: req.body['ownership-status'],
-    planningStatus: req.body['planning-status'],
-    buildingContractStatus: req.body['building-contract-status'],
-    startOnSiteStatus: req.body['start-on-site-status'],
-    forecastCompletionDate: req.body['forecast-completion-date']
+    siteName: req.session.data['site-name'],
+    siteType: req.session.data['site-type'],
+    localAuthority: req.session.data['local-authority'],
+    region: req.session.data['region'],
+    postcode: req.session.data['postcode'],
+    procurementRoute: req.session.data['procurement-route'],
+    planningStatus: req.session.data['planning-status'],
+    contractorName: req.session.data['contractor-name'],
+    mmcUsed: req.session.data['mmc-used']
   }
   req.session.data['newSiteAdded'] = true
   res.redirect('/sites?success=true')
@@ -737,7 +846,7 @@ router.post('/sites/:siteId/completions/add', function (req, res) {
     status: 'in-progress',
     tenureHomeTypes: [],
     costs: {
-      grossDevelopmentValue: '',
+      grossDevelopmentValue: '1250000',
       acquisitionCosts: '',
       workCosts: '',
       onCosts: ''
@@ -790,7 +899,7 @@ router.post('/sites/:siteId/completions/:phaseId/phase-costs', function (req, re
   if (!phase) return res.redirect('/sites/' + req.params.siteId + '/completions')
 
   phase.costs = {
-    grossDevelopmentValue: stripCommas(req.body['gross-development-value']),
+    grossDevelopmentValue: phase.costs.grossDevelopmentValue,
     acquisitionCosts: stripCommas(req.body['acquisition-costs']),
     workCosts: stripCommas(req.body['work-costs']),
     onCosts: stripCommas(req.body['on-costs'])
@@ -1652,4 +1761,317 @@ router.get('/components/stat-card', function (req, res) {
 
 router.get('/components/year-tabs', function (req, res) {
   res.render('components/year-tabs')
+})
+
+// =============================================================================
+// Forecasting — submitted forecasts and grant funded delivery
+// =============================================================================
+
+/**
+ * Mock forecast version metadata.
+ * Versions 1–4 represent previously submitted forecasts.
+ */
+var forecastVersions = {
+  1: { status: 'Submitted', createdBy: 'Sarah Johnson', reviewedBy: 'Michael Chen', reviewedDate: '15/03/2026' },
+  2: { status: 'Approved', createdBy: 'Sarah Johnson', reviewedBy: 'Michael Chen', reviewedDate: '20/06/2026' },
+  3: { status: 'Submitted', createdBy: 'Oscar Swanson', reviewedBy: 'Natasha Wilson', reviewedDate: '18/09/2026' },
+  4: { status: 'Approved', createdBy: 'Oscar Swanson', reviewedBy: 'Natasha Wilson', reviewedDate: '05/01/2026' }
+}
+
+/**
+ * Mock forecast table data for 2026-27 (the only year with non-zero values).
+ * Currency values are whole pound amounts.
+ */
+var forecastData2026 = {
+  capex:       { forecast: [55797508, 60012520, 0, 0], actual: [55797508, 60012520, 0, 0] },
+  grant:       { forecast: [22198349, 48443872, 0, 0], actual: [22198349, 48443872, 0, 0] },
+  starts:      { forecast: [31, 285, 0, 0],            actual: [31, 285, 0, 0] },
+  completions: { forecast: [99, 194, 0, 0],            actual: [46, 194, 0, 0] }
+}
+
+/**
+ * Mock comments history for the submitted forecast view.
+ */
+var forecastComments = [
+  { quarter: 2, dateTime: '05/01/2026 14:30', actionedBy: 'Natasha Wilson', comments: 'Reviewed and approved. Figures align with site reports.', status: 'Approved', version: 4 },
+  { quarter: 2, dateTime: '18/09/2026 09:15', actionedBy: 'Oscar Swanson', comments: 'Q3 forecast updated to reflect revised site programme.', status: 'Submitted', version: 3 },
+  { quarter: 2, dateTime: '20/06/2026 16:45', actionedBy: 'Michael Chen', comments: 'Approved with no changes required.', status: 'Approved', version: 2 },
+  { quarter: 2, dateTime: '15/03/2026 11:20', actionedBy: 'Sarah Johnson', comments: 'Initial Q1 forecast based on contractor programme.', status: 'Submitted', version: 1 }
+]
+
+/**
+ * GET /forecasting/submitted-forecasts
+ */
+router.get('/forecasting/submitted-forecasts', function (req, res) {
+  res.render('forecasting/submitted-forecasts')
+})
+
+/**
+ * GET /forecasting/grant-funded-delivery
+ *
+ * Read-only view of submitted forecast versions.
+ * ?version=N selects which version to display.
+ * ?submitted=true shows the success notification banner.
+ */
+/**
+ * Helper: initialise the submitted versions array in session if not present.
+ */
+function getSubmittedVersions (sessionData) {
+  if (!sessionData['forecastSubmittedVersions']) {
+    sessionData['forecastSubmittedVersions'] = []
+  }
+  return sessionData['forecastSubmittedVersions']
+}
+
+/**
+ * Helper: parse a session value as a number, stripping commas.
+ */
+function parseSessionNumber (val) {
+  if (val === undefined || val === '') return 0
+  return parseFloat(String(val).replace(/,/g, '')) || 0
+}
+
+router.get('/forecasting/grant-funded-delivery', function (req, res) {
+  var submitted = req.query.submitted === 'true'
+  var submittedVersions = getSubmittedVersions(req.session.data)
+
+  // Build version list: base versions 1–4 plus any user-submitted versions
+  var versions = JSON.parse(JSON.stringify(forecastVersions))
+  submittedVersions.forEach(function (sv) {
+    versions[sv.version] = {
+      status: 'Submitted',
+      createdBy: 'Oscar Swanson',
+      reviewedBy: 'Natasha Wilson',
+      reviewedDate: sv.date
+    }
+  })
+
+  var totalVersions = 4 + submittedVersions.length
+  var selectedVersion = parseInt(req.query.version, 10) || totalVersions
+  var versionMeta = versions[selectedVersion] || versions[totalVersions]
+
+  // Build comments list: seed data plus one entry per submitted version
+  var comments = forecastComments.slice()
+  // Add in reverse order so newest appears first
+  for (var i = submittedVersions.length - 1; i >= 0; i--) {
+    var sv = submittedVersions[i]
+    comments.unshift({
+      quarter: 2,
+      dateTime: sv.date + ' ' + sv.time,
+      actionedBy: 'Oscar Swanson',
+      comments: sv.comments || 'Forecast submitted.',
+      status: 'Submitted',
+      version: sv.version
+    })
+  }
+
+  // Build forecast data — if viewing a user-submitted version, use its saved data
+  var forecastData = JSON.parse(JSON.stringify(forecastData2026))
+  var matchingVersion = submittedVersions.find(function (sv) {
+    return sv.version === selectedVersion
+  })
+  if (matchingVersion && matchingVersion.forecastData) {
+    forecastData = JSON.parse(JSON.stringify(matchingVersion.forecastData))
+  }
+
+  res.render('forecasting/grant-funded-delivery', {
+    submitted: submitted,
+    selectedVersion: selectedVersion,
+    versionMeta: versionMeta,
+    versions: versions,
+    totalVersions: totalVersions,
+    forecastData: forecastData,
+    comments: comments
+  })
+})
+
+/**
+ * GET /forecasting/grant-funded-delivery/new
+ *
+ * New forecast form. Clears editable fields for a fresh entry each time.
+ */
+router.get('/forecasting/grant-funded-delivery/new', function (req, res) {
+  var submittedVersions = getSubmittedVersions(req.session.data)
+  var nextVersion = 5 + submittedVersions.length
+
+  // Pre-populate editable fields from the last submitted version,
+  // or fall back to base mock data if no versions submitted yet
+  var lastSnapshot = submittedVersions.length > 0
+    ? submittedVersions[submittedVersions.length - 1].forecastData
+    : forecastData2026
+
+  var tables = ['capex', 'grant', 'starts', 'completions']
+  tables.forEach(function (table) {
+    for (var q = 0; q < 4; q++) {
+      var key = table + '-forecast-q' + (q + 1)
+      req.session.data[key] = String(lastSnapshot[table].forecast[q])
+    }
+  })
+  req.session.data['forecast-comments'] = ''
+
+  res.render('forecasting/grant-funded-delivery-new', {
+    forecastData: forecastData2026,
+    nextVersion: nextVersion
+  })
+})
+
+/**
+ * POST /forecasting/grant-funded-delivery/new
+ *
+ * Handles both "Submit" and "Save as draft" actions.
+ * Each submission snapshots the entered data into a stored version.
+ */
+router.post('/forecasting/grant-funded-delivery/new', function (req, res) {
+  if (req.body.action === 'draft') {
+    res.redirect('/forecasting/grant-funded-delivery/new')
+  } else {
+    var submittedVersions = getSubmittedVersions(req.session.data)
+    var newVersion = 5 + submittedVersions.length
+    var now = new Date()
+    var dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    var timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+
+    // Snapshot the forecast data from session
+    var sessionData = req.session.data
+    var snapshotData = JSON.parse(JSON.stringify(forecastData2026))
+    var tables = ['capex', 'grant', 'starts', 'completions']
+    tables.forEach(function (table) {
+      for (var q = 0; q < 4; q++) {
+        var key = table + '-forecast-q' + (q + 1)
+        if (sessionData[key] !== undefined && sessionData[key] !== '') {
+          snapshotData[table].forecast[q] = parseSessionNumber(sessionData[key])
+        }
+      }
+    })
+
+    submittedVersions.push({
+      version: newVersion,
+      date: dateStr,
+      time: timeStr,
+      comments: sessionData['forecast-comments'] || '',
+      forecastData: snapshotData
+    })
+
+    res.redirect('/forecasting/grant-funded-delivery?submitted=true&version=' + newVersion)
+  }
+})
+
+// =============================================================================
+// Forecasting — Option 2 (grouped by Forecasts / Variances / Actuals)
+// =============================================================================
+// Reuses the same mock data, version metadata, and comments as Option 1.
+// Separate session keys use 'v2' prefix to avoid conflicts.
+
+router.get('/forecasting/submitted-forecasts-v2', function (req, res) {
+  res.render('forecasting/submitted-forecasts-v2')
+})
+
+router.get('/forecasting/grant-funded-delivery-v2', function (req, res) {
+  var submitted = req.query.submitted === 'true'
+  var submittedVersions = req.session.data['forecastSubmittedVersionsV2'] || []
+
+  var versions = JSON.parse(JSON.stringify(forecastVersions))
+  submittedVersions.forEach(function (sv) {
+    versions[sv.version] = {
+      status: 'Submitted',
+      createdBy: 'Oscar Swanson',
+      reviewedBy: 'Natasha Wilson',
+      reviewedDate: sv.date
+    }
+  })
+
+  var totalVersions = 4 + submittedVersions.length
+  var selectedVersion = parseInt(req.query.version, 10) || totalVersions
+  var versionMeta = versions[selectedVersion] || versions[totalVersions]
+
+  var comments = forecastComments.slice()
+  for (var i = submittedVersions.length - 1; i >= 0; i--) {
+    var sv = submittedVersions[i]
+    comments.unshift({
+      quarter: 2,
+      dateTime: sv.date + ' ' + sv.time,
+      actionedBy: 'Oscar Swanson',
+      comments: sv.comments || 'Forecast submitted.',
+      status: 'Submitted',
+      version: sv.version
+    })
+  }
+
+  var forecastData = JSON.parse(JSON.stringify(forecastData2026))
+  var matchingVersion = submittedVersions.find(function (sv) {
+    return sv.version === selectedVersion
+  })
+  if (matchingVersion && matchingVersion.forecastData) {
+    forecastData = JSON.parse(JSON.stringify(matchingVersion.forecastData))
+  }
+
+  res.render('forecasting/grant-funded-delivery-v2', {
+    submitted: submitted,
+    selectedVersion: selectedVersion,
+    versionMeta: versionMeta,
+    versions: versions,
+    totalVersions: totalVersions,
+    forecastData: forecastData,
+    comments: comments
+  })
+})
+
+router.get('/forecasting/grant-funded-delivery-v2/new', function (req, res) {
+  var submittedVersions = req.session.data['forecastSubmittedVersionsV2'] || []
+  var nextVersion = 5 + submittedVersions.length
+
+  var lastSnapshot = submittedVersions.length > 0
+    ? submittedVersions[submittedVersions.length - 1].forecastData
+    : forecastData2026
+
+  var tables = ['capex', 'grant', 'starts', 'completions']
+  tables.forEach(function (table) {
+    for (var q = 0; q < 4; q++) {
+      var key = table + '-forecast-q' + (q + 1)
+      req.session.data[key] = String(lastSnapshot[table].forecast[q])
+    }
+  })
+  req.session.data['forecast-comments'] = ''
+
+  res.render('forecasting/grant-funded-delivery-v2-new', {
+    forecastData: forecastData2026,
+    nextVersion: nextVersion
+  })
+})
+
+router.post('/forecasting/grant-funded-delivery-v2/new', function (req, res) {
+  if (req.body.action === 'draft') {
+    res.redirect('/forecasting/grant-funded-delivery-v2/new')
+  } else {
+    if (!req.session.data['forecastSubmittedVersionsV2']) {
+      req.session.data['forecastSubmittedVersionsV2'] = []
+    }
+    var submittedVersions = req.session.data['forecastSubmittedVersionsV2']
+    var newVersion = 5 + submittedVersions.length
+    var now = new Date()
+    var dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    var timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+
+    var sessionData = req.session.data
+    var snapshotData = JSON.parse(JSON.stringify(forecastData2026))
+    var tables = ['capex', 'grant', 'starts', 'completions']
+    tables.forEach(function (table) {
+      for (var q = 0; q < 4; q++) {
+        var key = table + '-forecast-q' + (q + 1)
+        if (sessionData[key] !== undefined && sessionData[key] !== '') {
+          snapshotData[table].forecast[q] = parseSessionNumber(sessionData[key])
+        }
+      }
+    })
+
+    submittedVersions.push({
+      version: newVersion,
+      date: dateStr,
+      time: timeStr,
+      comments: sessionData['forecast-comments'] || '',
+      forecastData: snapshotData
+    })
+
+    res.redirect('/forecasting/grant-funded-delivery-v2?submitted=true&version=' + newVersion)
+  }
 })

@@ -1,0 +1,172 @@
+{#
+  Prototype 1 start page — service overview/landing page.
+  Uses the SP programme navigation with Forecasting pointing to
+  /forecasting/submitted-forecasts (Option 1 layout).
+#}
+
+{% extends "layouts/main.html" %}
+
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
+{% set pageName = "Strategic Partnerships allocation" %}
+
+{% set forecastingUrl = "/forecasting/submitted-forecasts" %}
+
+{% block govukServiceNavigation %}
+  {{ govukServiceNavigation({
+    serviceName: serviceName,
+    serviceUrl: "/",
+    navigation: [
+      {
+        text: "Overview",
+        href: "/prototype-1",
+        current: true
+      },
+      {
+        text: "Agreed provider profile",
+        href: "#"
+      },
+      {
+        text: "Sites",
+        href: "/sites"
+      },
+      {
+        text: "Forecasting",
+        href: forecastingUrl
+      },
+      {
+        text: "Quarterly expenditure",
+        href: "#"
+      },
+      {
+        text: "Payments",
+        href: "#"
+      },
+      {
+        text: "Sign out",
+        href: "#"
+      }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">Social and Affordable Homes Programme 2026 to 2036</span>
+    <h1 class="govuk-heading-xl">Strategic Partnerships allocation</h1>
+    <p class="govuk-body-l">Manage your allocation.</p>
+  </div>
+</div>
+
+<!-- Service menu sections — mirrors the real service landing page structure.
+     Each section has a heading link (left) and action links (right) in a
+     two-thirds / one-third grid. All links point to # unless a prototype
+     page exists for that journey. -->
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="#">Agreed provider profile</a>
+        </h2>
+        <p class="govuk-body">Manage your grant rates, homes and tenure agreements.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <ul class="govuk-list">
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Grant rates</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Homes</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Forecasting</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Total grant by homes and tenure</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="#">Delivery partners</a>
+        </h2>
+        <p class="govuk-body">Add or deactivate your delivery partners.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <ul class="govuk-list">
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Add new partner</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="/sites">Sites</a>
+        </h2>
+        <p class="govuk-body">Manage your sites, home types and completions.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <ul class="govuk-list">
+          <li><a class="govuk-link govuk-link--no-visited-state" href="/sites/add/step-1">Add a new site</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Add multiple new sites using a bulk uploader</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Manage home types</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ forecastingUrl }}">Forecasting</a>
+        </h2>
+        <p class="govuk-body">Add a new forecast and view your submitted forecasts.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+        <ul class="govuk-list">
+          <li><a class="govuk-link govuk-link--no-visited-state" href="/forecasting/grant-funded-delivery">Grant funded delivery</a></li>
+          <li><a class="govuk-link govuk-link--no-visited-state" href="#">Nil grant homes</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="#">Quarterly expenditure</a>
+        </h2>
+        <p class="govuk-body">Submit your quarterly development expenditure.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">
+          <a class="govuk-link govuk-link--no-visited-state" href="#">Payments</a>
+        </h2>
+        <p class="govuk-body">Request and track your grant payments.</p>
+      </div>
+      <div class="govuk-grid-column-two-thirds">
+      </div>
+    </div>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+  </div>
+</div>
+
+{% endblock %}

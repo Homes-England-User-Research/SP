@@ -26,30 +26,41 @@
   pages since "starts with" is not standard Nunjucks syntax.
 #}
 {% block govukServiceNavigation %}
-  {{ govukServiceNavigation({
-    serviceName: serviceName,
-    serviceUrl: "/",
-    navigation: [
-      {
-        text: "Home",
-        href: "/",
-        current: true if currentPath == "/" else false
-      },
-      {
-        text: "Overview",
-        href: "/overview",
-        current: true if "/overview" in currentPath else false
-      },
-      {
-        text: "Sites",
-        href: "/sites",
-        current: true if "/sites" in currentPath else false
-      },
-      {
-        text: "Components",
-        href: "/components",
-        current: true if "/components" in currentPath else false
-      }
-    ]
-  }) }}
+  {#
+    Hide prototype nav items (Overview, Sites, Components) on the index and archive
+    pages — these are UR hub pages, not part of the prototype itself.
+  #}
+  {% if currentPath == "/" or currentPath == "/archive" %}
+    {{ govukServiceNavigation({
+      serviceName: serviceName,
+      serviceUrl: "/"
+    }) }}
+  {% else %}
+    {{ govukServiceNavigation({
+      serviceName: serviceName,
+      serviceUrl: "/",
+      navigation: [
+        {
+          text: "Home",
+          href: "/",
+          current: true if currentPath == "/" else false
+        },
+        {
+          text: "Overview",
+          href: "/overview",
+          current: true if "/overview" in currentPath else false
+        },
+        {
+          text: "Sites",
+          href: "/sites",
+          current: true if "/sites" in currentPath else false
+        },
+        {
+          text: "Components",
+          href: "/components",
+          current: true if "/components" in currentPath else false
+        }
+      ]
+    }) }}
+  {% endif %}
 {% endblock %}

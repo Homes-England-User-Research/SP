@@ -1,0 +1,51 @@
+// =============================================================================
+// Forecasting journey — custom styles
+// =============================================================================
+
+// Version select — match the GDS width-3 sizing (5.4em) for <select> elements
+// govuk-input--width-3 only works correctly on <input>, not <select>
+// Align the "Version" key vertically with the select dropdown
+.forecasting-version-row .govuk-summary-list__key {
+  vertical-align: middle;
+  padding-top: govuk-spacing(3);
+  padding-bottom: govuk-spacing(3);
+}
+
+.forecasting-version-select {
+  width: 5.4em;
+  min-width: 0;
+}
+
+// Forecasting tables — compact spacing between the four data tables
+.forecasting-table-group {
+  margin-bottom: govuk-spacing(6);
+}
+
+// Forecasting pages — 16px text for tabs and data tables
+.govuk-tabs .govuk-table {
+  @include govuk-font($size: 16);
+
+  .govuk-table__header {
+    @include govuk-font($size: 16, $weight: bold);
+  }
+
+  .govuk-table__cell {
+    @include govuk-font($size: 16);
+  }
+}
+
+// Forecasting inputs — fill available cell width, no bottom margin in table context
+.forecasting-input {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+// Force table layout so column widths are respected with inputs
+.sp-editable-table {
+  table-layout: fixed;
+}
+
+// First column row headers — vertically centre text alongside inputs/values
+.govuk-tabs .govuk-table__body .govuk-table__header {
+  vertical-align: middle;
+}

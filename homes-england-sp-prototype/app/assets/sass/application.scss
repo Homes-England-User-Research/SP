@@ -29,8 +29,72 @@
 // Completions journey — address table, compact inputs
 @import 'completions';
 
+// Forecasting journey — version metadata, table spacing
+@import 'forecasting';
+
 // Sites page — 3-column stat card grid variant
 .stat-card-grid--3col {
   grid-template-columns: repeat(3, 1fr);
+}
+
+// Sortable table — MOJ Design System pattern
+// Buttons inside sortable <th> elements styled as blue link text with
+// inline SVG sort arrows. Matches the MOJ Frontend sortable-table component.
+[aria-sort] button,
+[aria-sort] button:hover {
+  display: inline-flex;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  color: #1d70b8;
+  background-color: transparent;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  align-items: center;
+  gap: 2px;
+}
+
+[aria-sort] button:focus {
+  outline: none;
+  color: govuk-colour("black");
+  background-color: govuk-colour("yellow");
+  box-shadow:
+    0 -2px govuk-colour("yellow"),
+    0 4px govuk-colour("black");
+}
+
+// Accessible-autocomplete — override font to match GDS Transport
+.autocomplete__input,
+.autocomplete__option,
+.autocomplete__hint {
+  font-family: "GDS Transport", arial, sans-serif;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+// Sites filter accordion — hide the "Show all sections" control since
+// there is only one section. The section heading itself acts as the toggle.
+.sites-filter-accordion {
+  padding-top: 20px;
+}
+
+.sites-filter-accordion .govuk-accordion__show-all {
+  display: none;
+}
+
+// Add new site — step 4 wider section dividers for clearer grouping
+.add-site-divider {
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+// Add new site — step 5 wider summary list spacing
+.add-site-summary-section {
+  margin-bottom: 60px;
 }
 

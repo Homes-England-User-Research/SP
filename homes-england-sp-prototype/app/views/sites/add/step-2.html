@@ -1,110 +1,252 @@
 {% extends "layouts/sites.html" %}
 
-{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Add new site - Step 2 of 2" %}
+{% set pageName = "Site characteristics - Add a new site" %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/add-site.js"></script>
+{% endblock %}
 
 {% block content %}
 
-{{ govukBreadcrumbs({
-  items: [
-    { text: "Sites", href: "/sites" },
-    { text: "Add new site", href: "/sites/add/step-1" }
-  ]
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/add/step-1?back=true"
 }) }}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 2 of 2</span>
-    <h1 class="govuk-heading-xl">Add new site</h1>
+    <span class="govuk-caption-l">Step 2 of 5</span>
+    <h1 class="govuk-heading-l">Site characteristics</h1>
 
     <form method="post" action="/sites/add/step-2">
 
-      {# ── Section: Site milestones ───────────────────────────────────────── #}
-      <h2 class="govuk-heading-m">Site milestones</h2>
+      {# -- Strategic site / EMSA -- #}
+      {% set strategicConditionalHtml %}
+        {{ govukInput({
+          label: { text: "Enter the name of the strategic site" },
+          id: "strategic-site-name",
+          name: "strategic-site-name",
+          value: data['strategic-site-name'],
+          classes: "govuk-!-width-full"
+        }) }}
+      {% endset %}
 
-      {{ govukSelect({
-        label: { text: "What is the ownership status of the site?" },
-        id: "ownership-status",
-        name: "ownership-status",
-        classes: "govuk-!-width-full",
-        items: [
-          { value: "", text: "---Please select---" },
-          { value: "conditional", text: "Conditional acquisition, land option or heads of terms" },
-          { value: "negotiations-underway", text: "Land purchase negotiations underway" },
-          { value: "identified", text: "Land identified but purchase negotiations not yet started" },
-          { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest has occurred or Secure Legal Interest/Qualifying Secure Legal Interest as defined in the relevant Grant Agreement" }
-        ]
-      }) }}
-
-      {{ govukSelect({
-        label: { text: "What is the planning status of the site?" },
-        id: "planning-status",
-        name: "planning-status",
-        classes: "govuk-!-width-full",
-        items: [
-          { value: "", text: "---Please select---" },
-          { value: "detailed-no-steps", text: "Detailed Planning Approval granted with no further steps required before start on site can occur" },
-          { value: "detailed-some-steps", text: "Detailed Planning Approval granted with some further steps required before start on site can occur" },
-          { value: "outline-granted", text: "Outline Planning Approval granted" },
-          { value: "outline-submitted", text: "Outline planning submitted" },
-          { value: "detailed-submitted", text: "Detailed planning submitted" },
-          { value: "discussion", text: "Planning discussion underway with planning office" },
-          { value: "no-progress", text: "No progress yet on planning application" }
-        ]
-      }) }}
-
-      {{ govukSelect({
-        label: { text: "Building contract status" },
-        id: "building-contract-status",
-        name: "building-contract-status",
-        classes: "govuk-!-width-full",
-        items: [
-          { value: "", text: "---Please select---" },
-          { value: "unconditional-let", text: "Unconditional works contract let" },
-          { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract" },
-          { value: "tender", text: "Tender for works contract out for competition" },
-          { value: "not-begun", text: "Works contracting process not yet begun" }
-        ]
-      }) }}
-
-      {{ govukSelect({
-        label: { text: "Start on site status" },
-        id: "start-on-site-status",
-        name: "start-on-site-status",
-        classes: "govuk-!-width-full",
-        items: [
-          { value: "", text: "---Please select---" },
-          { value: "forecast", text: "Forecast" },
-          { value: "actual", text: "Actual" }
-        ]
-      }) }}
-
-      {{ govukDateInput({
-        id: "forecast-completion-date",
-        namePrefix: "forecast-completion-date",
+      {{ govukRadios({
+        name: "strategic-site",
         fieldset: {
-          legend: { text: "Forecast practical completion date" }
+          legend: {
+            text: "Is this a strategic site or is it within an Established Mayoral Strategic Authority priority location?",
+            classes: "govuk-fieldset__legend--s"
+          }
         },
-        hint: { text: "For example, 27 3 2027" },
+        hint: {
+          html: "Strategic sites are large sites, identified as part of the local planning process to enable the delivery of large scale sustainable housing and infrastructure.<br><br><a class='govuk-link' href='#' rel='noreferrer noopener' target='_blank'>Read more about EMSA priority locations (opens in a new tab).</a>"
+        },
         items: [
-          { name: "day",   classes: "govuk-input--width-2" },
-          { name: "month", classes: "govuk-input--width-2" },
-          { name: "year",  classes: "govuk-input--width-4" }
+          { value: "yes", text: "Yes", checked: data['strategic-site'] == "yes", conditional: { html: strategicConditionalHtml } },
+          { value: "no", text: "No", checked: data['strategic-site'] == "no" }
         ]
       }) }}
 
-      {# ── Buttons ────────────────────────────────────────────────────────── #}
-      {{ govukButton({ text: "Save site" }) }}
-      {{ govukButton({
-        text: "Save as draft",
-        classes: "govuk-button--secondary govuk-!-margin-left-3",
-        href: "/sites"
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {# -- Green belt -- #}
+      {{ govukRadios({
+        name: "green-belt",
+        fieldset: {
+          legend: {
+            text: "Is this site on a green belt?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "Green belts are areas around towns and cities defined in local planning policy, where new development is restricted."
+        },
+        items: [
+          { value: "yes", text: "Yes", checked: data['green-belt'] == "yes" },
+          { value: "no", text: "No", checked: data['green-belt'] == "no" }
+        ]
       }) }}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {# -- Regeneration site -- #}
+      {% set regenerationConditionalHtml %}
+        {{ govukTextarea({
+          label: {
+            text: "Tell us more about the regeneration plans for this site",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            html: "Include details on:<ul class='govuk-list govuk-list--bullet'><li>how the proposal supports the local place</li><li>your discussions with the local community on these proposals</li><li>the options appraisal that has been or will be considered by your board</li><li>why homes need to be replaced</li></ul>"
+          },
+          id: "regeneration-plans",
+          name: "regeneration-plans",
+          value: data['regeneration-plans'],
+          rows: 5,
+          attributes: { maxlength: "4000" }
+        }) }}
+        <p class="govuk-hint">You have 4000 characters remaining.</p>
+
+        {{ govukTextarea({
+          label: {
+            text: "What additional housing or other benefits will be secured through this proposal?",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            html: "Include details on:<ul class='govuk-list govuk-list--bullet'><li>any additional affordable housing on this site or in wider regeneration proposals</li><li>acceleration of other pipeline sites</li><li>any other social and economic benefits, for example employment or apprenticeships</li></ul>"
+          },
+          id: "regeneration-benefits",
+          name: "regeneration-benefits",
+          value: data['regeneration-benefits'],
+          rows: 5,
+          attributes: { maxlength: "4000" }
+        }) }}
+        <p class="govuk-hint">You have 4000 characters remaining.</p>
+
+        {{ govukTextarea({
+          label: {
+            text: "Tell us about any other funding that is required to support this regeneration",
+            classes: "govuk-label--s"
+          },
+          hint: {
+            text: "For example, Combined Authority brownfield funding, other Homes England investments, town centre funding or other off-site funding that supports the proposal. Include details of any funding drawdown requirements or long stop dates."
+          },
+          id: "regeneration-funding",
+          name: "regeneration-funding",
+          value: data['regeneration-funding'],
+          rows: 5,
+          attributes: { maxlength: "4000" }
+        }) }}
+        <p class="govuk-hint">You have 4000 characters remaining.</p>
+      {% endset %}
+
+      {{ govukRadios({
+        name: "regeneration-site",
+        fieldset: {
+          legend: {
+            text: "Is this a regeneration site?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        hint: {
+          text: "See 'regeneration of existing social housing estates' under 'What the funding can be used to deliver' in the SAHP funding guidance (opens in a new tab)."
+        },
+        items: [
+          { value: "yes", text: "Yes", checked: data['regeneration-site'] == "yes", conditional: { html: regenerationConditionalHtml } },
+          { value: "no", text: "No", checked: data['regeneration-site'] == "no" }
+        ]
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {# -- Historical grant -- #}
+      {% set historicalGrantConditionalHtml %}
+        {{ govukInput({
+          label: { text: "What is the amount of the historical grant?" },
+          id: "historical-grant-amount",
+          name: "historical-grant-amount",
+          value: data['historical-grant-amount'],
+          classes: "govuk-input--width-10 js-currency-input",
+          prefix: { text: "£" },
+          inputmode: "numeric"
+        }) }}
+
+        {{ govukInput({
+          label: { text: "Enter the scheme IDs or reference numbers" },
+          id: "historical-grant-scheme-ids",
+          name: "historical-grant-scheme-ids",
+          value: data['historical-grant-scheme-ids'],
+          classes: "govuk-!-width-full"
+        }) }}
+
+        {{ govukRadios({
+          name: "historical-grant-notified",
+          fieldset: {
+            legend: {
+              text: "Have you notified the Homes England Historical Grants team of your plans?"
+            }
+          },
+          items: [
+            { value: "yes", text: "Yes", checked: data['historical-grant-notified'] == "yes" },
+            { value: "no", text: "No", checked: data['historical-grant-notified'] == "no" }
+          ]
+        }) }}
+      {% endset %}
+
+      {{ govukRadios({
+        name: "historical-grant",
+        fieldset: {
+          legend: {
+            text: "Is there any historical grant in the site?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          { value: "yes", text: "Yes", checked: data['historical-grant'] == "yes", conditional: { html: historicalGrantConditionalHtml } },
+          { value: "no", text: "No", checked: data['historical-grant'] == "no" }
+        ]
+      }) }}
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      {# -- Occupancy status -- #}
+      {% set partiallyVacantConditionalHtml %}
+        {{ govukDateInput({
+          id: "vacancy-date",
+          namePrefix: "vacancy-date",
+          fieldset: {
+            legend: { text: "Date full vacancy expected" }
+          },
+          hint: { text: "For example, 27 3 2027" },
+          items: [
+            { name: "day",   classes: "govuk-input--width-2", value: data['vacancy-date-day'] },
+            { name: "month", classes: "govuk-input--width-2", value: data['vacancy-date-month'] },
+            { name: "year",  classes: "govuk-input--width-4", value: data['vacancy-date-year'] }
+          ]
+        }) }}
+
+        {{ govukInput({
+          label: { text: "What steps are required to complete decanting of existing residents?" },
+          id: "decanting-steps",
+          name: "decanting-steps",
+          value: data['decanting-steps'],
+          classes: "govuk-!-width-full"
+        }) }}
+      {% endset %}
+
+      {{ govukRadios({
+        name: "occupancy-status",
+        fieldset: {
+          legend: {
+            text: "What is the occupancy status of this site?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          { value: "vacant", text: "Vacant", checked: data['occupancy-status'] == "vacant" },
+          { value: "partially-vacant", text: "Partially vacant", checked: data['occupancy-status'] == "partially-vacant", conditional: { html: partiallyVacantConditionalHtml } },
+          { value: "decanting-not-yet-started", text: "Decanting not yet started", checked: data['occupancy-status'] == "decanting-not-yet-started" }
+        ]
+      }) }}
+
+      {# -- Buttons -- #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites"
+        }) }}
+      </div>
 
     </form>
 

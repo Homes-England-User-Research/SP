@@ -1,0 +1,289 @@
+{% extends "layouts/forecasting.html" %}
+
+{% set pageName = "Grant funded delivery forecasts" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Forecasting", href: "/forecasting/submitted-forecasts" }
+    ]
+  }) }}
+{% endblock %}
+
+{#
+  Macro to render a single read-only forecast table.
+  The caption text is rendered as the first column header (not a <caption>)
+  so it sits inline with the Q1–Q4 column headers.
+
+  Parameters:
+    caption     (string, required) — first column header text e.g. "Eligible expenditure"
+    data        (object, required) — { forecast: [q1,q2,q3,q4], actual: [q1,q2,q3,q4] }
+    isCurrency  (boolean, required) — true for £-formatted values, false for plain numbers
+    overallData (object, optional) — overall programme data for the Overall total column;
+                                     if omitted, uses the same data as the yearly totals
+#}
+{% macro forecastTable(caption, data, isCurrency, overallData) %}
+  {% set overall = overallData if overallData else data %}
+  <table class="govuk-table govuk-!-margin-bottom-6">
+    <!-- Even column widths: label 16%, Q1-Q4 at 14% each, totals at 14% each -->
+    <colgroup>
+      <col style="width: 16%">
+      <col style="width: 14%">
+      <col style="width: 14%">
+      <col style="width: 14%">
+      <col style="width: 14%">
+      <col style="width: 14%">
+      <col style="width: 14%">
+    </colgroup>
+    <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">{{ caption }}</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q1</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q2</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q3</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Q4</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Yearly total</th>
+        <th scope="col" class="govuk-table__header govuk-table__header--numeric">Overall total</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">Forecast</th>
+        {% for val in data.forecast %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {% if isCurrency %}{{ val | currency }}{% else %}{{ val | toLocaleString }}{% endif %}
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set yearlyForecast = data.forecast[0] + data.forecast[1] + data.forecast[2] + data.forecast[3] %}
+          {% if isCurrency %}{{ yearlyForecast | currency }}{% else %}{{ yearlyForecast | toLocaleString }}{% endif %}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set overallForecast = overall.forecast[0] + overall.forecast[1] + overall.forecast[2] + overall.forecast[3] %}
+          {% if isCurrency %}{{ overallForecast | currency }}{% else %}{{ overallForecast | toLocaleString }}{% endif %}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">Actual</th>
+        {% for val in data.actual %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {% if isCurrency %}{{ val | currency }}{% else %}{{ val | toLocaleString }}{% endif %}
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set yearlyActual = data.actual[0] + data.actual[1] + data.actual[2] + data.actual[3] %}
+          {% if isCurrency %}{{ yearlyActual | currency }}{% else %}{{ yearlyActual | toLocaleString }}{% endif %}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set overallActual = overall.actual[0] + overall.actual[1] + overall.actual[2] + overall.actual[3] %}
+          {% if isCurrency %}{{ overallActual | currency }}{% else %}{{ overallActual | toLocaleString }}{% endif %}
+        </td>
+      </tr>
+      <tr class="govuk-table__row">
+        <th scope="row" class="govuk-table__header">Variance</th>
+        {% for i in [0, 1, 2, 3] %}
+          {% set variance = data.forecast[i] - data.actual[i] %}
+          <td class="govuk-table__cell govuk-table__cell--numeric">
+            {% if isCurrency %}{{ variance | currency }}{% else %}{{ variance | toLocaleString }}{% endif %}
+          </td>
+        {% endfor %}
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set yearlyVariance = yearlyForecast - yearlyActual %}
+          {% if isCurrency %}{{ yearlyVariance | currency }}{% else %}{{ yearlyVariance | toLocaleString }}{% endif %}
+        </td>
+        <td class="govuk-table__cell govuk-table__cell--numeric">
+          {% set overallVariance = overallForecast - overallActual %}
+          {% if isCurrency %}{{ overallVariance | currency }}{% else %}{{ overallVariance | toLocaleString }}{% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endmacro %}
+
+{#
+  Macro to render a year panel with all 4 forecast tables.
+
+  Parameters:
+    yearId      (string, required) — e.g. "2026" for panel ID
+    data        (object, required) — the year's forecastData with capex, grant, starts, completions
+    isFirst     (boolean, required) — true for the first (visible) panel
+    overallData (object, required) — programme-wide data for the Overall total column
+#}
+{% macro yearPanel(yearId, data, isFirst, overallData) %}
+  <div class="govuk-tabs__panel{% if not isFirst %} govuk-tabs__panel--hidden{% endif %}" id="panel-{{ yearId }}">
+    {{ forecastTable("Eligible expenditure", data.capex, true, overallData.capex) }}
+
+    <div class="govuk-inset-text">
+      The variance row shows the difference between your new forecasts and the most recent approved forecasts.
+    </div>
+
+    {{ forecastTable("Grant drawdown", data.grant, true, overallData.grant) }}
+    {{ forecastTable("Home starts", data.starts, false, overallData.starts) }}
+    {{ forecastTable("Home completions", data.completions, false, overallData.completions) }}
+  </div>
+{% endmacro %}
+
+{% block content %}
+
+{# ── Success banner (shown after submitting a new forecast) ─────────────── #}
+{% if submitted %}
+  {{ govukNotificationBanner({
+    type: "success",
+    html: "<p class=\"govuk-notification-banner__heading\">You have successfully submitted a new grant funded delivery forecast</p>"
+  }) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-8">Grant funded delivery forecasts</h1>
+
+    {# ── Version metadata ─────────────────────────────────────────────────── #}
+    {#
+      Version metadata uses govukSummaryList with an embedded <select> for
+      version switching. The select uses an inline onchange handler — acceptable
+      in a prototype context.
+    #}
+    {% set versionSelectHtml %}
+      <select class="govuk-select forecasting-version-select" id="forecast-version" aria-label="Select version"
+              onchange="window.location='/forecasting/grant-funded-delivery?version=' + this.value">
+        {% for i in range(totalVersions, 0, -1) %}
+          <option value="{{ i }}" {% if i == selectedVersion %}selected{% endif %}>{{ i }}</option>
+        {% endfor %}
+      </select>
+    {% endset %}
+
+    {% set statusTagHtml %}
+      {% if versionMeta.status == 'Approved' %}
+        {{ govukTag({ text: versionMeta.status, classes: "govuk-tag--green" }) }}
+      {% else %}
+        {{ govukTag({ text: versionMeta.status, classes: "govuk-tag--blue" }) }}
+      {% endif %}
+    {% endset %}
+
+    {{ govukSummaryList({
+      classes: "govuk-!-margin-bottom-6",
+      rows: [
+        {
+          classes: "forecasting-version-row",
+          key: { text: "Version" },
+          value: { html: versionSelectHtml }
+        },
+        {
+          key: { text: "Version status" },
+          value: { html: statusTagHtml }
+        },
+        {
+          key: { text: "Version created by" },
+          value: { text: versionMeta.createdBy }
+        },
+        {
+          key: { text: "Reviewed by" },
+          value: { text: versionMeta.reviewedBy }
+        },
+        {
+          key: { text: "Reviewed date" },
+          value: { text: versionMeta.reviewedDate }
+        }
+      ]
+    }) }}
+
+    {{ govukButton({
+      text: "Create new version",
+      href: "/forecasting/grant-funded-delivery/new"
+    }) }}
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-8">Submitted forecasts</h2>
+
+    {# ── Year tabs ────────────────────────────────────────────────────────── #}
+    {#
+      Standard GDS govuk-tabs component with data-module="govuk-tabs".
+      Auto-initialised by govuk-frontend JavaScript.
+      No-JS fallback shows all panels as stacked sections.
+    #}
+    <div class="govuk-tabs" data-module="govuk-tabs">
+      <h3 class="govuk-tabs__title">Financial years</h3>
+      <ul class="govuk-tabs__list">
+        {% set years = [
+          { id: "2026", label: "2026-27" },
+          { id: "2027", label: "27-28" },
+          { id: "2028", label: "28-29" },
+          { id: "2029", label: "29-30" },
+          { id: "2030", label: "30-31" },
+          { id: "2031", label: "31-32" },
+          { id: "2032", label: "32-33" },
+          { id: "2033", label: "33-34" },
+          { id: "2034", label: "34-35" },
+          { id: "2035", label: "35-36" },
+          { id: "totals", label: "Totals" }
+        ] %}
+        {% for year in years %}
+          <li class="govuk-tabs__list-item{% if loop.first %} govuk-tabs__list-item--selected{% endif %}">
+            <a class="govuk-tabs__tab" href="#panel-{{ year.id }}">{{ year.label }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {# ── 2026-27 panel (with real data) ─────────────────────────────────── #}
+      {{ yearPanel("2026", forecastData, true, forecastData) }}
+
+      {# ── Future year panels (all zeros) ─────────────────────────────────── #}
+      {% set zeroData = {
+        capex:       { forecast: [0, 0, 0, 0], actual: [0, 0, 0, 0] },
+        grant:       { forecast: [0, 0, 0, 0], actual: [0, 0, 0, 0] },
+        starts:      { forecast: [0, 0, 0, 0], actual: [0, 0, 0, 0] },
+        completions: { forecast: [0, 0, 0, 0], actual: [0, 0, 0, 0] }
+      } %}
+      {% for yearId in ["2027", "2028", "2029", "2030", "2031", "2032", "2033", "2034", "2035"] %}
+        {{ yearPanel(yearId, zeroData, false, forecastData) }}
+      {% endfor %}
+
+      {# ── Totals panel ───────────────────────────────────────────────────── #}
+      {{ yearPanel("totals", forecastData, false, forecastData) }}
+
+    </div>
+
+    {# ── Comments history ─────────────────────────────────────────────────── #}
+    <h2 class="govuk-heading-l govuk-!-margin-top-8">Comments history</h2>
+
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Quarter</th>
+          <th scope="col" class="govuk-table__header">Date/Time</th>
+          <th scope="col" class="govuk-table__header">Actioned by</th>
+          <th scope="col" class="govuk-table__header">Comments</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+          <th scope="col" class="govuk-table__header">Version</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for comment in comments %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ comment.quarter }}</td>
+            <td class="govuk-table__cell">{{ comment.dateTime }}</td>
+            <td class="govuk-table__cell">{{ comment.actionedBy }}</td>
+            <td class="govuk-table__cell">{{ comment.comments }}</td>
+            <td class="govuk-table__cell">
+              {% if comment.status == 'Approved' %}
+                {{ govukTag({ text: comment.status, classes: "govuk-tag--green" }) }}
+              {% else %}
+                {{ govukTag({ text: comment.status, classes: "govuk-tag--blue" }) }}
+              {% endif %}
+            </td>
+            <td class="govuk-table__cell">{{ comment.version }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}

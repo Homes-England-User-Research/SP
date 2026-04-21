@@ -1,42 +1,95 @@
 /**
  * site-filters.js
  *
- * Reads checkbox state from the status and region filter Details components
- * and redirects to /sites with query params so the server can filter and
- * re-paginate. Resets to page 1 on any filter change.
+ * Client-side filtering for the Sites table. Filters by:
+ * - Site name search (text input, case-insensitive substring match)
+ * - Progress checkboxes (Site completed / Site activated)
+ * - Status checkboxes (Active / Inactive)
+ * - Region checkboxes
  *
- * No-JS fallback: checkboxes are cosmetic — all data is shown unfiltered.
+ * Filters are applied on the "Apply filters" button click.
+ * If no checkboxes are checked in a group, all values pass that filter.
+ *
+ * Data attributes on each <tr>:
+ *   data-site-name, data-status, data-region, data-progress
  */
 (function () {
   'use strict'
 
   var filterContainer = document.getElementById('site-filters')
-  if (!filterContainer) return
+  var applyBtn = document.getElementById('apply-filters-btn')
+  var table = document.getElementById('sites-table')
+  if (!filterContainer || !table) return
 
-  filterContainer.addEventListener('change', function (event) {
-    if (event.target.type !== 'checkbox') return
+  var searchInput = document.getElementById('site-name-search')
+  var rows = table.querySelectorAll('tbody tr')
 
-    var statusCheckboxes = filterContainer.querySelectorAll('input[name="status-filter"]')
-    var regionCheckboxes = filterContainer.querySelectorAll('input[name="region-filter"]')
+  function getCheckedValues (name) {
+    var checkboxes = filterContainer.querySelectorAll('input[name="' + name + '"]')
+    var values = []
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) values.push(checkboxes[i].value)
+    }
+    return values
+  }
 
-    var checkedStatuses = []
-    for (var i = 0; i < statusCheckboxes.length; i++) {
-      if (statusCheckboxes[i].checked) {
-        checkedStatuses.push(statusCheckboxes[i].value)
+  function applyFilters () {
+    var searchTerm = (searchInput ? searchInput.value : '').toLowerCase().trim()
+    var progressValues = getCheckedValues('progress-filter')
+    var statusValues = getCheckedValues('status-filter')
+    var regionValues = getCheckedValues('region-filter')
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i]
+      var siteName = row.getAttribute('data-site-name') || ''
+      var status = row.getAttribute('data-status') || ''
+      var region = row.getAttribute('data-region') || ''
+      var progress = row.getAttribute('data-progress') || ''
+
+      var matchSearch = !searchTerm || siteName.indexOf(searchTerm) !== -1
+      var matchProgress = progressValues.length === 0 || progressValues.indexOf(progress) !== -1
+      var matchStatus = statusValues.length === 0 || statusValues.indexOf(status) !== -1
+      var matchRegion = regionValues.length === 0 || regionValues.indexOf(region) !== -1
+
+      if (matchSearch && matchProgress && matchStatus && matchRegion) {
+        row.style.display = ''
+      } else {
+        row.style.display = 'none'
       }
     }
+  }
 
-    var checkedRegions = []
-    for (var j = 0; j < regionCheckboxes.length; j++) {
-      if (regionCheckboxes[j].checked) {
-        checkedRegions.push(regionCheckboxes[j].value)
+  // Apply on button click
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function (e) {
+      e.preventDefault()
+      applyFilters()
+    })
+  }
+
+  // Also apply on Enter in search box
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        applyFilters()
       }
-    }
+    })
+  }
 
-    var params = []
-    params.push('status=' + checkedStatuses.join(','))
-    params.push('region=' + checkedRegions.join(','))
-
-    window.location.href = '/sites?' + params.join('&')
-  })
+  // Clear filters — uncheck all checkboxes, clear search, show all rows
+  var clearBtn = document.getElementById('clear-filters-btn')
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function (e) {
+      e.preventDefault()
+      if (searchInput) searchInput.value = ''
+      var allCheckboxes = filterContainer.querySelectorAll('input[type="checkbox"]')
+      for (var i = 0; i < allCheckboxes.length; i++) {
+        allCheckboxes[i].checked = false
+      }
+      for (var j = 0; j < rows.length; j++) {
+        rows[j].style.display = ''
+      }
+    })
+  }
 })()

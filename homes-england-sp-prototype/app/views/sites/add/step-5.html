@@ -1,0 +1,446 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Check your answers - Add a new site" %}
+
+{# -- Helper: format Yes/No -- #}
+{% macro yesNo(val) %}{{ "Yes" if val == "yes" else ("No" if val == "no" else "") }}{% endmacro %}
+
+{# -- Helper: format date from day/month/year parts -- #}
+{% macro formatDate(prefix) %}
+  {%- if data[prefix + '-day'] and data[prefix + '-month'] and data[prefix + '-year'] -%}
+    {{ data[prefix + '-day'] }}/{{ data[prefix + '-month'] }}/{{ data[prefix + '-year'] }}
+  {%- endif -%}
+{% endmacro %}
+
+{# -- Helper: format address from parts -- #}
+{% macro formatAddress() %}
+  {%- set parts = [] -%}
+  {%- if data['address-line-1'] -%}{%- set parts = parts.concat([data['address-line-1']]) -%}{%- endif -%}
+  {%- if data['address-line-2'] -%}{%- set parts = parts.concat([data['address-line-2']]) -%}{%- endif -%}
+  {%- if data['town-or-city'] -%}{%- set parts = parts.concat([data['town-or-city']]) -%}{%- endif -%}
+  {%- if data['county'] -%}{%- set parts = parts.concat([data['county']]) -%}{%- endif -%}
+  {%- if data['postcode'] -%}{%- set parts = parts.concat([data['postcode']]) -%}{%- endif -%}
+  {{ parts | join(", ") }}
+{%- endmacro %}
+
+{# -- Label helpers -- #}
+{% macro siteTypeLabel(val) %}
+  {%- if val == "brownfield" -%}Brownfield
+  {%- elif val == "greenfield" -%}Greenfield
+  {%- elif val == "not-applicable" -%}Not applicable
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro procurementRouteLabel(val) %}
+  {%- if val == "acquisition-and-works" -%}Acquisition and works
+  {%- elif val == "off-the-shelf" -%}Off the shelf
+  {%- elif val == "works-only" -%}Works only
+  {%- elif val == "land-inclusive-package" -%}Land inclusive package (package deal)
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro occupancyLabel(val) %}
+  {%- if val == "vacant" -%}Vacant
+  {%- elif val == "partially-vacant" -%}Partially vacant
+  {%- elif val == "decanting-not-yet-started" -%}Decanting not yet started
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro landAcquisitionLabel(val) %}
+  {%- if val == "unconditional-acquisition" -%}Unconditional acquisition of freehold or long leasehold interest has occurred
+  {%- elif val == "conditional-acquisition" -%}Conditional acquisition, land option or heads of terms
+  {%- elif val == "negotiations-underway" -%}Land purchase negotiations underway
+  {%- elif val == "land-identified" -%}Land identified but purchase negotiations not yet started
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro planningStatusLabel(val) %}
+  {%- if val == "detailed-approval-granted" -%}Detailed planning approval granted
+  {%- elif val == "outline-granted" -%}Outline planning approval granted
+  {%- elif val == "outline-submitted" -%}Outline planning submitted
+  {%- elif val == "detailed-submitted" -%}Detailed planning submitted
+  {%- elif val == "discussion-underway" -%}Planning discussion underway with planning office
+  {%- elif val == "no-planning-required" -%}No planning required
+  {%- elif val == "no-progress" -%}No progress yet on planning application
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro worksContractLabel(val) %}
+  {%- if val == "unconditional-let" -%}Unconditional works contract let
+  {%- elif val == "conditional-let" -%}Conditional contract let or contractor identified
+  {%- elif val == "tender-out" -%}Tender for works contract out for competition
+  {%- elif val == "not-begun" -%}Works contracting process not yet begun
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% macro contractorTypeLabel(val) %}
+  {%- if val == "in-house" -%}In house contractor
+  {%- elif val == "external" -%}External contractor
+  {%- elif val == "mixed" -%}Mixed
+  {%- else -%}{{ val }}{%- endif -%}
+{% endmacro %}
+
+{% block content %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "/sites/add/step-4"
+}) }}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Step 5 of 5</span>
+    <h1 class="govuk-heading-l">Check your answers</h1>
+
+    <form method="post" action="/sites/add/step-5">
+
+      {# -- Site details (Step 1) -- #}
+      <div class="add-site-summary-section">
+        <h2 class="govuk-heading-m">Site details</h2>
+
+        {% set siteDetailsRows = [
+          {
+            key: { text: "Site name" },
+            value: { text: data['site-name'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "site name" }] }
+          },
+          {
+            key: { text: "Site type" },
+            value: { text: siteTypeLabel(data['site-type']) },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "site type" }] }
+          },
+          {
+            key: { text: "Local authority" },
+            value: { text: data['local-authority'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "local authority" }] }
+          },
+          {
+            key: { text: "Region" },
+            value: { text: data['region'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "region" }] }
+          },
+          {
+            key: { text: "Homes England region" },
+            value: { text: data['he-region'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "Homes England region" }] }
+          },
+          {
+            key: { text: "Procurement route" },
+            value: { text: procurementRouteLabel(data['procurement-route']) },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "procurement route" }] }
+          },
+          {
+            key: { text: "Rural settlement" },
+            value: { text: yesNo(data['rural-settlement']) },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "rural settlement" }] }
+          },
+          {
+            key: { text: "Rural exception site" },
+            value: { text: yesNo(data['rural-exception-site']) },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "rural exception site" }] }
+          },
+          {
+            key: { text: "Address" },
+            value: { text: formatAddress() },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "address" }] }
+          },
+          {
+            key: { text: "Postcode" },
+            value: { text: data['postcode'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "postcode" }] }
+          },
+          {
+            key: { text: "X coordinate" },
+            value: { text: data['x-coordinate'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "X coordinate" }] }
+          },
+          {
+            key: { text: "Y coordinate" },
+            value: { text: data['y-coordinate'] },
+            actions: { items: [{ href: "/sites/add/step-1?back=true", text: "Change", visuallyHiddenText: "Y coordinate" }] }
+          }
+        ] %}
+
+        {{ govukSummaryList({ rows: siteDetailsRows }) }}
+      </div>
+
+      {# -- Site characteristics (Step 2) -- #}
+      <div class="add-site-summary-section">
+        <h2 class="govuk-heading-m">Site characteristics</h2>
+
+        {% set characteristicsRows = [
+          {
+            key: { text: "Strategic site" },
+            value: { text: yesNo(data['strategic-site']) },
+            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "strategic site" }] }
+          }
+        ] %}
+
+        {% if data['strategic-site'] == "yes" %}
+          {% set characteristicsRows = characteristicsRows.concat([{
+            key: { text: "Strategic site name" },
+            value: { text: data['strategic-site-name'] },
+            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "strategic site name" }] }
+          }]) %}
+        {% endif %}
+
+        {% set characteristicsRows = characteristicsRows.concat([
+          {
+            key: { text: "Green belt" },
+            value: { text: yesNo(data['green-belt']) },
+            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "green belt" }] }
+          },
+          {
+            key: { text: "Regeneration site" },
+            value: { text: yesNo(data['regeneration-site']) },
+            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "regeneration site" }] }
+          }
+        ]) %}
+
+        {% if data['regeneration-site'] == "yes" %}
+          {% set characteristicsRows = characteristicsRows.concat([
+            {
+              key: { text: "Regeneration plans" },
+              value: { text: data['regeneration-plans'] },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "regeneration plans" }] }
+            },
+            {
+              key: { text: "Additional benefits" },
+              value: { text: data['regeneration-benefits'] },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "additional benefits" }] }
+            },
+            {
+              key: { text: "Other funding" },
+              value: { text: data['regeneration-funding'] },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "other funding" }] }
+            }
+          ]) %}
+        {% endif %}
+
+        {% set characteristicsRows = characteristicsRows.concat([{
+          key: { text: "Historical grant" },
+          value: { text: yesNo(data['historical-grant']) },
+          actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "historical grant" }] }
+        }]) %}
+
+        {% if data['historical-grant'] == "yes" %}
+          {% set characteristicsRows = characteristicsRows.concat([
+            {
+              key: { text: "Historical grant amount" },
+              value: { text: "£" + data['historical-grant-amount'] if data['historical-grant-amount'] else "" },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "historical grant amount" }] }
+            },
+            {
+              key: { text: "Scheme IDs" },
+              value: { text: data['historical-grant-scheme-ids'] },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "scheme IDs" }] }
+            },
+            {
+              key: { text: "Historical Grants team notified" },
+              value: { text: yesNo(data['historical-grant-notified']) },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "Historical Grants team notified" }] }
+            }
+          ]) %}
+        {% endif %}
+
+        {% set characteristicsRows = characteristicsRows.concat([{
+          key: { text: "Occupancy status" },
+          value: { text: occupancyLabel(data['occupancy-status']) },
+          actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "occupancy status" }] }
+        }]) %}
+
+        {% if data['occupancy-status'] == "partially-vacant" %}
+          {% set characteristicsRows = characteristicsRows.concat([
+            {
+              key: { text: "Full vacancy expected" },
+              value: { text: formatDate('vacancy-date') },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "full vacancy expected" }] }
+            },
+            {
+              key: { text: "Decanting steps" },
+              value: { text: data['decanting-steps'] },
+              actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "decanting steps" }] }
+            }
+          ]) %}
+        {% endif %}
+
+        {{ govukSummaryList({ rows: characteristicsRows }) }}
+      </div>
+
+      {# -- Design and sustainability (Step 3) -- #}
+      <div class="add-site-summary-section">
+        <h2 class="govuk-heading-m">Design and sustainability</h2>
+
+        {% set mmcCategoriesDisplay %}
+          {% if data['mmc-categories'] %}
+            {% if data['mmc-categories'] is string %}
+              {{ data['mmc-categories'] }}
+            {% else %}
+              {{ data['mmc-categories'] | join(", ") }}
+            {% endif %}
+          {% endif %}
+        {% endset %}
+
+        {% set mmcCat1Display %}
+          {% if data['mmc-cat1-subs'] %}
+            {% if data['mmc-cat1-subs'] is string %}{{ data['mmc-cat1-subs'] }}{% else %}{{ data['mmc-cat1-subs'] | join(", ") }}{% endif %}
+          {% endif %}
+        {% endset %}
+
+        {% set mmcCat2Display %}
+          {% if data['mmc-cat2-subs'] %}
+            {% if data['mmc-cat2-subs'] is string %}{{ data['mmc-cat2-subs'] }}{% else %}{{ data['mmc-cat2-subs'] | join(", ") }}{% endif %}
+          {% endif %}
+        {% endset %}
+
+        {% set designRows = [
+          {
+            key: { text: "Modern methods of construction (MMC) used" },
+            value: { text: yesNo(data['mmc-used']) },
+            actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "modern methods of construction" }] }
+          }
+        ] %}
+
+        {% if data['mmc-used'] == "yes" %}
+          {% set designRows = designRows.concat([{
+            key: { text: "MMC categories" },
+            value: { text: mmcCategoriesDisplay | trim },
+            actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "MMC categories" }] }
+          }]) %}
+
+          {% if mmcCat1Display | trim %}
+            {% set designRows = designRows.concat([{
+              key: { text: "Category 1 sub-categories" },
+              value: { text: mmcCat1Display | trim },
+              actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "category 1 sub-categories" }] }
+            }]) %}
+          {% endif %}
+
+          {% if mmcCat2Display | trim %}
+            {% set designRows = designRows.concat([{
+              key: { text: "Category 2 sub-categories" },
+              value: { text: mmcCat2Display | trim },
+              actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "category 2 sub-categories" }] }
+            }]) %}
+          {% endif %}
+        {% endif %}
+
+        {{ govukSummaryList({ rows: designRows }) }}
+      </div>
+
+      {# -- Site milestones (Step 4) -- #}
+      <div class="add-site-summary-section">
+        <h2 class="govuk-heading-m">Site milestones</h2>
+
+        {% set milestoneRows = [
+          {
+            key: { text: "Land acquisition status" },
+            value: { text: landAcquisitionLabel(data['land-acquisition-status']) },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "land acquisition status" }] }
+          }
+        ] %}
+
+        {% if data['land-acquisition-status'] == "unconditional-acquisition" %}
+          {% set milestoneRows = milestoneRows.concat([{
+            key: { text: "Acquisition date" },
+            value: { text: formatDate('land-acquisition-date') },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "acquisition date" }] }
+          }]) %}
+        {% endif %}
+
+        {% set milestoneRows = milestoneRows.concat([{
+          key: { text: "Planning status" },
+          value: { text: planningStatusLabel(data['planning-status']) },
+          actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "planning status" }] }
+        }]) %}
+
+        {% if data['planning-status'] == "detailed-approval-granted" %}
+          {% set milestoneRows = milestoneRows.concat([
+            {
+              key: { text: "Planning approval date" },
+              value: { text: formatDate('planning-approval-date') },
+              actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "planning approval date" }] }
+            },
+            {
+              key: { text: "Planning reference" },
+              value: { text: data['planning-reference'] },
+              actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "planning reference" }] }
+            },
+            {
+              key: { text: "Grant funding for all homes" },
+              value: { text: yesNo(data['grant-funding-all-homes']) },
+              actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "grant funding for all homes" }] }
+            }
+          ]) %}
+        {% endif %}
+
+        {% set milestoneRows = milestoneRows.concat([{
+          key: { text: "Works contract tendering progress" },
+          value: { text: worksContractLabel(data['works-contract-status']) },
+          actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "works contract tendering progress" }] }
+        }]) %}
+
+        {% if data['works-contract-status'] == "unconditional-let" %}
+          {% set milestoneRows = milestoneRows.concat([{
+            key: { text: "Building contract date" },
+            value: { text: formatDate('building-contract-date') },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "building contract date" }] }
+          }]) %}
+        {% endif %}
+
+        {% set milestoneRows = milestoneRows.concat([
+          {
+            key: { text: "Contractor type" },
+            value: { text: contractorTypeLabel(data['contractor-type']) },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "contractor type" }] }
+          },
+          {
+            key: { text: "Contractor name" },
+            value: { text: data['contractor-name'] },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "contractor name" }] }
+          },
+          {
+            key: { text: "Start on site status" },
+            value: { text: data['start-on-site-status'] | capitalize if data['start-on-site-status'] else "" },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "start on site status" }] }
+          }
+        ]) %}
+
+        {% if data['start-on-site-status'] == "actual" %}
+          {% set milestoneRows = milestoneRows.concat([{
+            key: { text: "Start on site date" },
+            value: { text: formatDate('start-on-site-date') },
+            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "start on site date" }] }
+          }]) %}
+        {% endif %}
+
+        {% set milestoneRows = milestoneRows.concat([{
+          key: { text: "Forecast practical completion date" },
+          value: { text: formatDate('practical-completion-date') },
+          actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "forecast practical completion date" }] }
+        }]) %}
+
+        {{ govukSummaryList({ rows: milestoneRows }) }}
+      </div>
+
+      {# -- Buttons -- #}
+      <div class="govuk-button-group">
+        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({
+          text: "Save as draft",
+          classes: "govuk-button--secondary",
+          href: "/sites"
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "layouts/forecasting.html" %}
+
+{% set pageName = "Submitted forecasts" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Submitted forecasts</h1>
+
+    <p class="govuk-body-l">Add new and view submitted versions of your forecasts, actuals and variances.</p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-3"><a class="govuk-link" href="/forecasting/grant-funded-delivery">Grant funded delivery</a></h2>
+    <p class="govuk-body">Includes quarterly and yearly totals of capital expenditure due, grant drawdown, starts and completions.</p>
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="/forecasting/grant-funded-delivery/new">Add new forecast</a></li>
+      <li><a class="govuk-link" href="/forecasting/grant-funded-delivery">View last submitted forecast</a></li>
+    </ul>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-3"><a class="govuk-link" href="#">Nil grant homes</a></h2>
+    <p class="govuk-body">Includes quarterly and yearly totals of home starts and completions.</p>
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="#">Add new forecast</a></li>
+      <li><a class="govuk-link" href="#">View last submitted forecast</a></li>
+    </ul>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -3,7 +3,6 @@
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/pagination/macro.njk" import govukPagination %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 
@@ -11,142 +10,151 @@
 
 {% block pageScripts %}
   <script src="/public/javascripts/site-filters.js"></script>
+  <script src="/public/javascripts/sortable-table.js"></script>
 {% endblock %}
 
 {% block content %}
 
-{# ── Success banner - shown only after completing the add-new-site flow ── #}
+{# -- Success banner - shown only after completing the add-new-site flow -- #}
 {% if success %}
   {{ govukNotificationBanner({
     type: "success",
     titleText: "Site added",
-    html: "<p class='govuk-body'>The new site has been added to your portfolio and appears at the top of the table below.</p>"
+    text: "The new site has been added to your portfolio and appears at the top of the table below."
   }) }}
 {% endif %}
 
-{# ── Page heading ─────────────────────────────────────────────────────── #}
+{# -- Page heading -- #}
 <h1 class="govuk-heading-xl govuk-!-margin-bottom-2">Sites</h1>
-<p class="govuk-body-l">Manage your sites, home type allocations and forecasts.</p>
+<p class="govuk-body-l">Manage your sites, home types and forecasts.</p>
 
-{# ── Quick links ──────────────────────────────────────────────────────── #}
+{# -- Quick links -- #}
 <ul class="govuk-list govuk-!-margin-bottom-8">
-  <li><a class="govuk-link" href="/sites/add/step-1">Add new site</a></li>
-  <li><a class="govuk-link" href="#">Add multiple new sites using a bulk uploader</a></li>
-  <li><a class="govuk-link" href="#">Completions</a></li>
-  <li><a class="govuk-link" href="#">Manage all home types</a></li>
+  <li class="govuk-!-margin-bottom-4"><a class="govuk-link" href="/sites/add/step-1">Add a new site</a>
+    <br><span class="govuk-body">Register a new site with details, location and contractor information.</span>
+  </li>
+  <li class="govuk-!-margin-bottom-4"><a class="govuk-link" href="#">Add multiple new sites</a>
+    <br><span class="govuk-body">Upload a spreadsheet to register multiple sites at once.</span>
+  </li>
+  <li><a class="govuk-link" href="#">Manage home types</a>
+    <br><span class="govuk-body">View, edit and create identical cross-site home types.</span>
+  </li>
 </ul>
 
-{# ── Metric cards ─────────────────────────────────────────────────────── #}
-<!-- Custom component: stat card (metric card).
-     Reuses the existing .stat-card component from the Overview page.
-     Three cards in a 3-column grid variant (.stat-card-grid--3col).
-     No GDS equivalent exists. Built from GDS design tokens only.
-     See CLAUDE.md "Stat card" section. -->
-<section aria-labelledby="sites-stats">
-  <h2 class="govuk-visually-hidden" id="sites-stats">
-    Key site statistics
-  </h2>
-  <div class="stat-card-grid stat-card-grid--3col">
-    <div class="stat-card">
-      <p class="govuk-body-s">Total sites</p>
-      <p class="govuk-heading-xl govuk-!-margin-bottom-1">{{ totalSites }}</p>
+{# -- Filter sites — uses GDS accordion component wrapping a 4-column
+     filter panel with site name search, progress/status/region checkboxes,
+     and a green Apply filters button. All filters work client-side via
+     site-filters.js. -- #}
+<!-- Filter accordion: "Show all sections" toggle hidden via CSS since
+     there is only one section. The section heading serves as the
+     "Filter sites" / show-hide toggle matching the design. -->
+<div class="govuk-accordion sites-filter-accordion" data-module="govuk-accordion" id="accordion-filters">
+  <div class="govuk-accordion__section">
+    <div class="govuk-accordion__section-header">
+      <h2 class="govuk-accordion__section-heading">
+        <span class="govuk-accordion__section-button" id="accordion-filters-heading-1">
+          Filter sites
+        </span>
+      </h2>
     </div>
-    <div class="stat-card">
-      <p class="govuk-body-s">Total homes</p>
-      <p class="govuk-heading-xl govuk-!-margin-bottom-1">{{ totalHomes | toLocaleString }}</p>
-    </div>
-    <div class="stat-card">
-      <p class="govuk-body-s">Completed sites</p>
-      <p class="govuk-heading-xl govuk-!-margin-bottom-1">{{ completedSites }}</p>
-    </div>
-  </div>
-</section>
+    <div id="accordion-filters-content-1" class="govuk-accordion__section-content">
 
-{# ── Filters ─────────────────────────────────────────────────────────── #}
-<!-- Filter controls use standard govukDetails wrapping govukCheckboxes.
-     Both are unmodified GDS components. On checkbox change, client-side JS
-     (site-filters.js) reads all checked values and redirects with query
-     params so the server can filter and re-paginate. -->
-<div class="govuk-grid-row govuk-!-margin-top-9 govuk-!-margin-bottom-0" id="site-filters">
-  <div class="govuk-grid-column-one-quarter">
-    {% set filterStatusHtml %}
-      {{ govukCheckboxes({
-        name: "status-filter",
-        classes: "govuk-checkboxes--small",
-        items: [
-          { value: "not-started",    text: "Not started",    checked: "not-started" in activeStatusSlugs },
-          { value: "pipeline",       text: "Pipeline",       checked: "pipeline" in activeStatusSlugs },
-          { value: "active",         text: "Active",         checked: "active" in activeStatusSlugs },
-          { value: "site-completed", text: "Site completed", checked: "site-completed" in activeStatusSlugs }
-        ]
-      }) }}
-    {% endset %}
-    {{ govukDetails({
-      summaryText: "Filter by status",
-      html: filterStatusHtml
-    }) }}
-  </div>
-  <div class="govuk-grid-column-one-quarter">
-    {% set filterRegionHtml %}
-      {{ govukCheckboxes({
-        name: "region-filter",
-        classes: "govuk-checkboxes--small",
-        items: [
-          { value: "east-midlands",    text: "East Midlands",            checked: "east-midlands" in activeRegionSlugs },
-          { value: "east-of-england",  text: "East of England",          checked: "east-of-england" in activeRegionSlugs },
-          { value: "london",           text: "London",                   checked: "london" in activeRegionSlugs },
-          { value: "north-east",       text: "North East",               checked: "north-east" in activeRegionSlugs },
-          { value: "north-west",       text: "North West",               checked: "north-west" in activeRegionSlugs },
-          { value: "south-east",       text: "South East",               checked: "south-east" in activeRegionSlugs },
-          { value: "south-west",       text: "South West",               checked: "south-west" in activeRegionSlugs },
-          { value: "west-midlands",    text: "West Midlands",            checked: "west-midlands" in activeRegionSlugs },
-          { value: "yorkshire",        text: "Yorkshire and the Humber",  checked: "yorkshire" in activeRegionSlugs }
-        ]
-      }) }}
-    {% endset %}
-    {{ govukDetails({
-      summaryText: "Filter by region",
-      html: filterRegionHtml
-    }) }}
+      <div class="govuk-grid-row govuk-!-margin-bottom-4" id="site-filters">
+        <div class="govuk-grid-column-one-quarter">
+          <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Site name search</h4>
+          <div class="govuk-form-group">
+            <input class="govuk-input" id="site-name-search" name="site-name-search" type="text" placeholder="Search by site name...">
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Progress</h4>
+          {{ govukCheckboxes({
+            name: "progress-filter",
+            classes: "govuk-checkboxes--small",
+            items: [
+              { value: "Site completed", text: "Site completed", id: "progress-site-completed" },
+              { value: "Site activated", text: "Site activated", id: "progress-site-activated" }
+            ]
+          }) }}
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Status</h4>
+          {{ govukCheckboxes({
+            name: "status-filter",
+            classes: "govuk-checkboxes--small",
+            items: [
+              { value: "Active", text: "Active", id: "status-active" },
+              { value: "Inactive", text: "Inactive", id: "status-inactive" }
+            ]
+          }) }}
+        </div>
+        <div class="govuk-grid-column-one-quarter">
+          <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Region</h4>
+          {{ govukCheckboxes({
+            name: "region-filter",
+            classes: "govuk-checkboxes--small",
+            items: [
+              { value: "South East", text: "South East", id: "region-south-east" },
+              { value: "East of England", text: "East of England", id: "region-east-of-england" },
+              { value: "North East", text: "North East", id: "region-north-east" },
+              { value: "North West", text: "North West", id: "region-north-west" },
+              { value: "London", text: "London", id: "region-london" },
+              { value: "East Midlands", text: "East Midlands", id: "region-east-midlands" },
+              { value: "West Midlands", text: "West Midlands", id: "region-west-midlands" },
+              { value: "South West", text: "South West", id: "region-south-west" },
+              { value: "Yorkshire and the Humber", text: "Yorkshire and the Humber", id: "region-yorkshire" }
+            ]
+          }) }}
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Apply filters",
+          id: "apply-filters-btn"
+        }) }}
+        {{ govukButton({
+          text: "Clear filters",
+          classes: "govuk-button--secondary",
+          id: "clear-filters-btn"
+        }) }}
+      </div>
+
+    </div>
   </div>
 </div>
 
-{# ── Sites table ──────────────────────────────────────────────────────── #}
-<table class="govuk-table">
+{# -- Sites table — sortable columns via sortable-table.js,
+     progress column uses coloured GDS tags -- #}
+<table class="govuk-table js-sortable-table" id="sites-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Site ID</th>
-      <th scope="col" class="govuk-table__header">Site name</th>
-      <th scope="col" class="govuk-table__header govuk-table__header--numeric">Homes</th>
-      <th scope="col" class="govuk-table__header">Status in deal</th>
-      <th scope="col" class="govuk-table__header">Local authority</th>
-      <th scope="col" class="govuk-table__header">Region</th>
-      <th scope="col" class="govuk-table__header">Status</th>
+      <th scope="col" class="govuk-table__header" aria-sort="ascending" data-sort-type="numeric">Site ID</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" data-sort-type="text">Site name</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" data-sort-type="text">Status</th>
+      <th scope="col" class="govuk-table__header govuk-table__header--numeric" aria-sort="none" data-sort-type="numeric">Homes</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" data-sort-type="text">Region</th>
+      <th scope="col" class="govuk-table__header" aria-sort="none" data-sort-type="text">Progress</th>
       <th scope="col" class="govuk-table__header">Delete</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
     {% for site in sites %}
-    <tr class="govuk-table__row">
+    <tr class="govuk-table__row" data-site-name="{{ site.siteName | lower }}" data-status="{{ site.statusInDeal }}" data-region="{{ site.region }}" data-progress="{{ 'Site completed' if site.status == 'Site completed' else 'Site activated' }}">
       <td class="govuk-table__cell">
         <a href="/sites/{{ site.siteId }}" class="govuk-link">{{ site.siteId }}</a>
       </td>
       <td class="govuk-table__cell">
         <a href="/sites/{{ site.siteId }}" class="govuk-link">{{ site.siteName }}</a>
       </td>
-      <td class="govuk-table__cell govuk-table__cell--numeric">{{ site.homes | toLocaleString }}</td>
       <td class="govuk-table__cell">{{ site.statusInDeal }}</td>
-      <td class="govuk-table__cell">{{ site.localAuthority }}</td>
+      <td class="govuk-table__cell govuk-table__cell--numeric">{{ site.homes | toLocaleString }}</td>
       <td class="govuk-table__cell">{{ site.region }}</td>
       <td class="govuk-table__cell">
-        {% if site.status == "Active" %}
-          {{ govukTag({ text: "Active", classes: "govuk-tag--blue" }) }}
-        {% elif site.status == "Pipeline" %}
-          {{ govukTag({ text: "Pipeline", classes: "govuk-tag--yellow" }) }}
-        {% elif site.status == "Not started" %}
-          {{ govukTag({ text: "Not started", classes: "govuk-tag--grey" }) }}
-        {% elif site.status == "Site completed" %}
+        {% if site.status == "Site completed" %}
           {{ govukTag({ text: "Site completed", classes: "govuk-tag--green" }) }}
+        {% else %}
+          {{ govukTag({ text: "Site activated", classes: "govuk-tag--blue" }) }}
         {% endif %}
       </td>
       <td class="govuk-table__cell">
@@ -157,17 +165,9 @@
   </tbody>
 </table>
 
-{# ── Pagination ───────────────────────────────────────────────────────── #}
+{# -- Pagination -- #}
 {% if pagination.items %}
   {{ govukPagination(pagination) }}
 {% endif %}
-
-{# ── Build analysis ──────────────────────────────────────────────────── #}
-<hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
-{{ govukButton({
-  text: "View build analysis",
-  classes: "govuk-button--secondary",
-  href: "/sites/build-analysis"
-}) }}
 
 {% endblock %}

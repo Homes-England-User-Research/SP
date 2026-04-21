@@ -212,6 +212,7 @@
 {# ── Tab 3: Phase costs ──────────────────────────────────────────── #}
 {% set phaseCostsHtml %}
   <h2 class="govuk-heading-m">Phase costs</h2>
+  <p class="govuk-body">Please input development expenditure and capital contributions for Affordable Units only.</p>
 
   {% if isSubmitted %}
     {{ govukSummaryList({
@@ -228,16 +229,12 @@
 
       <h3 class="govuk-heading-s">Development value</h3>
 
-      {{ govukInput({
-        label: { text: "Gross development value" },
-        id: "gross-development-value",
-        name: "gross-development-value",
-        value: phase.costs.grossDevelopmentValue if phase.costs else "",
-        prefix: { text: "£" },
-        classes: "govuk-input--width-10",
-        inputmode: "numeric",
-        spellcheck: false
-      }) }}
+      <!-- Gross development value: read-only, auto-populated from elsewhere in IMS.
+           Displayed as static text (not an input) to match production behaviour. -->
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="gdv-display">Gross development value (£)</label>
+        <p class="govuk-body govuk-!-font-weight-bold" id="gdv-display">{{ phase.costs.grossDevelopmentValue | currency if phase.costs.grossDevelopmentValue else "—" }}</p>
+      </div>
 
       <h3 class="govuk-heading-s">Cost breakdown</h3>
 

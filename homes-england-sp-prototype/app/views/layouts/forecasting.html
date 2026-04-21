@@ -1,7 +1,6 @@
 {#
-  Sites layout - extends main.html but overrides the service navigation
-  to show the SP programme navigation (Overview, APP, Sites, etc.) with
-  Sites as the current page.
+  Forecasting layout - extends main.html but overrides the service navigation
+  to show the SP programme navigation with Forecasting as the current page.
 
   Reads data.activePrototype from session to determine which prototype the
   user entered from (set when they visit /prototype-1 or /prototype-2).
@@ -32,12 +31,12 @@
       },
       {
         text: "Sites",
-        href: "/sites",
-        current: true if "/sites" in currentPath else false
+        href: "#"
       },
       {
         text: "Forecasting",
-        href: forecastingNavUrl
+        href: forecastingNavUrl,
+        current: true if "/forecasting" in currentPath else false
       },
       {
         text: "Quarterly expenditure",

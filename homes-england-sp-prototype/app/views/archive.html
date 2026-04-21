@@ -1,0 +1,60 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Archive" %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/"
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">
+      Archive
+    </h1>
+
+    <!-- Numbered list of prototype screens for UR round 2 -->
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Overview page</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/overview">Option 1</a></li>
+      <li><a class="govuk-link" href="/overview-gds">Option 2</a></li>
+    </ul>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Adding a new site</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/sites">Option 1</a></li>
+      <li><a class="govuk-link" href="/sites-gds">Option 2</a></li>
+      <li><a class="govuk-link" href="/sites-gds-v3">Option 3</a> - 4 focused steps with radios, check your answers</li>
+    </ul>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Adding a new site home forecast</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/site-units-forecast">Option 1</a></li>
+    </ul>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Allocate home types</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/sites/allocate-home-types">Option 1</a> - GDS checkboxes and "Add to a list" pattern</li>
+    </ul>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Site summaries</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/sites/1001">Option 1</a> - sidebar layout with site related actions</li>
+      <li><a class="govuk-link" href="/sites/1001/summary-2">Option 2</a> - full-width layout with grouped task list progress</li>
+      <li><a class="govuk-link" href="/sites/1001/summary-3">Option 3</a> - pure GDS version with key information sidebar</li>
+    </ul>
+
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Completions</h3>
+    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+      <li><a class="govuk-link" href="/sites/1001/completions">Option 1</a></li>
+    </ul>
+
+  </div>
+</div>
+
+{% endblock %}
