@@ -69,6 +69,37 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleSubCategory()
   })
 
+  // ─── Pattern 2b: MMC manufacturer reveal (any of multiple categories) ─
+  //     Sections with data-mmc-parent-any="category-1,category-2" are shown
+  //     when ANY of the listed category checkboxes are checked.
+  var mmcAnySections = document.querySelectorAll('[data-mmc-parent-any]')
+
+  mmcAnySections.forEach(function (section) {
+    var parentValues = section.getAttribute('data-mmc-parent-any').split(',')
+    var checkboxes = parentValues.map(function (val) {
+      return document.querySelector(
+        'input[name="mmc-categories"][value="' + val.trim() + '"]'
+      )
+    }).filter(Boolean)
+
+    if (checkboxes.length === 0) return
+
+    function toggleSection () {
+      var anyChecked = checkboxes.some(function (cb) { return cb.checked })
+      if (anyChecked) {
+        section.removeAttribute('hidden')
+      } else {
+        section.setAttribute('hidden', '')
+      }
+    }
+
+    checkboxes.forEach(function (cb) {
+      cb.addEventListener('change', toggleSection)
+    })
+
+    toggleSection()
+  })
+
   // ─── Pattern 3: Currency formatting ──────────────────────────────────
   var currencyInputs = document.querySelectorAll('.js-currency-input')
 

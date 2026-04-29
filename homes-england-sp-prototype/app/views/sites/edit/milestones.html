@@ -1,3 +1,6 @@
+<!-- Edit page for Milestones section of the site summary.
+     Adapted from sites/add/step-4.html — same form fields but without
+     step numbering, and Save button returns to summary. -->
 {% extends "layouts/sites.html" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
@@ -7,7 +10,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Site milestones - Add a new site" %}
+{% set pageName = "Site milestones" %}
 
 {% block pageScripts %}
   <script src="/public/javascripts/add-site.js"></script>
@@ -16,7 +19,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/sites/add/step-3"
+    href: "/sites/" + siteId + "#milestones"
   }) }}
 {% endblock %}
 
@@ -25,10 +28,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 4 of 5</span>
     <h1 class="govuk-heading-xl">Site milestones</h1>
 
-    <form method="post" action="/sites/add/step-4">
+    <form method="post" action="/sites/{{ siteId }}/edit/milestones">
 
       {# -- Section: Land acquisition -- #}
       <h2 class="govuk-heading-l">Land acquisition</h2>
@@ -51,9 +53,6 @@
         ]
       }) }}
 
-      <!-- Conditional: acquisition date — revealed by add-site.js when
-           land-acquisition-status is set to "unconditional-acquisition".
-           Uses data-conditional-select pattern for dropdown-driven reveals. -->
       <div class="js-conditional-select-content" id="land-acquisition-date-group" data-conditional-for="land-acquisition-status" data-conditional-value="unconditional-acquisition" {% if data['land-acquisition-status'] != "unconditional-acquisition" %}hidden{% endif %}>
         {{ govukDateInput({
           id: "land-acquisition-date",
@@ -98,8 +97,6 @@
         ]
       }) }}
 
-      <!-- Conditional: planning details — revealed when planning-status
-           is "detailed-approval-granted". -->
       <div class="js-conditional-select-content" id="planning-details-group" data-conditional-for="planning-status" data-conditional-value="detailed-approval-granted" {% if data['planning-status'] != "detailed-approval-granted" %}hidden{% endif %}>
         {{ govukDateInput({
           id: "planning-approval-date",
@@ -169,8 +166,6 @@
         ]
       }) }}
 
-      <!-- Conditional: building contract date — revealed when
-           works-contract-status is "unconditional-let". -->
       <div class="js-conditional-select-content" id="works-contract-date-group" data-conditional-for="works-contract-status" data-conditional-value="unconditional-let" {% if data['works-contract-status'] != "unconditional-let" %}hidden{% endif %}>
         {{ govukDateInput({
           id: "building-contract-date",
@@ -287,15 +282,8 @@
         ]
       }) }}
 
-      {# -- Buttons -- #}
-      <div class="govuk-button-group add-site-buttons">
-        {{ govukButton({ text: "Save and continue" }) }}
-        {{ govukButton({
-          text: "Save as draft",
-          classes: "govuk-button--secondary",
-          href: "/sites"
-        }) }}
-      </div>
+      {# -- Button -- #}
+      {{ govukButton({ text: "Save and continue" }) }}
 
     </form>
 

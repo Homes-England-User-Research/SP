@@ -32,6 +32,9 @@
 // Forecasting journey — version metadata, table spacing
 @import 'forecasting';
 
+// Site summary — section header flex layout
+@import 'site-summary';
+
 // Sites page — 3-column stat card grid variant
 .stat-card-grid--3col {
   grid-template-columns: repeat(3, 1fr);
@@ -87,10 +90,15 @@
   display: none;
 }
 
-// Add new site — step 4 wider section dividers for clearer grouping
+// Add new site — wider section dividers for clearer grouping between sections
 .add-site-divider {
-  margin-top: 60px;
-  margin-bottom: 60px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+// Add new site — button group spacing at bottom of step pages
+.add-site-buttons {
+  margin-top: 50px;
 }
 
 // Add new site — step 5 wider summary list spacing

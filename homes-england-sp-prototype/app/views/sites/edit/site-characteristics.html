@@ -1,3 +1,6 @@
+<!-- Edit page for Site characteristics section of the site summary.
+     Adapted from sites/add/step-2.html — same form fields but without
+     step numbering, and Save button returns to summary. -->
 {% extends "layouts/sites.html" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
@@ -7,7 +10,7 @@
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Site characteristics - Add a new site" %}
+{% set pageName = "Site characteristics" %}
 
 {% block pageScripts %}
   <script src="/public/javascripts/add-site.js"></script>
@@ -16,7 +19,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/sites/add/step-1?back=true"
+    href: "/sites/" + siteId + "#site-details"
   }) }}
 {% endblock %}
 
@@ -25,10 +28,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 2 of 5</span>
     <h1 class="govuk-heading-xl">Site characteristics</h1>
 
-    <form method="post" action="/sites/add/step-2">
+    <form method="post" action="/sites/{{ siteId }}/edit/site-characteristics">
 
       {# -- Strategic site / EMSA -- #}
       {% set strategicConditionalHtml %}
@@ -58,7 +60,7 @@
         ]
       }) }}
 
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       {# -- Green belt -- #}
       {{ govukRadios({
@@ -78,7 +80,7 @@
         ]
       }) }}
 
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       {# -- Regeneration site -- #}
       {% set regenerationConditionalHtml %}
@@ -148,7 +150,7 @@
         ]
       }) }}
 
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       {# -- Historical grant -- #}
       {% set historicalGrantConditionalHtml %}
@@ -158,7 +160,7 @@
           name: "historical-grant-amount",
           value: data['historical-grant-amount'],
           classes: "govuk-input--width-10 js-currency-input",
-          prefix: { text: "£" },
+          prefix: { text: "\u00a3" },
           inputmode: "numeric"
         }) }}
 
@@ -198,7 +200,7 @@
         ]
       }) }}
 
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       {# -- Occupancy status -- #}
       {% set partiallyVacantConditionalHtml %}
@@ -240,15 +242,8 @@
         ]
       }) }}
 
-      {# -- Buttons -- #}
-      <div class="govuk-button-group add-site-buttons">
-        {{ govukButton({ text: "Save and continue" }) }}
-        {{ govukButton({
-          text: "Save as draft",
-          classes: "govuk-button--secondary",
-          href: "/sites"
-        }) }}
-      </div>
+      {# -- Button -- #}
+      {{ govukButton({ text: "Save and continue" }) }}
 
     </form>
 

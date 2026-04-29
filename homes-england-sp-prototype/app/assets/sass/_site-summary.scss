@@ -1,0 +1,8 @@
+// Site summary — section header with inline Change link
+// Used on the Site details and Milestones tabs to display a heading
+// alongside a right-aligned "Change" link for each section.
+.summary-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}

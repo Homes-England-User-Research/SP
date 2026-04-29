@@ -48,8 +48,8 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-l">{{ site.siteName }} completion</span>
-    <h1 class="govuk-heading-l">{{ tenureTitle }}</h1>
+    <span class="govuk-caption-xl">{{ site.siteName }} completion</span>
+    <h1 class="govuk-heading-xl">{{ tenureTitle }}</h1>
 
     <form method="post" action="/sites/{{ site.siteId }}/completions/{{ phase.id }}/tenure-home-types/{{ tht.id }}/rent-and-sales">
 
@@ -103,7 +103,7 @@
 
         <!-- Calculated field: first tranche sales receipt (no input — computed from
              market value × initial sale %) -->
-        <h2 class="govuk-heading-m">Assumed first tranche sales receipt</h2>
+        <h2 class="govuk-heading-l">Assumed first tranche sales receipt</h2>
         <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
           {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
@@ -127,7 +127,7 @@
 
         <!-- Calculated field: rent as % of unsold share (no input — computed from
              rent per week ÷ unsold share value) -->
-        <h2 class="govuk-heading-m">Shared Ownership rent as percentage of the unsold share</h2>
+        <h2 class="govuk-heading-l">Shared Ownership rent as percentage of the unsold share</h2>
         <p class="govuk-hint">This is calculated by dividing the rent by the market value of the home left after the assumed first tranche sale. This must not be more than 3%.</p>
         <p class="govuk-hint">To calculate the Shared Ownership rent as percentage of the unsold share, enter the rent per week once you have found the assumed first tranche sales receipt. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-rent-percent-unsold" aria-live="polite">
@@ -162,7 +162,7 @@
           spellcheck: false
         }) }}
 
-        <h2 class="govuk-heading-m">Assumed first tranche sales receipt</h2>
+        <h2 class="govuk-heading-l">Assumed first tranche sales receipt</h2>
         <p class="govuk-hint">To calculate the assumed first tranche sales receipt, enter the market value of each home and the assumed average first tranche sale. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-first-tranche" aria-live="polite">
           {%- if tht.rentAndSales.firstTrancheSalesReceipt -%}
@@ -197,7 +197,7 @@
           spellcheck: false
         }) }}
 
-        <h2 class="govuk-heading-m">Rent as percentage of the unsold share</h2>
+        <h2 class="govuk-heading-l">Rent as percentage of the unsold share</h2>
         <p class="govuk-hint">This is calculated by dividing the rent by the market value of the home left after the assumed first tranche sale. This must not be more than 3%.</p>
         <p class="govuk-hint">To calculate the rent as percentage of the unsold share, enter the rent per week once you have found the assumed first tranche sales receipt. Then select the calculate button.</p>
         <p class="govuk-body govuk-!-font-weight-bold" id="calc-rent-percent-unsold" aria-live="polite">

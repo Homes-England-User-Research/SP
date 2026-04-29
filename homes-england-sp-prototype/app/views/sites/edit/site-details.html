@@ -1,3 +1,6 @@
+<!-- Edit page for Site details section of the site summary.
+     Adapted from sites/add/step-1.html — same form fields but without
+     step numbering, different heading, and Save button returns to summary. -->
 {% extends "layouts/sites.html" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
@@ -6,7 +9,7 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Site details - Add a new site" %}
+{% set pageName = "Site details" %}
 
 {% block pageScripts %}
   <link rel="stylesheet" href="/public/javascripts/accessible-autocomplete.min.css">
@@ -17,7 +20,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/sites"
+    href: "/sites/" + siteId + "#site-details"
   }) }}
 {% endblock %}
 
@@ -26,10 +29,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 1 of 5</span>
-    <h1 class="govuk-heading-xl">Add a new site</h1>
+    <h1 class="govuk-heading-xl">Site details</h1>
 
-    <form method="post" action="/sites/add/step-1">
+    <form method="post" action="/sites/{{ siteId }}/edit/site-details">
 
       {# -- Section: Site details -- #}
       <h2 class="govuk-heading-l">Site details</h2>
@@ -70,11 +72,6 @@
         }) }}
       </div>
 
-      <!-- Local authority lookup: uses GOV.UK accessible-autocomplete
-           component to enhance a <select> into a typeahead search box.
-           On selection, JavaScript (local-authority-lookup.js) auto-populates
-           the Region and Homes England region read-only displays below.
-           This matches the GDS autocomplete pattern. -->
       <div class="govuk-!-margin-bottom-7">
         <div class="govuk-form-group">
           <label class="govuk-label govuk-label--s" for="local-authority">
@@ -91,11 +88,6 @@
         </div>
       </div>
 
-      <!-- Region and Homes England region — read-only displays that
-           auto-populate when a local authority is selected. Not editable
-           input fields. Hidden <input type="hidden"> stores the value
-           for session persistence on form POST. Hint text hidden by JS
-           after a local authority has been selected. -->
       <div class="govuk-!-margin-bottom-7">
         <div class="govuk-form-group">
           <label class="govuk-label govuk-label--s">
@@ -140,7 +132,7 @@
       </div>
 
       {# -- Section: Rural details -- #}
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       <h2 class="govuk-heading-l">Rural site details</h2>
 
@@ -183,7 +175,7 @@
       </div>
 
       {# -- Section: Site location -- #}
-      <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
       <h2 class="govuk-heading-l">Site location</h2>
 
@@ -259,15 +251,8 @@
         }) }}
       </div>
 
-      {# -- Buttons -- #}
-      <div class="govuk-button-group add-site-buttons">
-        {{ govukButton({ text: "Save and continue" }) }}
-        {{ govukButton({
-          text: "Save as draft",
-          classes: "govuk-button--secondary",
-          href: "/sites"
-        }) }}
-      </div>
+      {# -- Button -- #}
+      {{ govukButton({ text: "Save and continue" }) }}
 
     </form>
 

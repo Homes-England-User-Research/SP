@@ -40,7 +40,7 @@
            sections matching the site lifecycle. Each section has a
            numbered heading + description per the design reference. -->
 
-      <h2 class="govuk-heading-m">1. Set up your site</h2>
+      <h2 class="govuk-heading-l">1. Set up your site</h2>
       <p class="govuk-body">Activate your site and enter the required forecast before proceeding.</p>
 
       {{ govukTaskList({
@@ -66,7 +66,7 @@
         ]
       }) }}
 
-      <h2 class="govuk-heading-m">2. Prepare site details</h2>
+      <h2 class="govuk-heading-l">2. Prepare site details</h2>
       <p class="govuk-body">These can be done in any order, but must be complete before you submit completions.</p>
 
       {{ govukTaskList({
@@ -92,7 +92,7 @@
         ]
       }) }}
 
-      <h2 class="govuk-heading-m">3. Achieve Start on Site</h2>
+      <h2 class="govuk-heading-l">3. Achieve Start on Site</h2>
       <p class="govuk-body">Activate your site and enter the required forecast before proceeding.</p>
 
       {{ govukTaskList({
@@ -107,7 +107,7 @@
         ]
       }) }}
 
-      <h2 class="govuk-heading-m">4. Completions</h2>
+      <h2 class="govuk-heading-l">4. Completions</h2>
 
       {{ govukTaskList({
         idPrefix: "completions",
@@ -130,7 +130,7 @@
     {# ── Tab 2: Site details — single-column form ──────────────────────── #}
     {# Field widths match the GDS version at /sites-gds/add/step-1 #}
     {% set siteDetailsHtml %}
-      <h2 class="govuk-heading-m">Site details</h2>
+      <h2 class="govuk-heading-l">Site details</h2>
 
       <form method="post" action="/sites/{{ site.siteId }}">
 
@@ -301,7 +301,7 @@
 
     {# ── Tab 3: Site milestones — single-column form ───────────────────── #}
     {% set siteMilestonesHtml %}
-      <h2 class="govuk-heading-m">Site milestones</h2>
+      <h2 class="govuk-heading-l">Site milestones</h2>
 
       <form method="post" action="/sites/{{ site.siteId }}">
 

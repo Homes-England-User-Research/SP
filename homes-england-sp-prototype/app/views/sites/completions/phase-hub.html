@@ -53,7 +53,7 @@
 
 {# ── Tab 1: Phase details ────────────────────────────────────────── #}
 {% set phaseDetailsHtml %}
-  <h2 class="govuk-heading-m">Phase details</h2>
+  <h2 class="govuk-heading-l">Phase details</h2>
 
   {% if isSubmitted %}
     {# Read-only view when submitted #}
@@ -135,7 +135,7 @@
 
 {# ── Tab 2: Tenure home type list ────────────────────────────────── #}
 {% set tenureHomeTypeListHtml %}
-  <h2 class="govuk-heading-m">Tenure home type list</h2>
+  <h2 class="govuk-heading-l">Tenure home type list</h2>
 
   {% if enrichedTHTs.length > 0 %}
     <!-- Table uses completions-tht-table class to prevent column wrapping,
@@ -211,7 +211,7 @@
 
 {# ── Tab 3: Phase costs ──────────────────────────────────────────── #}
 {% set phaseCostsHtml %}
-  <h2 class="govuk-heading-m">Phase costs</h2>
+  <h2 class="govuk-heading-l">Phase costs</h2>
   <p class="govuk-body">Please input development expenditure and capital contributions for Affordable Units only.</p>
 
   {% if isSubmitted %}
@@ -288,7 +288,7 @@
 
 {# ── Tab 4: Phase contributions ──────────────────────────────────── #}
 {% set phaseContributionsHtml %}
-  <h2 class="govuk-heading-m">Phase contributions</h2>
+  <h2 class="govuk-heading-l">Phase contributions</h2>
 
   {% if isSubmitted %}
     {{ govukSummaryList({
@@ -446,7 +446,7 @@
 
 {# ── Tab 5: Review and submit ───────────────────────────────────── #}
 {% set reviewAndSubmitHtml %}
-  <h2 class="govuk-heading-m">Review and submit</h2>
+  <h2 class="govuk-heading-l">Review and submit</h2>
 
   {% if isSubmitted %}
     {{ govukWarningText({

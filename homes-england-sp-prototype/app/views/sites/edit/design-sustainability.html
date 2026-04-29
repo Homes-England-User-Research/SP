@@ -1,3 +1,6 @@
+<!-- Edit page for Design and sustainability section of the site summary.
+     Adapted from sites/add/step-3.html — same form fields but without
+     step numbering, and Save button returns to summary. -->
 {% extends "layouts/sites.html" %}
 
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
@@ -6,7 +9,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% set pageName = "Design and sustainability - Add a new site" %}
+{% set pageName = "Design and sustainability" %}
 
 {% block pageScripts %}
   <script src="/public/javascripts/add-site.js"></script>
@@ -15,7 +18,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/sites/add/step-2"
+    href: "/sites/" + siteId + "#site-details"
   }) }}
 {% endblock %}
 
@@ -24,10 +27,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-xl">Step 3 of 5</span>
     <h1 class="govuk-heading-xl">Design and sustainability</h1>
 
-    <form method="post" action="/sites/add/step-3">
+    <form method="post" action="/sites/{{ siteId }}/edit/design-sustainability">
 
       {# -- MMC question -- #}
       {% set mmcConditionalHtml %}
@@ -71,10 +73,6 @@
         ]
       }) }}
 
-      <!-- Manufacturer name field — shown when MMC=Yes and category 1
-           or 2 is selected. Sits outside the radio conditional so it
-           appears below the Yes/No radio group. Hidden/shown by JS
-           based on category checkbox state. -->
       <div id="mmc-manufacturer-section" data-mmc-parent-any="category-1,category-2" hidden>
         {{ govukInput({
           label: {
@@ -91,12 +89,8 @@
         }) }}
       </div>
 
-      <!-- Sub-category sections revealed by JavaScript (add-site.js) when
-           parent category checkboxes are checked. Uses data-mmc-parent
-           pattern for progressive enhancement. -->
-
       <div class="govuk-!-margin-top-6" id="mmc-sub-category-1" data-mmc-parent="category-1">
-        <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
         {{ govukCheckboxes({
           name: "mmc-cat1-subs",
           fieldset: {
@@ -116,7 +110,7 @@
       </div>
 
       <div class="govuk-!-margin-top-6" id="mmc-sub-category-2" data-mmc-parent="category-2">
-        <hr class="govuk-section-break govuk-section-break--visible add-site-divider">
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
         {{ govukCheckboxes({
           name: "mmc-cat2-subs",
           fieldset: {
@@ -134,15 +128,8 @@
         }) }}
       </div>
 
-      {# -- Buttons -- #}
-      <div class="govuk-button-group add-site-buttons">
-        {{ govukButton({ text: "Save and continue" }) }}
-        {{ govukButton({
-          text: "Save as draft",
-          classes: "govuk-button--secondary",
-          href: "/sites"
-        }) }}
-      </div>
+      {# -- Button -- #}
+      {{ govukButton({ text: "Save and continue" }) }}
 
     </form>
 

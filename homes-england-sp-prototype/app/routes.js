@@ -200,6 +200,40 @@ router.get('/overview-gds/build-analysis', function (req, res) {
 // =============================================================================
 
 /**
+ * Canonical list of all session fields used by the 5-step Add New Site flow.
+ * Used to:
+ *   1. Clear session on fresh step-1 visit (prevent stale data)
+ *   2. Persist ALL entered data when saving a new site on step-5 submit
+ *   3. Seed session data when viewing a site summary
+ */
+const ADD_SITE_FIELDS = [
+  'site-name', 'site-type', 'local-authority', 'region', 'he-region',
+  'procurement-route', 'rural-settlement', 'rural-exception-site',
+  'address-line-1', 'address-line-2', 'town-or-city', 'county',
+  'postcode', 'x-coordinate', 'y-coordinate',
+  'strategic-site', 'strategic-site-name', 'green-belt',
+  'regeneration-site', 'regeneration-plans', 'regeneration-benefits',
+  'regeneration-funding', 'historical-grant', 'historical-grant-amount',
+  'historical-grant-scheme-ids', 'historical-grant-notified',
+  'occupancy-status', 'vacancy-date-day', 'vacancy-date-month',
+  'vacancy-date-year', 'decanting-steps',
+  'mmc-used', 'mmc-categories', 'mmc-cat1-subs', 'mmc-cat2-subs',
+  'mmc-manufacturer-name',
+  'land-acquisition-status', 'land-acquisition-date-day',
+  'land-acquisition-date-month', 'land-acquisition-date-year',
+  'planning-status', 'planning-approval-date-day',
+  'planning-approval-date-month', 'planning-approval-date-year',
+  'planning-reference', 'grant-funding-all-homes',
+  'works-contract-status', 'building-contract-date-day',
+  'building-contract-date-month', 'building-contract-date-year',
+  'contractor-type', 'contractor-name',
+  'start-on-site-status', 'start-on-site-date-day',
+  'start-on-site-date-month', 'start-on-site-date-year',
+  'practical-completion-date-day', 'practical-completion-date-month',
+  'practical-completion-date-year'
+]
+
+/**
  * Seed data for the sites table — 44 sites to match stat cards.
  * In production this would come from the IMS API.
  */
@@ -305,13 +339,13 @@ router.get('/sites', function (req, res) {
   if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
     var ns = req.session.data['newSite']
     allSites.unshift({
-      siteId: String(2000 + Math.floor(Math.random() * 1000)),
-      siteName: ns.siteName || 'New site',
+      siteId: ns.siteId || String(2000 + Math.floor(Math.random() * 1000)),
+      siteName: ns['site-name'] || 'New site',
       status: 'Not started',
       homes: 0,
-      statusInDeal: 'Active',
-      localAuthority: ns.localAuthority || '',
-      region: ns.region || ''
+      statusInDeal: 'Inactive',
+      localAuthority: ns['local-authority'] || '',
+      region: ns['region'] || ''
     })
   }
 
@@ -391,32 +425,7 @@ router.get('/sites', function (req, res) {
  */
 router.get('/sites/add/step-1', function (req, res) {
   if (!req.query.back) {
-    var addSiteFields = [
-      'site-name', 'site-type', 'local-authority', 'region', 'he-region',
-      'procurement-route', 'rural-settlement', 'rural-exception-site',
-      'address-line-1', 'address-line-2', 'town-or-city', 'county',
-      'postcode', 'x-coordinate', 'y-coordinate',
-      'strategic-site', 'strategic-site-name', 'green-belt',
-      'regeneration-site', 'regeneration-plans', 'regeneration-benefits',
-      'regeneration-funding', 'historical-grant', 'historical-grant-amount',
-      'historical-grant-scheme-ids', 'historical-grant-notified',
-      'occupancy-status', 'vacancy-date-day', 'vacancy-date-month',
-      'vacancy-date-year', 'decanting-steps',
-      'mmc-used', 'mmc-categories', 'mmc-cat1-subs', 'mmc-cat2-subs',
-      'land-acquisition-status', 'land-acquisition-date-day',
-      'land-acquisition-date-month', 'land-acquisition-date-year',
-      'planning-status', 'planning-approval-date-day',
-      'planning-approval-date-month', 'planning-approval-date-year',
-      'planning-reference', 'grant-funding-all-homes',
-      'works-contract-status', 'building-contract-date-day',
-      'building-contract-date-month', 'building-contract-date-year',
-      'contractor-type', 'contractor-name',
-      'start-on-site-status', 'start-on-site-date-day',
-      'start-on-site-date-month', 'start-on-site-date-year',
-      'practical-completion-date-day', 'practical-completion-date-month',
-      'practical-completion-date-year'
-    ]
-    addSiteFields.forEach(function (key) {
+    ADD_SITE_FIELDS.forEach(function (key) {
       delete req.session.data[key]
     })
   }
@@ -489,17 +498,16 @@ router.get('/sites/add/step-5', function (req, res) {
  * and redirects to the Sites page with a success banner.
  */
 router.post('/sites/add/step-5', function (req, res) {
-  req.session.data['newSite'] = {
-    siteName: req.session.data['site-name'],
-    siteType: req.session.data['site-type'],
-    localAuthority: req.session.data['local-authority'],
-    region: req.session.data['region'],
-    postcode: req.session.data['postcode'],
-    procurementRoute: req.session.data['procurement-route'],
-    planningStatus: req.session.data['planning-status'],
-    contractorName: req.session.data['contractor-name'],
-    mmcUsed: req.session.data['mmc-used']
-  }
+  // Save ALL entered fields so the site summary can display them
+  var siteData = {}
+  ADD_SITE_FIELDS.forEach(function (key) {
+    if (req.session.data[key] !== undefined) {
+      siteData[key] = req.session.data[key]
+    }
+  })
+  // Generate a unique site ID for the new site
+  siteData.siteId = String(2000 + Math.floor(Math.random() * 1000))
+  req.session.data['newSite'] = siteData
   req.session.data['newSiteAdded'] = true
   res.redirect('/sites?success=true')
 })
@@ -1277,6 +1285,107 @@ router.get('/sites/:siteId/completions/:phaseId', function (req, res) {
   })
 })
 
+// =============================================================================
+// Site summary — edit section pages
+// =============================================================================
+
+/**
+ * GET /sites/:siteId/edit/site-details
+ *
+ * Standalone edit page for the "Site details" section of the site summary.
+ * Renders the same form fields as add-site step-1 but without step numbering.
+ * Session data is already seeded by the GET /sites/:siteId handler.
+ */
+router.get('/sites/:siteId/edit/site-details', function (req, res) {
+  req.session.data['current-site-id'] = req.params.siteId
+  res.render('sites/edit/site-details', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/edit/site-details
+ */
+router.post('/sites/:siteId/edit/site-details', function (req, res) {
+  // Sync changes back to newSite if editing a newly-added site
+  var ns = req.session.data['newSite']
+  if (ns && ns.siteId === req.params.siteId) {
+    ADD_SITE_FIELDS.forEach(function (key) {
+      if (req.session.data[key] !== undefined) {
+        ns[key] = req.session.data[key]
+      }
+    })
+  }
+  res.redirect('/sites/' + req.params.siteId + '#site-details')
+})
+
+/**
+ * GET /sites/:siteId/edit/site-characteristics
+ */
+router.get('/sites/:siteId/edit/site-characteristics', function (req, res) {
+  req.session.data['current-site-id'] = req.params.siteId
+  res.render('sites/edit/site-characteristics', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/edit/site-characteristics
+ */
+router.post('/sites/:siteId/edit/site-characteristics', function (req, res) {
+  var ns = req.session.data['newSite']
+  if (ns && ns.siteId === req.params.siteId) {
+    ADD_SITE_FIELDS.forEach(function (key) {
+      if (req.session.data[key] !== undefined) {
+        ns[key] = req.session.data[key]
+      }
+    })
+  }
+  res.redirect('/sites/' + req.params.siteId + '#site-details')
+})
+
+/**
+ * GET /sites/:siteId/edit/design-sustainability
+ */
+router.get('/sites/:siteId/edit/design-sustainability', function (req, res) {
+  req.session.data['current-site-id'] = req.params.siteId
+  res.render('sites/edit/design-sustainability', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/edit/design-sustainability
+ */
+router.post('/sites/:siteId/edit/design-sustainability', function (req, res) {
+  var ns = req.session.data['newSite']
+  if (ns && ns.siteId === req.params.siteId) {
+    ADD_SITE_FIELDS.forEach(function (key) {
+      if (req.session.data[key] !== undefined) {
+        ns[key] = req.session.data[key]
+      }
+    })
+  }
+  res.redirect('/sites/' + req.params.siteId + '#site-details')
+})
+
+/**
+ * GET /sites/:siteId/edit/milestones
+ */
+router.get('/sites/:siteId/edit/milestones', function (req, res) {
+  req.session.data['current-site-id'] = req.params.siteId
+  res.render('sites/edit/milestones', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/edit/milestones
+ */
+router.post('/sites/:siteId/edit/milestones', function (req, res) {
+  var ns = req.session.data['newSite']
+  if (ns && ns.siteId === req.params.siteId) {
+    ADD_SITE_FIELDS.forEach(function (key) {
+      if (req.session.data[key] !== undefined) {
+        ns[key] = req.session.data[key]
+      }
+    })
+  }
+  res.redirect('/sites/' + req.params.siteId + '#milestones')
+})
+
 /**
  * GET /sites/:siteId
  *
@@ -1285,36 +1394,113 @@ router.get('/sites/:siteId/completions/:phaseId', function (req, res) {
  * and metric data, and renders the summary template with tabs.
  *
  * IMPORTANT: This wildcard route must be defined AFTER all specific
- * /sites/* routes (add/step-1, add/step-2, build-analysis) to avoid
- * the :siteId param matching "add" or "build-analysis".
+ * /sites/* routes (add/step-1, add/step-2, build-analysis, edit/*) to
+ * avoid the :siteId param matching "add" or "build-analysis".
  */
 router.get('/sites/:siteId', function (req, res) {
+  // Helper: seed both req.session.data and res.locals.data so templates
+  // see the values immediately (Prototype Kit copies session→locals BEFORE
+  // route handlers run, so we must update both)
+  function seedData (obj) {
+    Object.keys(obj).forEach(function (key) {
+      req.session.data[key] = obj[key]
+      res.locals.data[key] = obj[key]
+    })
+  }
+
+  // Check for session-stored new site first
+  var ns = req.session.data['newSite']
+  if (ns && ns.siteId === req.params.siteId) {
+    // Seed session data fields from stored newSite so templates can read data['field-name']
+    var nsData = {}
+    ADD_SITE_FIELDS.forEach(function (key) {
+      if (ns[key] !== undefined) {
+        nsData[key] = ns[key]
+      }
+    })
+    nsData['current-site-id'] = ns.siteId
+    seedData(nsData)
+    return res.render('sites/summary', {
+      site: {
+        siteId: ns.siteId,
+        siteName: ns['site-name'] || 'New site',
+        status: 'Not started',
+        statusInDeal: 'Inactive',
+        homes: 0
+      }
+    })
+  }
+
+  // Fall back to seed sites
   var site = seedSites.find(function (s) { return s.siteId === req.params.siteId })
   if (!site) return res.redirect('/sites')
 
-  // Enrich with mock data that mirrors add-new-site form fields
-  var enriched = Object.assign({}, site, {
-    typeOfSite: 'greenfield',
-    ruralArea: 'no',
-    operatingArea: 'South East',
-    processingRoute: 'acquisition-works',
-    regenerationSite: 'no',
-    postcode: 'XXXX XXX',
-    xCoordinate: '',
-    yCoordinate: '',
-    typeOfContractor: 'in-house',
-    contractor: '---',
-    // Step 2 milestone data
-    ownershipStatus: 'conditional',
-    planningStatus: 'detailed-no-steps',
-    buildingContractStatus: 'conditional-let',
-    startOnSiteStatus: 'forecast',
-    forecastCompletionDay: '27',
-    forecastCompletionMonth: '3',
-    forecastCompletionYear: '2027'
+  // Seed session data with mock values so summary template reads consistently
+  // from data['field-name'] — same mechanism as the add-site flow
+  seedData({
+    'site-name': site.siteName,
+    'site-type': 'greenfield',
+    'local-authority': site.localAuthority,
+    'region': site.region,
+    'he-region': '',
+    'procurement-route': 'acquisition-and-works',
+    'rural-settlement': 'yes',
+    'rural-exception-site': 'no',
+    'address-line-1': '57 Burnway',
+    'address-line-2': '----',
+    'town-or-city': 'Hornchurch',
+    'county': 'Essex',
+    'postcode': 'Bd11',
+    'x-coordinate': '51519392587702D4',
+    'y-coordinate': '-0.321198458008S9',
+    'strategic-site': 'yes',
+    'strategic-site-name': 'Lorem ipsum',
+    'green-belt': 'yes',
+    'regeneration-site': 'yes',
+    'regeneration-plans': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam consectetur risus ut egestas efficitur. Ut lacinia nulla vulputate ipsum fermentum, sit amet porttitor sapien rutrum. Curabitur sacilis odio commodo, laoreet mi sed, tempor mauris. Cras a tellus vel ipsum tempus commodo. Donec fermentum magna sit amet maximus porttitor. Fusce feugiat tellus lacus, sit amet gravida ligula ornare eu. Aenean pellentesque, neque nec scelerisque facilisis, urna ipsum cursus arcu, eu tincidunt ante nibula et eros. Sed dapibus fringilla urna non congue. Etiam vitae odio quis dolor consequat pulvinar in at urna. Etiam faucibus nisi magna. Praesent ultrices nisl vitrus augue mollis, at tempor nunc facilisis. Proin luctus finibus augue eget euismod. Sed in placerat risus. Nunc varius tempor erat, id lacinia turpis faucibus et.',
+    'regeneration-benefits': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam consectetur risus ut egestas efficitur. Ut lacinia nulla vulputate ipsum fermentum, sit amet porttitor sapien rutrum. Curabitur sacilis odio commodo, laoreet mi sed, tempor mauris. Cras a tellus vel ipsum tempus commodo. Donec fermentum magna sit amet maximus porttitor. Fusce feugiat tellus lacus, sit amet gravida ligula ornare eu. Aenean pellentesque, neque nec scelerisque facilisis, urna ipsum cursus arcu.',
+    'regeneration-funding': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam consectetur risus ut egestas efficitur. Ut lacinia nulla vulputate ipsum fermentum, sit amet porttitor sapien rutrum. Curabitur sacilis odio commodo, laoreet mi sed, tempor mauris. Cras a tellus vel ipsum tempus commodo. Donec fermentum magna sit amet maximus porttitor. Fusce feugiat tellus lacus, sit amet gravida ligula ornare eu. Aenean pellentesque, neque nec scelerisque facilisis, urna ipsum cursus arcu.',
+    'historical-grant': 'yes',
+    'historical-grant-amount': '12000000',
+    'historical-grant-scheme-ids': 'XXXXXXXXX',
+    'historical-grant-notified': '',
+    'occupancy-status': 'partially-vacant',
+    'vacancy-date-day': '',
+    'vacancy-date-month': '',
+    'vacancy-date-year': '',
+    'decanting-steps': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam consectetur risus ut egestas efficitur. Ut lacinia nulla vulputate ipsum fermentum, sit amet porttitor sapien rutrum. Curabitur sacilis odio commodo, laoreet mi sed, tempor mauris. Cras a tellus vel ipsum tempus commodo. Donec fermentum magna sit amet maximus porttitor. Fusce feugiat tellus lacus, sit amet gravida ligula ornare eu. Aenean pellentesque, neque nec scelerisque facilisis, urna ipsum cursus arcu.',
+    'mmc-used': 'yes',
+    'mmc-categories': ['category-1', 'category-2'],
+    'mmc-cat1-subs': ['cat1-chassis-no-internal'],
+    'mmc-cat2-subs': ['cat2-open-panels', 'cat2-frames'],
+    'mmc-manufacturer-name': 'Xxxxxxxxxxx Ltd',
+    'land-acquisition-status': 'unconditional-acquisition',
+    'land-acquisition-date-day': '',
+    'land-acquisition-date-month': '',
+    'land-acquisition-date-year': '',
+    'planning-status': 'detailed-approval-granted',
+    'planning-approval-date-day': '',
+    'planning-approval-date-month': '',
+    'planning-approval-date-year': '',
+    'planning-reference': 'XXXXXXXXXXXXXXX',
+    'grant-funding-all-homes': '',
+    'works-contract-status': 'unconditional-let',
+    'building-contract-date-day': '',
+    'building-contract-date-month': '',
+    'building-contract-date-year': '',
+    'contractor-type': 'in-house',
+    'contractor-name': 'XXXXXXXXXXXXXXX',
+    'start-on-site-status': 'actual',
+    'start-on-site-date-day': '',
+    'start-on-site-date-month': '',
+    'start-on-site-date-year': '',
+    'practical-completion-date-day': '',
+    'practical-completion-date-month': '',
+    'practical-completion-date-year': '',
+    'current-site-id': site.siteId
   })
 
-  res.render('sites/summary', { site: enriched })
+  res.render('sites/summary', { site: site })
 })
 
 /**

@@ -5,13 +5,12 @@
 {% from "govuk/components/task-list/macro.njk" import govukTaskList %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/select/macro.njk" import govukSelect %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 
 {% set pageName = site.siteName + " site summary" %}
+
+{# Shared label/formatting macros — imported with context so macros can access data.* #}
+{% from "sites/_summary-macros.html" import yesNo, formatDate, formatAddress, siteTypeLabel, procurementRouteLabel, occupancyLabel, landAcquisitionLabel, planningStatusLabel, worksContractLabel, contractorTypeLabel with context %}
 
 {% block beforeContent %}
   {{ govukBreadcrumbs({
@@ -24,18 +23,19 @@
 <span class="govuk-caption-xl">Site {{ site.siteId }}</span>
 <h1 class="govuk-heading-xl">{{ site.siteName }} site summary</h1>
 
-{# ── Key information: Summary list in one-third column ──────────────── #}
-<div class="govuk-grid-row govuk-!-margin-bottom-8">
+<!-- Key information summary — always visible above tabs.
+     Mirrors the IMS site header showing status, grant and homes at a glance. -->
+<div class="govuk-grid-row govuk-!-margin-bottom-6">
   <div class="govuk-grid-column-two-thirds">
     {{ govukSummaryList({
       rows: [
         {
           key: { text: "Site status" },
-          value: { text: "INACTIVE" }
+          value: { html: govukTag({ text: "Inactive" }) }
         },
         {
           key: { text: "Total grant attributable" },
-          value: { text: "£0" }
+          value: { text: "0" }
         },
         {
           key: { text: "Grant funded homes" },
@@ -46,41 +46,48 @@
   </div>
 </div>
 
-{# ── Tab: Site progress ───────────────────────────────────────────── #}
-{% set siteProgressHtml %}
-  <h2 class="govuk-heading-m">Site progress</h2>
+{# ── Tab 1: Overview ──────────────────────────────────────────────── #}
+{% set overviewHtml %}
+  <h2 class="govuk-heading-l">Overview</h2>
 
-  <!-- Standard GDS task list component — no custom departure.
-       Shows site actions with status tags and hint descriptions
-       matching IMS workflow steps. -->
+  <!-- Setup section — tasks required before start on site -->
+  <h3 class="govuk-heading-m">Setup</h3>
   {{ govukTaskList({
-    idPrefix: "site-progress",
+    idPrefix: "setup",
     items: [
       {
         title: { text: "Activate site" },
         href: "#",
-        hint: { text: "Required before you can achieve Start on Site" },
+        hint: { text: "Required before you can achieve start on site" },
         status: {
           tag: {
-            text: "Incomplete",
-            classes: "govuk-tag--blue"
+            text: "Not started",
+            classes: "govuk-tag--grey"
           }
         }
       },
       {
-        title: { text: "Site homes forecast" },
+        title: { text: "Forecast tenure mix" },
         href: "/site-units-forecast",
-        hint: { text: "Required before you can achieve Start on Site" },
+        hint: { text: "Required before you can achieve start on site" },
         status: {
           tag: {
-            text: "Incomplete",
-            classes: "govuk-tag--blue"
+            text: "Not started",
+            classes: "govuk-tag--grey"
           }
         }
-      },
+      }
+    ]
+  }) }}
+
+  <!-- Scheme details section — tasks for site delivery -->
+  <h3 class="govuk-heading-m">Scheme details</h3>
+  {{ govukTaskList({
+    idPrefix: "scheme-details",
+    items: [
       {
         title: { text: "Allocate home types" },
-        href: "#",
+        href: "/sites/allocate-home-types",
         hint: { text: "Required before you can submit completions" },
         status: {
           tag: {
@@ -90,239 +97,340 @@
         }
       },
       {
-        title: { text: "Start on Site achievement" },
-        href: "#",
-        hint: { text: "Requires: Activate site and Site homes forecast" },
+        title: { text: "Start on site achievement" },
+        hint: { text: "Activate site and site homes forecast required" },
         status: {
           text: "Cannot start yet"
         }
       },
       {
         title: { text: "Completions" },
-        href: "/sites/" + site.siteId + "/completions",
-        hint: { text: "Requires: Start on Site must be achieved first" },
+        hint: { text: "Start on site must be achieved first" },
         status: {
-          tag: {
-            text: "Not started",
-            classes: "govuk-tag--blue"
-          }
+          text: "Cannot start yet"
         }
       }
     ]
   }) }}
 {% endset %}
 
-{# ── Tab: Site details ────────────────────────────────────────────── #}
+{# ── Tab 2: Site details ──────────────────────────────────────────── #}
 {% set siteDetailsHtml %}
-  <h2 class="govuk-heading-m">Site details</h2>
 
-  <form method="post" action="/sites/{{ site.siteId }}">
+  {# -- Section: Site details -- #}
+  <div class="summary-section-header">
+    <h2 class="govuk-heading-l">Site details</h2>
+    <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/site-details">Change<span class="govuk-visually-hidden"> site details</span></a>
+  </div>
 
-    {{ govukInput({
-      label: { text: "Site ID" },
-      id: "site-id",
-      name: "site-id",
-      value: site.siteId,
-      classes: "govuk-input--width-10"
-    }) }}
-
-    {{ govukInput({
-      label: { text: "Site name" },
-      id: "site-name",
-      name: "site-name",
-      value: site.siteName,
-      classes: "govuk-!-width-two-thirds"
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Type of site" },
-      id: "type-of-site",
-      name: "type-of-site",
-      classes: "govuk-!-width-two-thirds",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "brownfield", text: "Brownfield" },
-        { value: "greenfield", text: "Greenfield", selected: site.typeOfSite == "greenfield" },
-        { value: "mixed", text: "Mixed" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Is the land in a rural area?" },
-      id: "rural-area",
-      name: "rural-area",
-      classes: "govuk-!-width-one-third",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "yes", text: "Yes" },
-        { value: "no", text: "No", selected: site.ruralArea == "no" }
-      ]
-    }) }}
-
-    {{ govukInput({
-      label: { text: "Local authority" },
-      id: "local-authority",
-      name: "local-authority",
-      value: site.localAuthority,
-      classes: "govuk-!-width-two-thirds"
-    }) }}
-
-    {{ govukInput({
-      label: { text: "Operating area" },
-      id: "operating-area",
-      name: "operating-area",
-      value: site.operatingArea or "",
-      classes: "govuk-!-width-two-thirds"
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Region" },
-      id: "region",
-      name: "region",
-      classes: "govuk-!-width-two-thirds",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "east-midlands", text: "East Midlands", selected: site.region == "East Midlands" },
-        { value: "east-of-england", text: "East of England", selected: site.region == "East of England" },
-        { value: "london", text: "London", selected: site.region == "London" },
-        { value: "north-east", text: "North East", selected: site.region == "North East" },
-        { value: "north-west", text: "North West", selected: site.region == "North West" },
-        { value: "south-east", text: "South East", selected: site.region == "South East" },
-        { value: "south-west", text: "South West", selected: site.region == "South West" },
-        { value: "west-midlands", text: "West Midlands", selected: site.region == "West Midlands" },
-        { value: "yorkshire", text: "Yorkshire and the Humber", selected: site.region == "Yorkshire and the Humber" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Processing route" },
-      id: "processing-route",
-      name: "processing-route",
-      classes: "govuk-!-width-two-thirds",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "acquisition-works", text: "Acquisition & Works", selected: site.processingRoute == "acquisition-works" },
-        { value: "works-only", text: "Works only" },
-        { value: "acquisition-only", text: "Acquisition only" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Is there a regeneration site identified under the 2023 Estate Regeneration flexibility?" },
-      id: "regeneration-site",
-      name: "regeneration-site",
-      classes: "govuk-!-width-one-third",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "yes", text: "Yes" },
-        { value: "no", text: "No", selected: site.regenerationSite == "no" }
-      ]
-    }) }}
-
-    <div class="govuk-!-margin-top-6">
-      {{ govukButton({ text: "Save changes" }) }}
-      {{ govukButton({
-        text: "Cancel changes",
-        classes: "govuk-button--secondary govuk-!-margin-left-3",
-        href: "/sites"
-      }) }}
-    </div>
-
-  </form>
-{% endset %}
-
-{# ── Tab: Site milestones ─────────────────────────────────────────── #}
-{% set siteMilestonesHtml %}
-  <h2 class="govuk-heading-m">Site milestones</h2>
-
-  <form method="post" action="/sites/{{ site.siteId }}">
-
-    {{ govukSelect({
-      label: { text: "What is the ownership status of the site?" },
-      id: "ownership-status",
-      name: "ownership-status",
-      classes: "govuk-!-width-full",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "conditional", text: "Conditional acquisition, land option or heads of terms", selected: site.ownershipStatus == "conditional" },
-        { value: "negotiations-underway", text: "Land purchase negotiations underway" },
-        { value: "identified", text: "Land identified but purchase negotiations not yet started" },
-        { value: "unconditional", text: "Unconditional acquisition of freehold or long leasehold interest has occurred or Secure Legal Interest/Qualifying Secure Legal Interest as defined in the relevant Grant Agreement" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "What is the planning status of the site?" },
-      id: "planning-status",
-      name: "planning-status",
-      classes: "govuk-!-width-full",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "detailed-no-steps", text: "Detailed Planning Approval granted with no further steps required before start on site can occur", selected: site.planningStatus == "detailed-no-steps" },
-        { value: "detailed-some-steps", text: "Detailed Planning Approval granted with some further steps required before start on site can occur" },
-        { value: "outline-granted", text: "Outline Planning Approval granted" },
-        { value: "outline-submitted", text: "Outline planning submitted" },
-        { value: "detailed-submitted", text: "Detailed planning submitted" },
-        { value: "discussion", text: "Planning discussion underway with planning office" },
-        { value: "no-progress", text: "No progress yet on planning application" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Building contract status" },
-      id: "building-contract-status",
-      name: "building-contract-status",
-      classes: "govuk-!-width-full",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "unconditional-let", text: "Unconditional works contract let" },
-        { value: "conditional-let", text: "Conditional contract let or contractor identified but not yet in contract", selected: site.buildingContractStatus == "conditional-let" },
-        { value: "tender", text: "Tender for works contract out for competition" },
-        { value: "not-begun", text: "Works contracting process not yet begun" }
-      ]
-    }) }}
-
-    {{ govukSelect({
-      label: { text: "Start on site status" },
-      id: "start-on-site-status",
-      name: "start-on-site-status",
-      classes: "govuk-!-width-full",
-      items: [
-        { value: "", text: "---Please select---" },
-        { value: "forecast", text: "Forecast", selected: site.startOnSiteStatus == "forecast" },
-        { value: "actual", text: "Actual" }
-      ]
-    }) }}
-
-    {{ govukDateInput({
-      id: "forecast-completion-date",
-      namePrefix: "forecast-completion-date",
-      fieldset: {
-        legend: { text: "Forecast practical completion date" }
+  {{ govukSummaryList({
+    rows: [
+      {
+        key: { text: "Site name" },
+        value: { text: data['site-name'] }
       },
-      hint: { text: "For example, 27 3 2007" },
-      items: [
-        { name: "day",   classes: "govuk-input--width-2", value: site.forecastCompletionDay or "" },
-        { name: "month", classes: "govuk-input--width-2", value: site.forecastCompletionMonth or "" },
-        { name: "year",  classes: "govuk-input--width-4", value: site.forecastCompletionYear or "" }
-      ]
-    }) }}
+      {
+        key: { text: "Site type" },
+        value: { text: siteTypeLabel(data['site-type']) }
+      },
+      {
+        key: { text: "Local authority" },
+        value: { text: data['local-authority'] }
+      },
+      {
+        key: { text: "Region" },
+        value: { text: data['region'] }
+      },
+      {
+        key: { text: "Homes England region" },
+        value: { text: data['he-region'] }
+      },
+      {
+        key: { text: "Site procurement route" },
+        value: { text: procurementRouteLabel(data['procurement-route']) }
+      },
+      {
+        key: { text: "Rural settlement" },
+        value: { text: yesNo(data['rural-settlement']) }
+      },
+      {
+        key: { text: "Rural exception site" },
+        value: { text: yesNo(data['rural-exception-site']) }
+      },
+      {
+        key: { text: "Address line 1" },
+        value: { text: data['address-line-1'] }
+      },
+      {
+        key: { text: "Address line 2" },
+        value: { text: data['address-line-2'] }
+      },
+      {
+        key: { text: "Town or City" },
+        value: { text: data['town-or-city'] }
+      },
+      {
+        key: { text: "County" },
+        value: { text: data['county'] }
+      },
+      {
+        key: { text: "Postcode" },
+        value: { text: data['postcode'] }
+      },
+      {
+        key: { text: "X coordinate" },
+        value: { text: data['x-coordinate'] }
+      },
+      {
+        key: { text: "Y coordinate" },
+        value: { text: data['y-coordinate'] }
+      }
+    ]
+  }) }}
 
-    <div class="govuk-!-margin-top-6">
-      {{ govukButton({ text: "Save changes" }) }}
-      {{ govukButton({
-        text: "Cancel changes",
-        classes: "govuk-button--secondary govuk-!-margin-left-3",
-        href: "/sites"
-      }) }}
-    </div>
+  {# -- Section: Site characteristics -- #}
+  <div class="summary-section-header">
+    <h2 class="govuk-heading-l">Site characteristics</h2>
+    <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/site-characteristics">Change<span class="govuk-visually-hidden"> site characteristics</span></a>
+  </div>
 
-  </form>
+  {% set characteristicsRows = [
+    {
+      key: { text: "Strategic site" },
+      value: { text: yesNo(data['strategic-site']) }
+    }
+  ] %}
+
+  {% if data['strategic-site'] == "yes" %}
+    {% set characteristicsRows = characteristicsRows.concat([{
+      key: { text: "Name of strategic site or priority area" },
+      value: { text: data['strategic-site-name'] }
+    }]) %}
+  {% endif %}
+
+  {% set characteristicsRows = characteristicsRows.concat([
+    {
+      key: { text: "Green belt" },
+      value: { text: yesNo(data['green-belt']) }
+    },
+    {
+      key: { text: "Regeneration site" },
+      value: { text: yesNo(data['regeneration-site']) }
+    }
+  ]) %}
+
+  {% if data['regeneration-site'] == "yes" %}
+    {% set characteristicsRows = characteristicsRows.concat([
+      {
+        key: { text: "Regeneration site plans" },
+        value: { text: data['regeneration-plans'] }
+      },
+      {
+        key: { text: "Additional housing or other benefits" },
+        value: { text: data['regeneration-benefits'] }
+      },
+      {
+        key: { text: "Additional funding required to support regeneration" },
+        value: { text: data['regeneration-funding'] }
+      }
+    ]) %}
+  {% endif %}
+
+  {% set characteristicsRows = characteristicsRows.concat([{
+    key: { text: "Historical grant" },
+    value: { text: yesNo(data['historical-grant']) }
+  }]) %}
+
+  {% if data['historical-grant'] == "yes" %}
+    {% set characteristicsRows = characteristicsRows.concat([
+      {
+        key: { text: "Historical grant amount" },
+        value: { text: "£" + data['historical-grant-amount'] if data['historical-grant-amount'] else "" }
+      },
+      {
+        key: { text: "Historical grant scheme ID or reference" },
+        value: { text: data['historical-grant-scheme-ids'] }
+      },
+      {
+        key: { text: "Notified Homes England of plans" },
+        value: { text: yesNo(data['historical-grant-notified']) }
+      }
+    ]) %}
+  {% endif %}
+
+  {% set characteristicsRows = characteristicsRows.concat([{
+    key: { text: "Occupancy status" },
+    value: { text: occupancyLabel(data['occupancy-status']) }
+  }]) %}
+
+  {% if data['occupancy-status'] == "partially-vacant" %}
+    {% set characteristicsRows = characteristicsRows.concat([
+      {
+        key: { text: "Date full vacancy expected" },
+        value: { text: formatDate('vacancy-date') }
+      },
+      {
+        key: { text: "Steps required to complete decanting of existing residents" },
+        value: { text: data['decanting-steps'] }
+      }
+    ]) %}
+  {% endif %}
+
+  {{ govukSummaryList({ rows: characteristicsRows }) }}
+
+  {# -- Section: Design and sustainability -- #}
+  <div class="summary-section-header">
+    <h2 class="govuk-heading-l">Design and sustainability</h2>
+    <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/design-sustainability">Change<span class="govuk-visually-hidden"> design and sustainability</span></a>
+  </div>
+
+  {% set mmcCategoriesDisplay %}
+    {% if data['mmc-categories'] %}
+      {% if data['mmc-categories'] is string %}
+        {{ data['mmc-categories'] }}
+      {% else %}
+        {{ data['mmc-categories'] | join(", ") }}
+      {% endif %}
+    {% endif %}
+  {% endset %}
+
+  {% set mmcCat1Display %}
+    {% if data['mmc-cat1-subs'] %}
+      {% if data['mmc-cat1-subs'] is string %}{{ data['mmc-cat1-subs'] }}{% else %}{{ data['mmc-cat1-subs'] | join(", ") }}{% endif %}
+    {% endif %}
+  {% endset %}
+
+  {% set mmcCat2Display %}
+    {% if data['mmc-cat2-subs'] %}
+      {% if data['mmc-cat2-subs'] is string %}{{ data['mmc-cat2-subs'] }}{% else %}{{ data['mmc-cat2-subs'] | join(", ") }}{% endif %}
+    {% endif %}
+  {% endset %}
+
+  {% set designRows = [
+    {
+      key: { text: "Using modern methods of construction (MMC)" },
+      value: { text: yesNo(data['mmc-used']) }
+    }
+  ] %}
+
+  {% if data['mmc-used'] == "yes" %}
+    {% set designRows = designRows.concat([{
+      key: { text: "Categories being used" },
+      value: { text: mmcCategoriesDisplay | trim }
+    }]) %}
+
+    {% if mmcCat1Display | trim %}
+      {% set designRows = designRows.concat([{
+        key: { text: "Category 1 sub-categories" },
+        value: { text: mmcCat1Display | trim }
+      }]) %}
+    {% endif %}
+
+    {% if mmcCat2Display | trim %}
+      {% set designRows = designRows.concat([{
+        key: { text: "Category 2 sub-categories" },
+        value: { text: mmcCat2Display | trim }
+      }]) %}
+    {% endif %}
+
+    {% set designRows = designRows.concat([{
+      key: { text: "Manufacturer name" },
+      value: { text: data['mmc-manufacturer-name'] }
+    }]) %}
+  {% endif %}
+
+  {{ govukSummaryList({ rows: designRows }) }}
+
 {% endset %}
 
-{# ── Tab: Total housing output costs ─────────────────────────────── #}
-{% set totalHousingCostsHtml %}
-  <h2 class="govuk-heading-m">Total housing output costs</h2>
+{# ── Tab 3: Milestones ────────────────────────────────────────────── #}
+{% set milestonesHtml %}
+
+  <div class="summary-section-header">
+    <h2 class="govuk-heading-l">Milestones</h2>
+    <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/milestones">Change<span class="govuk-visually-hidden"> milestones</span></a>
+  </div>
+
+  {% set milestoneRows = [
+    {
+      key: { text: "Land acquisition status" },
+      value: { text: landAcquisitionLabel(data['land-acquisition-status']) }
+    }
+  ] %}
+
+  {% if data['land-acquisition-status'] == "unconditional-acquisition" %}
+    {% set milestoneRows = milestoneRows.concat([{
+      key: { text: "Land acquisition date" },
+      value: { text: formatDate('land-acquisition-date') }
+    }]) %}
+  {% endif %}
+
+  {% set milestoneRows = milestoneRows.concat([{
+    key: { text: "Planning status" },
+    value: { text: planningStatusLabel(data['planning-status']) }
+  }]) %}
+
+  {% if data['planning-status'] == "detailed-approval-granted" %}
+    {% set milestoneRows = milestoneRows.concat([
+      {
+        key: { text: "Planning approval date" },
+        value: { text: formatDate('planning-approval-date') }
+      },
+      {
+        key: { text: "Planning reference" },
+        value: { text: data['planning-reference'] }
+      },
+      {
+        key: { text: "Are you applying for grant funding for all of the homes covered by this planning application?" },
+        value: { text: yesNo(data['grant-funding-all-homes']) }
+      }
+    ]) %}
+  {% endif %}
+
+  {% set milestoneRows = milestoneRows.concat([{
+    key: { text: "Works contracting status" },
+    value: { text: worksContractLabel(data['works-contract-status']) }
+  }]) %}
+
+  {% if data['works-contract-status'] == "unconditional-let" %}
+    {% set milestoneRows = milestoneRows.concat([{
+      key: { text: "Building contract date" },
+      value: { text: formatDate('building-contract-date') }
+    }]) %}
+  {% endif %}
+
+  {% set milestoneRows = milestoneRows.concat([
+    {
+      key: { text: "Type of contractor" },
+      value: { text: contractorTypeLabel(data['contractor-type']) }
+    },
+    {
+      key: { text: "Name of contractor" },
+      value: { text: data['contractor-name'] }
+    },
+    {
+      key: { text: "Start on site status" },
+      value: { text: data['start-on-site-status'] | capitalize if data['start-on-site-status'] else "" }
+    },
+    {
+      key: { text: "Start on site date" },
+      value: { text: formatDate('start-on-site-date') }
+    },
+    {
+      key: { text: "Practical completion date" },
+      value: { text: formatDate('practical-completion-date') }
+    }
+  ]) %}
+
+  {{ govukSummaryList({ rows: milestoneRows }) }}
+
+{% endset %}
+
+{# ── Tab 4: Development expenditure ──────────────────────────────── #}
+{% set developmentExpenditureHtml %}
+  <h2 class="govuk-heading-l">Development expenditure</h2>
+
+  <p class="govuk-body">This is a summary of site expenditure as recorded in the <a class="govuk-link" href="#">quarterly development expenditure</a> section.</p>
 
   {{ govukTable({
     head: [
@@ -335,7 +443,7 @@
     ],
     rows: [
       [
-        { html: "<strong>2026/2027</strong>" },
+        { html: "<strong>2026-2027</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£2,601,361", format: "numeric" },
@@ -343,7 +451,7 @@
         { text: "£3,090,415", format: "numeric" }
       ],
       [
-        { html: "<strong>2027/2028</strong>" },
+        { html: "<strong>2027-2028</strong>" },
         { text: "£1,320,165", format: "numeric" },
         { text: "£4,247,928", format: "numeric" },
         { text: "£1,093,775", format: "numeric" },
@@ -351,7 +459,7 @@
         { text: "£7,756,254", format: "numeric" }
       ],
       [
-        { html: "<strong>2028/2029</strong>" },
+        { html: "<strong>2028-2029</strong>" },
         { text: "£454,328", format: "numeric" },
         { text: "£25,832", format: "numeric" },
         { text: "£66,690", format: "numeric" },
@@ -359,7 +467,7 @@
         { text: "£550,332", format: "numeric" }
       ],
       [
-        { html: "<strong>2029/2030</strong>" },
+        { html: "<strong>2029-2030</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
@@ -367,7 +475,7 @@
         { text: "£0", format: "numeric" }
       ],
       [
-        { html: "<strong>2030/2031</strong>" },
+        { html: "<strong>2030-2031</strong>" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
         { text: "£0", format: "numeric" },
@@ -386,13 +494,13 @@
   }) }}
 {% endset %}
 
-{# ── Tabs: full width ────────────────────────────────────────────────── #}
+{# ── Tabs ──────────────────────────────────────────────────────────── #}
 {{ govukTabs({
   items: [
-    { label: "Site progress", id: "site-progress", panel: { html: siteProgressHtml } },
+    { label: "Overview", id: "overview", panel: { html: overviewHtml } },
     { label: "Site details", id: "site-details", panel: { html: siteDetailsHtml } },
-    { label: "Site milestones", id: "site-milestones", panel: { html: siteMilestonesHtml } },
-    { label: "Total housing output costs", id: "total-housing-costs", panel: { html: totalHousingCostsHtml } }
+    { label: "Milestones", id: "milestones", panel: { html: milestonesHtml } },
+    { label: "Development expenditure", id: "development-expenditure", panel: { html: developmentExpenditureHtml } }
   ]
 }) }}
 

@@ -6,102 +6,29 @@
 
 {% set pageName = "Check your answers - Add a new site" %}
 
-{# -- Helper: format Yes/No -- #}
-{% macro yesNo(val) %}{{ "Yes" if val == "yes" else ("No" if val == "no" else "") }}{% endmacro %}
+{# Shared label/formatting macros — also used by sites/summary.html #}
+{% from "sites/_summary-macros.html" import yesNo, formatDate, formatAddress, siteTypeLabel, procurementRouteLabel, occupancyLabel, landAcquisitionLabel, planningStatusLabel, worksContractLabel, contractorTypeLabel with context %}
 
-{# -- Helper: format date from day/month/year parts -- #}
-{% macro formatDate(prefix) %}
-  {%- if data[prefix + '-day'] and data[prefix + '-month'] and data[prefix + '-year'] -%}
-    {{ data[prefix + '-day'] }}/{{ data[prefix + '-month'] }}/{{ data[prefix + '-year'] }}
-  {%- endif -%}
-{% endmacro %}
-
-{# -- Helper: format address from parts -- #}
-{% macro formatAddress() %}
-  {%- set parts = [] -%}
-  {%- if data['address-line-1'] -%}{%- set parts = parts.concat([data['address-line-1']]) -%}{%- endif -%}
-  {%- if data['address-line-2'] -%}{%- set parts = parts.concat([data['address-line-2']]) -%}{%- endif -%}
-  {%- if data['town-or-city'] -%}{%- set parts = parts.concat([data['town-or-city']]) -%}{%- endif -%}
-  {%- if data['county'] -%}{%- set parts = parts.concat([data['county']]) -%}{%- endif -%}
-  {%- if data['postcode'] -%}{%- set parts = parts.concat([data['postcode']]) -%}{%- endif -%}
-  {{ parts | join(", ") }}
-{%- endmacro %}
-
-{# -- Label helpers -- #}
-{% macro siteTypeLabel(val) %}
-  {%- if val == "brownfield" -%}Brownfield
-  {%- elif val == "greenfield" -%}Greenfield
-  {%- elif val == "not-applicable" -%}Not applicable
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro procurementRouteLabel(val) %}
-  {%- if val == "acquisition-and-works" -%}Acquisition and works
-  {%- elif val == "off-the-shelf" -%}Off the shelf
-  {%- elif val == "works-only" -%}Works only
-  {%- elif val == "land-inclusive-package" -%}Land inclusive package (package deal)
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro occupancyLabel(val) %}
-  {%- if val == "vacant" -%}Vacant
-  {%- elif val == "partially-vacant" -%}Partially vacant
-  {%- elif val == "decanting-not-yet-started" -%}Decanting not yet started
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro landAcquisitionLabel(val) %}
-  {%- if val == "unconditional-acquisition" -%}Unconditional acquisition of freehold or long leasehold interest has occurred
-  {%- elif val == "conditional-acquisition" -%}Conditional acquisition, land option or heads of terms
-  {%- elif val == "negotiations-underway" -%}Land purchase negotiations underway
-  {%- elif val == "land-identified" -%}Land identified but purchase negotiations not yet started
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro planningStatusLabel(val) %}
-  {%- if val == "detailed-approval-granted" -%}Detailed planning approval granted
-  {%- elif val == "outline-granted" -%}Outline planning approval granted
-  {%- elif val == "outline-submitted" -%}Outline planning submitted
-  {%- elif val == "detailed-submitted" -%}Detailed planning submitted
-  {%- elif val == "discussion-underway" -%}Planning discussion underway with planning office
-  {%- elif val == "no-planning-required" -%}No planning required
-  {%- elif val == "no-progress" -%}No progress yet on planning application
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro worksContractLabel(val) %}
-  {%- if val == "unconditional-let" -%}Unconditional works contract let
-  {%- elif val == "conditional-let" -%}Conditional contract let or contractor identified
-  {%- elif val == "tender-out" -%}Tender for works contract out for competition
-  {%- elif val == "not-begun" -%}Works contracting process not yet begun
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
-
-{% macro contractorTypeLabel(val) %}
-  {%- if val == "in-house" -%}In house contractor
-  {%- elif val == "external" -%}External contractor
-  {%- elif val == "mixed" -%}Mixed
-  {%- else -%}{{ val }}{%- endif -%}
-{% endmacro %}
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/sites/add/step-4"
+  }) }}
+{% endblock %}
 
 {% block content %}
-
-{{ govukBackLink({
-  text: "Back",
-  href: "/sites/add/step-4"
-}) }}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <span class="govuk-caption-l">Step 5 of 5</span>
-    <h1 class="govuk-heading-l">Check your answers</h1>
+    <span class="govuk-caption-xl">Step 5 of 5</span>
+    <h1 class="govuk-heading-xl">Check your answers</h1>
 
     <form method="post" action="/sites/add/step-5">
 
       {# -- Site details (Step 1) -- #}
       <div class="add-site-summary-section">
-        <h2 class="govuk-heading-m">Site details</h2>
+        <h2 class="govuk-heading-l">Site details</h2>
 
         {% set siteDetailsRows = [
           {
@@ -171,7 +98,7 @@
 
       {# -- Site characteristics (Step 2) -- #}
       <div class="add-site-summary-section">
-        <h2 class="govuk-heading-m">Site characteristics</h2>
+        <h2 class="govuk-heading-l">Site characteristics</h2>
 
         {% set characteristicsRows = [
           {
@@ -183,9 +110,9 @@
 
         {% if data['strategic-site'] == "yes" %}
           {% set characteristicsRows = characteristicsRows.concat([{
-            key: { text: "Strategic site name" },
+            key: { text: "Name of strategic site or priority area" },
             value: { text: data['strategic-site-name'] },
-            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "strategic site name" }] }
+            actions: { items: [{ href: "/sites/add/step-2", text: "Change", visuallyHiddenText: "name of strategic site or priority area" }] }
           }]) %}
         {% endif %}
 
@@ -274,7 +201,7 @@
 
       {# -- Design and sustainability (Step 3) -- #}
       <div class="add-site-summary-section">
-        <h2 class="govuk-heading-m">Design and sustainability</h2>
+        <h2 class="govuk-heading-l">Design and sustainability</h2>
 
         {% set mmcCategoriesDisplay %}
           {% if data['mmc-categories'] %}
@@ -328,6 +255,12 @@
               actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "category 2 sub-categories" }] }
             }]) %}
           {% endif %}
+
+          {% set designRows = designRows.concat([{
+            key: { text: "Manufacturer name" },
+            value: { text: data['mmc-manufacturer-name'] },
+            actions: { items: [{ href: "/sites/add/step-3", text: "Change", visuallyHiddenText: "manufacturer name" }] }
+          }]) %}
         {% endif %}
 
         {{ govukSummaryList({ rows: designRows }) }}
@@ -335,7 +268,7 @@
 
       {# -- Site milestones (Step 4) -- #}
       <div class="add-site-summary-section">
-        <h2 class="govuk-heading-m">Site milestones</h2>
+        <h2 class="govuk-heading-l">Site milestones</h2>
 
         {% set milestoneRows = [
           {
@@ -411,13 +344,11 @@
           }
         ]) %}
 
-        {% if data['start-on-site-status'] == "actual" %}
-          {% set milestoneRows = milestoneRows.concat([{
-            key: { text: "Start on site date" },
-            value: { text: formatDate('start-on-site-date') },
-            actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "start on site date" }] }
-          }]) %}
-        {% endif %}
+        {% set milestoneRows = milestoneRows.concat([{
+          key: { text: "Start on site date" },
+          value: { text: formatDate('start-on-site-date') },
+          actions: { items: [{ href: "/sites/add/step-4", text: "Change", visuallyHiddenText: "start on site date" }] }
+        }]) %}
 
         {% set milestoneRows = milestoneRows.concat([{
           key: { text: "Forecast practical completion date" },
@@ -429,7 +360,7 @@
       </div>
 
       {# -- Buttons -- #}
-      <div class="govuk-button-group">
+      <div class="govuk-button-group add-site-buttons">
         {{ govukButton({ text: "Save and continue" }) }}
         {{ govukButton({
           text: "Save as draft",

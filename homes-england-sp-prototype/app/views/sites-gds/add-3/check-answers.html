@@ -22,7 +22,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
-    <h1 class="govuk-heading-l">Check your answers before adding this site</h1>
+    <h1 class="govuk-heading-xl">Check your answers before adding this site</h1>
 
     <!-- GDS "Check your answers" pattern — standard summary list with
          change links back to each step. This is the canonical GDS pattern
@@ -30,7 +30,7 @@
          See: design-system.service.gov.uk/patterns/check-answers -->
 
     {# ── Site details (step 1) ──────────────────────────────────────── #}
-    <h2 class="govuk-heading-m">Site details</h2>
+    <h2 class="govuk-heading-l">Site details</h2>
 
     {# Resolve type of site display value #}
     {% if site.typeOfSite == "brownfield" %}
@@ -86,7 +86,7 @@
     }) }}
 
     {# ── Site location (step 2) ─────────────────────────────────────── #}
-    <h2 class="govuk-heading-m">Site location</h2>
+    <h2 class="govuk-heading-l">Site location</h2>
 
     {# Resolve region display value #}
     {% set regionMap = {
@@ -150,7 +150,7 @@
     }) }}
 
     {# ── Processing and contractor (step 3) ─────────────────────────── #}
-    <h2 class="govuk-heading-m">Processing and contractor</h2>
+    <h2 class="govuk-heading-l">Processing and contractor</h2>
 
     {# Resolve processing route display value #}
     {% if site.processingRoute == "acquisition-works" %}
@@ -217,7 +217,7 @@
     }) }}
 
     {# ── Milestones (step 4) ────────────────────────────────────────── #}
-    <h2 class="govuk-heading-m">Site milestones</h2>
+    <h2 class="govuk-heading-l">Site milestones</h2>
 
     {# Resolve ownership status display value #}
     {% set ownershipMap = {
@@ -306,7 +306,7 @@
     }) }}
 
     {# ── Submit ──────────────────────────────────────────────────────── #}
-    <h2 class="govuk-heading-m">Now add this site</h2>
+    <h2 class="govuk-heading-l">Now add this site</h2>
     <p class="govuk-body">By adding this site you are confirming that, to the best of your knowledge, the details you are providing are correct.</p>
 
     <form method="post" action="/sites-gds/add-3/check-answers">
