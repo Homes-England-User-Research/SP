@@ -6,3 +6,9 @@
   justify-content: space-between;
   align-items: baseline;
 }
+
+// Development expenditure table — evenly distribute columns
+// so Year, Q1–Q4 and Yearly total all get equal width.
+#development-expenditure .govuk-table {
+  table-layout: fixed;
+}

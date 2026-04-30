@@ -239,12 +239,12 @@ const ADD_SITE_FIELDS = [
  */
 const seedSites = [
   { siteId: '1001', siteName: 'Belgrave Square',       status: 'Site completed', homes: 120,  statusInDeal: 'Active',   localAuthority: 'Havering',          region: 'South East' },
-  { siteId: '1002', siteName: 'Riverside Gardens',     status: 'Site completed', homes: 85,   statusInDeal: 'Active',   localAuthority: 'Greenwich',         region: 'London' },
+  { siteId: '1002', siteName: 'Riverside Gardens',     status: 'Site completed', homes: 85,   statusInDeal: 'Active',   localAuthority: 'Greenwich',         region: 'South East' },
   { siteId: '1003', siteName: 'Meadow Lane',           status: 'Site completed', homes: 200,  statusInDeal: 'Active',   localAuthority: 'Nottingham',        region: 'East Midlands' },
-  { siteId: '1004', siteName: 'Victoria Dock',         status: 'Site completed', homes: 340,  statusInDeal: 'Active',   localAuthority: 'Newham',            region: 'London' },
+  { siteId: '1004', siteName: 'Victoria Dock',         status: 'Site completed', homes: 340,  statusInDeal: 'Active',   localAuthority: 'Newham',            region: 'East of England' },
   { siteId: '1005', siteName: 'Kingsway Park',         status: 'Site completed', homes: 150,  statusInDeal: 'Active',   localAuthority: 'Derby',             region: 'East Midlands' },
-  { siteId: '1010', siteName: 'Westfield Rise',        status: 'Active',         homes: 450,  statusInDeal: 'Active',   localAuthority: 'Barnet',            region: 'London' },
-  { siteId: '1011', siteName: 'Oakwood Place',         status: 'Active',         homes: 310,  statusInDeal: 'Active',   localAuthority: 'Camden',            region: 'London' },
+  { siteId: '1010', siteName: 'Westfield Rise',        status: 'Active',         homes: 450,  statusInDeal: 'Active',   localAuthority: 'Barnet',            region: 'South East' },
+  { siteId: '1011', siteName: 'Oakwood Place',         status: 'Active',         homes: 310,  statusInDeal: 'Active',   localAuthority: 'Camden',            region: 'South East' },
   { siteId: '1012', siteName: 'Harbour View',          status: 'Active',         homes: 275,  statusInDeal: 'Active',   localAuthority: 'Bristol',           region: 'South West' },
   { siteId: '1013', siteName: 'Station Quarter',       status: 'Active',         homes: 520,  statusInDeal: 'Active',   localAuthority: 'Leeds',             region: 'Yorkshire and the Humber' },
   { siteId: '1014', siteName: 'Canal Basin',           status: 'Active',         homes: 180,  statusInDeal: 'Active',   localAuthority: 'Birmingham',        region: 'West Midlands' },
@@ -261,13 +261,13 @@ const seedSites = [
   { siteId: '1025', siteName: 'Lakeside Avenue',       status: 'Active',         homes: 205,  statusInDeal: 'Active',   localAuthority: 'Peterborough',      region: 'East of England' },
   { siteId: '1026', siteName: 'Windmill Lane',         status: 'Active',         homes: 330,  statusInDeal: 'Active',   localAuthority: 'Coventry',          region: 'West Midlands' },
   { siteId: '1027', siteName: 'Hawthorn Drive',        status: 'Active',         homes: 160,  statusInDeal: 'Active',   localAuthority: 'Sunderland',        region: 'North East' },
-  { siteId: '1030', siteName: 'Orchard Way',           status: 'Pipeline',       homes: 600,  statusInDeal: 'Inactive', localAuthority: 'Lewisham',          region: 'London' },
+  { siteId: '1030', siteName: 'Orchard Way',           status: 'Pipeline',       homes: 600,  statusInDeal: 'Inactive', localAuthority: 'Lewisham',          region: 'South East' },
   { siteId: '1031', siteName: 'Chapel Street',         status: 'Pipeline',       homes: 250,  statusInDeal: 'Active',   localAuthority: 'Bolton',            region: 'North West' },
   { siteId: '1032', siteName: 'Quarry Hill',           status: 'Pipeline',       homes: 180,  statusInDeal: 'Inactive', localAuthority: 'Wakefield',         region: 'Yorkshire and the Humber' },
   { siteId: '1033', siteName: 'Prospect Row',          status: 'Pipeline',       homes: 420,  statusInDeal: 'Active',   localAuthority: 'Plymouth',          region: 'South West' },
   { siteId: '1034', siteName: 'High Cross',            status: 'Pipeline',       homes: 310,  statusInDeal: 'Inactive', localAuthority: 'Leicester',         region: 'East Midlands' },
   { siteId: '1035', siteName: 'Copperfield Park',      status: 'Pipeline',       homes: 145,  statusInDeal: 'Active',   localAuthority: 'Gateshead',         region: 'North East' },
-  { siteId: '1036', siteName: 'Sunbury Wharf',         status: 'Pipeline',       homes: 530,  statusInDeal: 'Inactive', localAuthority: 'Tower Hamlets',     region: 'London' },
+  { siteId: '1036', siteName: 'Sunbury Wharf',         status: 'Pipeline',       homes: 530,  statusInDeal: 'Inactive', localAuthority: 'Tower Hamlets',     region: 'East of England' },
   { siteId: '1037', siteName: 'Beechwood Grove',       status: 'Pipeline',       homes: 270,  statusInDeal: 'Active',   localAuthority: 'Wolverhampton',     region: 'West Midlands' },
   { siteId: '1038', siteName: 'Ferndale Road',         status: 'Pipeline',       homes: 195,  statusInDeal: 'Inactive', localAuthority: 'Colchester',        region: 'East of England' },
   { siteId: '1039', siteName: 'Crestwood Chase',       status: 'Pipeline',       homes: 380,  statusInDeal: 'Active',   localAuthority: 'Salford',           region: 'North West' },
@@ -277,7 +277,7 @@ const seedSites = [
   { siteId: '1051', siteName: 'Chestnut Grove',        status: 'Not started',    homes: 280,  statusInDeal: 'Inactive', localAuthority: 'Doncaster',         region: 'Yorkshire and the Humber' },
   { siteId: '1052', siteName: 'Ashfield Gardens',      status: 'Not started',    homes: 340,  statusInDeal: 'Inactive', localAuthority: 'Northampton',       region: 'East Midlands' },
   { siteId: '1053', siteName: 'Rosemary Lane',         status: 'Not started',    homes: 190,  statusInDeal: 'Inactive', localAuthority: 'Middlesbrough',     region: 'North East' },
-  { siteId: '1054', siteName: 'Brindley Quay',         status: 'Not started',    homes: 650,  statusInDeal: 'Inactive', localAuthority: 'Hackney',           region: 'London' },
+  { siteId: '1054', siteName: 'Brindley Quay',         status: 'Not started',    homes: 650,  statusInDeal: 'Inactive', localAuthority: 'Hackney',           region: 'East of England' },
   { siteId: '1055', siteName: 'Fielding Crescent',     status: 'Not started',    homes: 155,  statusInDeal: 'Inactive', localAuthority: 'Chelmsford',        region: 'East of England' },
   { siteId: '1056', siteName: 'Wren Close',            status: 'Not started',    homes: 410,  statusInDeal: 'Inactive', localAuthority: 'Wigan',             region: 'North West' },
   { siteId: '1057', siteName: 'Ivy Court',             status: 'Not started',    homes: 220,  statusInDeal: 'Inactive', localAuthority: 'Bath',              region: 'South West' },
@@ -291,7 +291,8 @@ const statusParamMap = {
   'not-started': 'Not started',
   'pipeline': 'Pipeline',
   'active': 'Active',
-  'site-completed': 'Site completed'
+  'site-completed': 'Site completed',
+  'draft': 'Draft'
 }
 
 /**
@@ -300,7 +301,6 @@ const statusParamMap = {
 const regionParamMap = {
   'east-midlands': 'East Midlands',
   'east-of-england': 'East of England',
-  'london': 'London',
   'north-east': 'North East',
   'north-west': 'North West',
   'south-east': 'South East',
@@ -334,8 +334,24 @@ router.get('/sites', function (req, res) {
   var activeStatuses = activeStatusSlugs.map(function (s) { return statusParamMap[s] }).filter(Boolean)
   var activeRegions = activeRegionSlugs.map(function (s) { return regionParamMap[s] }).filter(Boolean)
 
-  // --- Prepend new site from session if one was just added ---
+  // --- Prepend draft site if one exists ---
   var allSites = seedSites.slice()
+  if (req.session.data['draftSite']) {
+    var ds = req.session.data['draftSite']
+    allSites.unshift({
+      siteId: ds.siteId || 'draft',
+      siteName: ds['site-name'] || 'New site (draft)',
+      status: 'Draft',
+      homes: 0,
+      statusInDeal: 'Draft',
+      localAuthority: ds['local-authority'] || '',
+      region: ds['region'] || '',
+      isDraft: true,
+      draftStep: ds.draftStep || 1
+    })
+  }
+
+  // --- Prepend completed new site if one was just added ---
   if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
     var ns = req.session.data['newSite']
     allSites.unshift({
@@ -343,14 +359,15 @@ router.get('/sites', function (req, res) {
       siteName: ns['site-name'] || 'New site',
       status: 'Not started',
       homes: 0,
-      statusInDeal: 'Inactive',
+      statusInDeal: 'Active',
       localAuthority: ns['local-authority'] || '',
       region: ns['region'] || ''
     })
   }
 
-  // --- Filter ---
+  // --- Filter (draft and newly-added sites always pass) ---
   var filtered = allSites.filter(function (site) {
+    if (site.isDraft || site.status === 'Not started') return true
     return activeStatuses.indexOf(site.status) !== -1
       && activeRegions.indexOf(site.region) !== -1
   })
@@ -401,6 +418,8 @@ router.get('/sites', function (req, res) {
 
   res.render('sites/index', {
     success: req.query.success === 'true',
+    bulkSuccess: req.query['bulk-success'] === 'true',
+    draftSaved: req.query['draft-saved'] === 'true',
     sites: pageSites,
     pagination: pagination,
     totalSites: totalSites,
@@ -433,12 +452,35 @@ router.get('/sites/add/step-1', function (req, res) {
 })
 
 /**
+ * Helper — save current add-site session data as a draft.
+ * Stores all field values plus which step the user was on.
+ */
+function saveDraft (req, stepNumber) {
+  var draftData = {}
+  ADD_SITE_FIELDS.forEach(function (key) {
+    if (req.session.data[key] !== undefined) {
+      draftData[key] = req.session.data[key]
+    }
+  })
+  // Preserve or generate a site ID for the draft
+  var existing = req.session.data['draftSite']
+  draftData.siteId = (existing && existing.siteId) || String(2000 + Math.floor(Math.random() * 1000))
+  draftData.draftStep = stepNumber
+  req.session.data['draftSite'] = draftData
+}
+
+/**
  * POST /sites/add/step-1
  *
- * Prototype Kit auto-stores all POSTed fields in session.data,
- * so we just redirect to step 2.
+ * Prototype Kit auto-stores all POSTed fields in session.data.
+ * If user clicked "Save as draft", save progress and return to sites.
+ * Otherwise redirect to step 2.
  */
 router.post('/sites/add/step-1', function (req, res) {
+  if (req.body.action === 'draft') {
+    saveDraft(req, 1)
+    return res.redirect('/sites?draft-saved=true')
+  }
   res.redirect('/sites/add/step-2')
 })
 
@@ -453,6 +495,10 @@ router.get('/sites/add/step-2', function (req, res) {
  * POST /sites/add/step-2
  */
 router.post('/sites/add/step-2', function (req, res) {
+  if (req.body.action === 'draft') {
+    saveDraft(req, 2)
+    return res.redirect('/sites?draft-saved=true')
+  }
   res.redirect('/sites/add/step-3')
 })
 
@@ -467,6 +513,10 @@ router.get('/sites/add/step-3', function (req, res) {
  * POST /sites/add/step-3
  */
 router.post('/sites/add/step-3', function (req, res) {
+  if (req.body.action === 'draft') {
+    saveDraft(req, 3)
+    return res.redirect('/sites?draft-saved=true')
+  }
   res.redirect('/sites/add/step-4')
 })
 
@@ -481,6 +531,10 @@ router.get('/sites/add/step-4', function (req, res) {
  * POST /sites/add/step-4
  */
 router.post('/sites/add/step-4', function (req, res) {
+  if (req.body.action === 'draft') {
+    saveDraft(req, 4)
+    return res.redirect('/sites?draft-saved=true')
+  }
   res.redirect('/sites/add/step-5')
 })
 
@@ -496,8 +550,13 @@ router.get('/sites/add/step-5', function (req, res) {
  *
  * Final step — saves the new site to the session newSite object
  * and redirects to the Sites page with a success banner.
+ * Clears any draft since the site is now complete.
  */
 router.post('/sites/add/step-5', function (req, res) {
+  if (req.body.action === 'draft') {
+    saveDraft(req, 5)
+    return res.redirect('/sites?draft-saved=true')
+  }
   // Save ALL entered fields so the site summary can display them
   var siteData = {}
   ADD_SITE_FIELDS.forEach(function (key) {
@@ -509,6 +568,8 @@ router.post('/sites/add/step-5', function (req, res) {
   siteData.siteId = String(2000 + Math.floor(Math.random() * 1000))
   req.session.data['newSite'] = siteData
   req.session.data['newSiteAdded'] = true
+  // Clear draft since site is now complete
+  delete req.session.data['draftSite']
   res.redirect('/sites?success=true')
 })
 
@@ -520,6 +581,27 @@ router.post('/sites/add/step-5', function (req, res) {
  */
 router.get('/sites/build-analysis', function (req, res) {
   res.render('sites/build-analysis')
+})
+
+/**
+ * GET /sites/bulk-upload
+ *
+ * Bulk site upload page — instructions, template download and file upload.
+ * For UR simulation: the Simulate button skips the real upload and triggers
+ * the processing spinner page.
+ */
+router.get('/sites/bulk-upload', function (req, res) {
+  res.render('sites/bulk-upload')
+})
+
+/**
+ * GET /sites/bulk-upload/processing
+ *
+ * Simulated processing spinner page. Shows a loading animation for 5 seconds
+ * then auto-redirects to /sites?bulk-success=true via client-side JS.
+ */
+router.get('/sites/bulk-upload/processing', function (req, res) {
+  res.render('sites/bulk-upload-processing')
 })
 
 /**

@@ -1,0 +1,61 @@
+// Bulk upload — file drop zone and processing spinner
+// Used on /sites/bulk-upload and /sites/bulk-upload/processing
+
+// Drop zone for file upload
+.bulk-upload-dropzone {
+  border: 2px dashed govuk-colour("mid-grey");
+  padding: govuk-spacing(4);
+  background: govuk-colour("light-grey");
+}
+
+.bulk-upload-dropzone__status {
+  background: #d0e4f1;
+  padding: govuk-spacing(2) govuk-spacing(3);
+  margin-bottom: govuk-spacing(3);
+}
+
+.bulk-upload-dropzone__actions {
+  display: flex;
+  align-items: center;
+  gap: govuk-spacing(2);
+}
+
+.bulk-upload-dropzone__button {
+  margin-bottom: 0;
+}
+
+// Processing spinner page
+.bulk-processing {
+  text-align: center;
+  padding: govuk-spacing(9) 0;
+}
+
+.bulk-processing__heading {
+  margin-top: govuk-spacing(6);
+}
+
+// Spinner animation — circular border with one transparent side
+.bulk-processing__spinner {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  border: 6px solid govuk-colour("mid-grey");
+  border-top-color: govuk-colour("blue");
+  border-radius: 50%;
+  animation: bulk-spinner 1s linear infinite;
+}
+
+@keyframes bulk-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Respect prefers-reduced-motion — stop spinning
+@media (prefers-reduced-motion: reduce) {
+  .bulk-processing__spinner {
+    animation: none;
+    border-top-color: govuk-colour("mid-grey");
+    border-left-color: govuk-colour("blue");
+  }
+}

@@ -35,6 +35,9 @@
 // Site summary — section header flex layout
 @import 'site-summary';
 
+// Bulk upload — drop zone and processing spinner
+@import 'bulk-upload';
+
 // Sites page — 3-column stat card grid variant
 .stat-card-grid--3col {
   grid-template-columns: repeat(3, 1fr);

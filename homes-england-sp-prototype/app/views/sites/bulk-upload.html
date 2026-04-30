@@ -1,0 +1,73 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% set pageName = "Add multiple sites" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [{ text: "Sites", href: "/sites" }]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Add multiple sites</h1>
+
+    <p class="govuk-body">You can add multiple sites by following these steps:</p>
+
+    <ol class="govuk-list govuk-list--number">
+      <li>Download and save the Excel spreadsheet template</li>
+      <li>Populate the template with your site information</li>
+      <li>Return to this page and select or drag and drop your file - we will check it for errors</li>
+    </ol>
+
+    <p class="govuk-body">If you need to update any sites after uploading, you will need to edit each one through the <a class="govuk-link" href="/sites">sites table</a>.</p>
+
+    {{ govukWarningText({
+      text: "If you change the template layout or structure the upload will fail.",
+      iconFallbackText: "Warning"
+    }) }}
+
+    {{ govukButton({
+      text: "Download template",
+      href: "#"
+    }) }}
+
+    <h2 class="govuk-heading-l">Upload site template</h2>
+
+    <!-- File upload area — styled to match the design with a dashed
+         border drop zone. In a real service this would use the GDS
+         file upload component; for the prototype we simulate the upload. -->
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="file-upload">
+        Upload file
+      </label>
+      <div class="bulk-upload-dropzone">
+        <p class="govuk-body bulk-upload-dropzone__status">No file chosen</p>
+        <div class="bulk-upload-dropzone__actions">
+          <button type="button" class="govuk-button govuk-button--secondary bulk-upload-dropzone__button">Choose file</button>
+          <span class="govuk-body">or drop file</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simulate button — skips the real upload process and triggers
+         the processing spinner page for user research sessions. -->
+    <div class="govuk-!-margin-top-6">
+      {{ govukButton({
+        text: "Simulate",
+        classes: "govuk-button--secondary",
+        href: "/sites/bulk-upload/processing"
+      }) }}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "layouts/sites.html" %}
+
+{% set pageName = "Processing upload" %}
+
+{% block pageScripts %}
+  <!-- Auto-redirect to sites page after 5 seconds to simulate processing -->
+  <script>
+    setTimeout(function () {
+      window.location.href = '/sites?bulk-success=true'
+    }, 5000)
+  </script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Centred spinner page — simulates server-side processing of the
+     bulk upload. CSS spinner animation defined in _bulk-upload.scss.
+     Auto-redirects after 5 seconds via inline JS above. -->
+<div class="bulk-processing">
+  <div class="bulk-processing__spinner" aria-hidden="true"></div>
+  <h1 class="govuk-heading-l bulk-processing__heading">Validating data and updating the database.</h1>
+  <p class="govuk-body">This page will refresh automatically. Do not close or refresh the browser.</p>
+</div>
+
+{% endblock %}

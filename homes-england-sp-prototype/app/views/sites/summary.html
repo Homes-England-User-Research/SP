@@ -189,7 +189,7 @@
   }) }}
 
   {# -- Section: Site characteristics -- #}
-  <div class="summary-section-header">
+  <div class="summary-section-header govuk-!-margin-top-9">
     <h2 class="govuk-heading-l">Site characteristics</h2>
     <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/site-characteristics">Change<span class="govuk-visually-hidden"> site characteristics</span></a>
   </div>
@@ -279,7 +279,7 @@
   {{ govukSummaryList({ rows: characteristicsRows }) }}
 
   {# -- Section: Design and sustainability -- #}
-  <div class="summary-section-header">
+  <div class="summary-section-header govuk-!-margin-top-9">
     <h2 class="govuk-heading-l">Design and sustainability</h2>
     <a class="govuk-link" href="/sites/{{ site.siteId }}/edit/design-sustainability">Change<span class="govuk-visually-hidden"> design and sustainability</span></a>
   </div>
@@ -432,6 +432,10 @@
 
   <p class="govuk-body">This is a summary of site expenditure as recorded in the <a class="govuk-link" href="#">quarterly development expenditure</a> section.</p>
 
+  <!-- Expenditure data: seed sites show mock quarterly figures,
+       newly-created sites show £0 across all quarters since no
+       expenditure has been recorded yet. -->
+  {% set z = "£0" %}
   {{ govukTable({
     head: [
       { text: "Year" },
@@ -444,43 +448,43 @@
     rows: [
       [
         { html: "<strong>2026-2027</strong>" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£2,601,361", format: "numeric" },
-        { text: "£489,054", format: "numeric" },
-        { text: "£3,090,415", format: "numeric" }
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: "£2,601,361" if site.homes else z, format: "numeric" },
+        { text: "£489,054" if site.homes else z, format: "numeric" },
+        { text: "£3,090,415" if site.homes else z, format: "numeric" }
       ],
       [
         { html: "<strong>2027-2028</strong>" },
-        { text: "£1,320,165", format: "numeric" },
-        { text: "£4,247,928", format: "numeric" },
-        { text: "£1,093,775", format: "numeric" },
-        { text: "£1,094,386", format: "numeric" },
-        { text: "£7,756,254", format: "numeric" }
+        { text: "£1,320,165" if site.homes else z, format: "numeric" },
+        { text: "£4,247,928" if site.homes else z, format: "numeric" },
+        { text: "£1,093,775" if site.homes else z, format: "numeric" },
+        { text: "£1,094,386" if site.homes else z, format: "numeric" },
+        { text: "£7,756,254" if site.homes else z, format: "numeric" }
       ],
       [
         { html: "<strong>2028-2029</strong>" },
-        { text: "£454,328", format: "numeric" },
-        { text: "£25,832", format: "numeric" },
-        { text: "£66,690", format: "numeric" },
-        { text: "£3,482", format: "numeric" },
-        { text: "£550,332", format: "numeric" }
+        { text: "£454,328" if site.homes else z, format: "numeric" },
+        { text: "£25,832" if site.homes else z, format: "numeric" },
+        { text: "£66,690" if site.homes else z, format: "numeric" },
+        { text: "£3,482" if site.homes else z, format: "numeric" },
+        { text: "£550,332" if site.homes else z, format: "numeric" }
       ],
       [
         { html: "<strong>2029-2030</strong>" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" }
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" }
       ],
       [
         { html: "<strong>2030-2031</strong>" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" },
-        { text: "£0", format: "numeric" }
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" },
+        { text: z, format: "numeric" }
       ],
       [
         { html: "<strong>Site total</strong>" },
@@ -488,7 +492,7 @@
         { text: "", format: "numeric" },
         { text: "", format: "numeric" },
         { text: "", format: "numeric" },
-        { html: "<strong>£11,411,337</strong>", format: "numeric" }
+        { html: "<strong>£11,397,001</strong>" if site.homes else "<strong>£0</strong>", format: "numeric" }
       ]
     ]
   }) }}
