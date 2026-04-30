@@ -5,7 +5,11 @@
 .bulk-upload-dropzone {
   border: 2px dashed govuk-colour("mid-grey");
   padding: govuk-spacing(4);
-  background: govuk-colour("light-grey");
+  background: govuk-colour("white");
+
+  &:hover {
+    background: govuk-colour("light-grey");
+  }
 }
 
 .bulk-upload-dropzone__status {
