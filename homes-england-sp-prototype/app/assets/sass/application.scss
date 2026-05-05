@@ -116,3 +116,15 @@
   margin-bottom: 60px;
 }
 
+// Prototype-wide — prevent visited links turning purple so the prototype
+// looks consistent during user research sessions regardless of browser history
+a.govuk-link:visited,
+.govuk-link:visited,
+.govuk-breadcrumbs__link:visited,
+.govuk-back-link:visited,
+.govuk-header__link:visited,
+.govuk-footer__link:visited,
+.govuk-tabs__tab:visited {
+  color: $govuk-link-colour;
+}
+
