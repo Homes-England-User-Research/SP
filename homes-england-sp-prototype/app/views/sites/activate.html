@@ -1,0 +1,64 @@
+{% extends "layouts/sites.html" %}
+
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Activate site" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Sites", href: "/sites" },
+      { text: "Site summary", href: "/sites/" + siteId }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-xl">Site {{ siteId }}</span>
+    <h1 class="govuk-heading-xl">Activate site</h1>
+
+    <form method="post" action="/sites/{{ siteId }}/activate">
+
+      {{ govukTextarea({
+        name: "activation-comment",
+        id: "activation-comment",
+        label: {
+          text: "Tell us what progress you have made on the site.",
+          classes: "govuk-label--m"
+        }
+      }) }}
+
+      {{ govukCheckboxes({
+        name: "activation-confirmation",
+        items: [
+          {
+            value: "confirmed",
+            html: 'This confirmation is given by the Grant Recipient Senior Officer on behalf of the Grant Recipient and confirms (after the proper enquiry having been made) that the Active Site to which it relates will deliver only Housing Outputs and is or are held by the Grant Recipient, a Delivery Partner or Group Company and such party has a Qualifying Secure Legal Interest in it or them.<br><br>Words and phrases defined in the Grant Agreement are acknowledged to have the same meanings when used here.'
+          }
+        ]
+      }) }}
+
+      <div class="govuk-button-group">
+        {{ govukButton({
+          text: "Activate site"
+        }) }}
+        {{ govukButton({
+          text: "Cancel",
+          classes: "govuk-button--secondary",
+          href: "/sites/" + siteId
+        }) }}
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

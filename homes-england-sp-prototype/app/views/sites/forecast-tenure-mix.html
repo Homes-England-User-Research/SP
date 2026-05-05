@@ -1,0 +1,198 @@
+{% extends "layouts/sites.html" %}
+
+{% from "components/editableTable.html" import editableTable %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageName = "Forecast tenure mix" %}
+
+{% block beforeContent %}
+  {{ govukBreadcrumbs({
+    items: [
+      { text: "Sites", href: "/sites" },
+      { text: "Site summary", href: "/sites/" + siteId }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+
+{#
+  SP (Strategic Partnerships) pattern — dense multi-field layout matching IMS
+  experience. Tenure mix forecast allows SP users to enter forecast homes per
+  tenure type across two funding tiers, with auto-calculated remaining homes
+  and read-only attributable grant column.
+#}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-xl">Site {{ siteId }}</span>
+    <h1 class="govuk-heading-xl">Forecast tenure mix</h1>
+  </div>
+</div>
+
+<form method="post" action="/sites/{{ siteId }}/forecast-tenure-mix">
+
+  {#
+    Column configuration for tier tables.
+    Updated from old /site-units-forecast to include Attributable grant column
+    per updated design. 5 columns: tenure label + 4 data columns.
+    "Forecast homes" is editable; Completed, Remaining and Attributable grant
+    are read-only. Remaining is auto-calculated (forecast - completed).
+  #}
+  {% set tierColumns = [
+    { label: "Tenure",              name: "tenure",    editable: false, readOnly: false, isHeader: true },
+    { label: "Forecast homes",      name: "forecast",  editable: true,  readOnly: false, numeric: true },
+    { label: "Completed homes",     name: "completed", editable: false, readOnly: true,  calculated: false, numeric: true },
+    { label: "Remaining homes",     name: "remaining", editable: false, readOnly: true,  calculated: true,  numeric: true },
+    { label: "Attributable grant",  name: "grant",     editable: false, readOnly: true,  calculated: false, numeric: true }
+  ] %}
+
+  {% set tierColWidths = ["30%", "18%", "18%", "17%", "17%"] %}
+
+  {# ── Tier 1 forecast ──────────────────────────────────────────────── #}
+  <div class="govuk-grid-row govuk-!-margin-top-6">
+    <div class="govuk-grid-column-full">
+
+      {% set tier1Rows = [
+        { id: "social-rent-t1",        tenureType: "Social Rent",                                grantRate: 12000 },
+        { id: "affordable-rent-t1",    tenureType: "Affordable Rent",                            grantRate: 15000 },
+        { id: "specialist-housing-t1", tenureType: "Specialist and supported housing for rent",   grantRate: 18000 },
+        { id: "rent-to-buy-t1",        tenureType: "Rent to Buy",                                grantRate: 21000 },
+        { id: "shared-ownership-t1",   tenureType: "Shared Ownership",                           grantRate: 24000 },
+        { id: "older-persons-so-t1",   tenureType: "Older Persons Shared Ownership",             grantRate: 27000 }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(tier1Rows, tierColumns, "Tier 1 forecast", data, tierColWidths) }}
+      </div>
+
+    </div>
+  </div>
+
+  {# ── Tier 2 forecast ──────────────────────────────────────────────── #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set tier2Rows = [
+        { id: "social-rent-t2",        tenureType: "Social Rent",                                grantRate: 15000 },
+        { id: "affordable-rent-t2",    tenureType: "Affordable Rent",                            grantRate: 18000 },
+        { id: "specialist-housing-t2", tenureType: "Specialist and supported housing for rent",   grantRate: 21000 },
+        { id: "rent-to-buy-t2",        tenureType: "Rent to Buy",                                grantRate: 24000 },
+        { id: "shared-ownership-t2",   tenureType: "Shared Ownership",                           grantRate: 27000 },
+        { id: "older-persons-so-t2",   tenureType: "Older Persons Shared Ownership",             grantRate: 30000 }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(tier2Rows, tierColumns, "Tier 2 forecast", data, tierColWidths) }}
+      </div>
+
+    </div>
+  </div>
+
+  {# ── Total forecast homes ─────────────────────────────────────────── #}
+  {#
+    Read-only summary row. Values calculated by editable-table.js by summing
+    all forecast inputs and completed/remaining cells across both tiers.
+    aria-live="polite" on totals so screen readers announce updates.
+  #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      <h2 class="govuk-heading-m" id="total-homes-heading">Total forecast homes</h2>
+
+      <div class="sp-table-wrapper">
+        <table class="govuk-table" aria-labelledby="total-homes-heading">
+          <colgroup>
+            <col style="width: 30%">
+            <col style="width: 18%">
+            <col style="width: 18%">
+            <col style="width: 17%">
+            <col style="width: 17%">
+          </colgroup>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header"></th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Forecast homes</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Completed homes</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Remaining homes</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Attributable grant</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header sp-tenure-type-header">Total homes (grant funded)</th>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-forecast" aria-live="polite">0</span>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-actual">0</span>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-remaining" aria-live="polite">0</span>
+              </td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">
+                <span class="sp-total-grant">0</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  {# ── Grant enhancement rate forecast ──────────────────────────────── #}
+  {#
+    Single-row editable table for grant enhancement rate. Same column
+    structure as the tier tables but with only one row.
+  #}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+      {% set grantEnhancementColumns = [
+        { label: "Tenure",              name: "tenure",    editable: false, readOnly: false, isHeader: true },
+        { label: "Forecast homes",      name: "forecast",  editable: true,  readOnly: false, numeric: true },
+        { label: "Completed homes",     name: "completed", editable: false, readOnly: true,  calculated: false, numeric: true },
+        { label: "Remaining homes",     name: "remaining", editable: false, readOnly: true,  calculated: true,  numeric: true },
+        { label: "Attributable grant",  name: "grant",     editable: false, readOnly: true,  calculated: false, numeric: true }
+      ] %}
+
+      {% set grantEnhancementRows = [
+        { id: "grant-enhancement-rate", tenureType: "Grant enhancement rate", grantRate: 32500 }
+      ] %}
+
+      <div class="sp-table-wrapper">
+        {{ editableTable(grantEnhancementRows, grantEnhancementColumns, "Grant enhancement rate forecast", data, tierColWidths) }}
+      </div>
+
+    </div>
+  </div>
+
+  {# ── Total attributable grant ─────────────────────────────────────── #}
+  <!-- Grand total — sum of all row-level attributable grants plus the
+       grant enhancement rate grant. Calculated by editable-table.js and
+       displayed as formatted currency. aria-live announces updates. -->
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Total attributable grant</h2>
+      <p class="govuk-body-l" aria-live="polite"><span class="sp-grand-total-grant">&pound;0</span></p>
+    </div>
+  </div>
+
+  {# ── Save button ──────────────────────────────────────────────────── #}
+  <div class="govuk-grid-row govuk-!-margin-top-4">
+    <div class="govuk-grid-column-full">
+      {{ govukButton({
+        text: "Save"
+      }) }}
+    </div>
+  </div>
+
+</form>
+
+{% endblock %}
+
+{% block pageScripts %}
+  <script src="/public/javascripts/editable-table.js"></script>
+{% endblock %}

@@ -6,7 +6,7 @@
   patterns. This macro supports that pattern while maintaining WCAG 2.1 AA compliance.
 
   Parameters:
-    rows       - required  - array of objects: { id, tenureType }
+    rows       - required  - array of objects: { id, tenureType, grantRate (optional, integer) }
     columns    - required  - array of objects: { label, name, editable (bool), readOnly (bool) }
     caption    - optional  - string shown as a <caption> element
     sessionData - optional - object of key/value pairs used to pre-populate inputs
@@ -50,7 +50,7 @@
 
   <tbody class="govuk-table__body">
     {% for row in rows %}
-      <tr class="govuk-table__row" data-row-id="{{ row.id }}">
+      <tr class="govuk-table__row" data-row-id="{{ row.id }}"{% if row.grantRate %} data-grant-rate="{{ row.grantRate }}"{% endif %}>
         {% for column in columns %}
           {% if loop.first %}
             {# First column is the tenure type label - row header for accessibility #}

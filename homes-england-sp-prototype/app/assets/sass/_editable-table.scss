@@ -26,6 +26,12 @@
     vertical-align: bottom;
   }
 
+  // Middle-align all body cells so read-only values sit level with inputs
+  tbody .govuk-table__cell,
+  tbody .govuk-table__header {
+    vertical-align: middle;
+  }
+
   // Tenure-type row header — GDS default bold weight preserved.
   .sp-tenure-type-header {
     min-width: 260px; // Prevent long tenure names from becoming too narrow on narrow viewports

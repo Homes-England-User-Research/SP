@@ -24,14 +24,16 @@
 <h1 class="govuk-heading-xl">{{ site.siteName }} site summary</h1>
 
 <!-- Key information summary — always visible above tabs.
-     Mirrors the IMS site header showing status, grant and homes at a glance. -->
+     Mirrors the IMS site header showing status, grant and homes at a glance.
+     Site status is dynamic: reads site.activated flag set by the activate
+     route handler to toggle between Inactive and Active. -->
 <div class="govuk-grid-row govuk-!-margin-bottom-6">
   <div class="govuk-grid-column-two-thirds">
     {{ govukSummaryList({
       rows: [
         {
           key: { text: "Site status" },
-          value: { html: govukTag({ text: "Inactive" }) }
+          value: { html: govukTag({ text: "Active" }) if site.activated else govukTag({ text: "Inactive" }) }
         },
         {
           key: { text: "Total grant attributable" },
@@ -50,16 +52,24 @@
 {% set overviewHtml %}
   <h2 class="govuk-heading-l">Overview</h2>
 
-  <!-- Setup section — tasks required before start on site -->
+  <!-- Setup section — tasks required before start on site.
+       Task statuses are dynamic: site.activated and site.forecastCompleted
+       flags are set by the respective POST handlers and passed through
+       from the route handler. -->
   <h3 class="govuk-heading-m">Setup</h3>
   {{ govukTaskList({
     idPrefix: "setup",
     items: [
       {
-        title: { text: "Activate site" },
-        href: "#",
+        title: { text: "Deactivate site" if site.activated else "Activate site" },
+        href: "/sites/" + site.siteId + "/activate",
         hint: { text: "Required before you can achieve start on site" },
         status: {
+          tag: {
+            text: "Completed",
+            classes: "govuk-tag--green"
+          }
+        } if site.activated else {
           tag: {
             text: "Not started",
             classes: "govuk-tag--grey"
@@ -68,9 +78,14 @@
       },
       {
         title: { text: "Forecast tenure mix" },
-        href: "/site-units-forecast",
+        href: "/sites/" + site.siteId + "/forecast-tenure-mix",
         hint: { text: "Required before you can achieve start on site" },
         status: {
+          tag: {
+            text: "Completed",
+            classes: "govuk-tag--green"
+          }
+        } if site.forecastCompleted else {
           tag: {
             text: "Not started",
             classes: "govuk-tag--grey"
@@ -98,8 +113,14 @@
       },
       {
         title: { text: "Start on site achievement" },
+        href: "#" if (site.activated and site.forecastCompleted) else "",
         hint: { text: "Activate site and site homes forecast required" },
         status: {
+          tag: {
+            text: "Not started",
+            classes: "govuk-tag--grey"
+          }
+        } if (site.activated and site.forecastCompleted) else {
           text: "Cannot start yet"
         }
       },

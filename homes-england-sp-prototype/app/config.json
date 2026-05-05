@@ -1,5 +1,5 @@
 {
-  "serviceName": "Homes England",
+  "serviceName": "Affordable housing grants",
   "useServiceNavigation": true,
   "plugins": {
     "govuk-frontend": {

@@ -354,12 +354,14 @@ router.get('/sites', function (req, res) {
   // --- Prepend completed new site if one was just added ---
   if (req.session.data['newSiteAdded'] && req.session.data['newSite']) {
     var ns = req.session.data['newSite']
+    var nsId = ns.siteId || String(2000 + Math.floor(Math.random() * 1000))
+    var nsActivated = req.session.data['site-' + nsId + '-activated'] === 'true'
     allSites.unshift({
-      siteId: ns.siteId || String(2000 + Math.floor(Math.random() * 1000)),
+      siteId: nsId,
       siteName: ns['site-name'] || 'New site',
       status: 'Not started',
       homes: 0,
-      statusInDeal: 'Active',
+      statusInDeal: nsActivated ? 'Active' : 'Inactive',
       localAuthority: ns['local-authority'] || '',
       region: ns['region'] || ''
     })
@@ -1468,6 +1470,57 @@ router.post('/sites/:siteId/edit/milestones', function (req, res) {
   res.redirect('/sites/' + req.params.siteId + '#milestones')
 })
 
+// =============================================================================
+// Activate site
+// =============================================================================
+
+/**
+ * GET /sites/:siteId/activate
+ *
+ * Renders the activate site page — textarea for progress comment,
+ * legal confirmation checkbox, and Activate site button.
+ */
+router.get('/sites/:siteId/activate', function (req, res) {
+  res.render('sites/activate', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/activate
+ *
+ * Saves activation flag and comment to session. The site status changes
+ * from Inactive to Active, reflected on the summary page header and
+ * the /sites table.
+ */
+router.post('/sites/:siteId/activate', function (req, res) {
+  req.session.data['site-' + req.params.siteId + '-activated'] = 'true'
+  req.session.data['site-' + req.params.siteId + '-activation-comment'] = req.session.data['activation-comment'] || ''
+  res.redirect('/sites/' + req.params.siteId)
+})
+
+// =============================================================================
+// Forecast tenure mix
+// =============================================================================
+
+/**
+ * GET /sites/:siteId/forecast-tenure-mix
+ *
+ * Renders the forecast tenure mix page — editable tables for Tier 1/2
+ * tenure forecasts, grant enhancement rate, and total attributable grant.
+ */
+router.get('/sites/:siteId/forecast-tenure-mix', function (req, res) {
+  res.render('sites/forecast-tenure-mix', { siteId: req.params.siteId })
+})
+
+/**
+ * POST /sites/:siteId/forecast-tenure-mix
+ *
+ * Saves forecast data to session and marks the forecast task as completed.
+ */
+router.post('/sites/:siteId/forecast-tenure-mix', function (req, res) {
+  req.session.data['site-' + req.params.siteId + '-forecast-completed'] = 'true'
+  res.redirect('/sites/' + req.params.siteId)
+})
+
 /**
  * GET /sites/:siteId
  *
@@ -1502,13 +1555,17 @@ router.get('/sites/:siteId', function (req, res) {
     })
     nsData['current-site-id'] = ns.siteId
     seedData(nsData)
+    var isActivated = req.session.data['site-' + ns.siteId + '-activated'] === 'true'
+    var isForecastCompleted = req.session.data['site-' + ns.siteId + '-forecast-completed'] === 'true'
     return res.render('sites/summary', {
       site: {
         siteId: ns.siteId,
         siteName: ns['site-name'] || 'New site',
         status: 'Not started',
-        statusInDeal: 'Inactive',
-        homes: 0
+        statusInDeal: isActivated ? 'Active' : 'Inactive',
+        homes: 0,
+        activated: isActivated,
+        forecastCompleted: isForecastCompleted
       }
     })
   }
@@ -1582,7 +1639,16 @@ router.get('/sites/:siteId', function (req, res) {
     'current-site-id': site.siteId
   })
 
-  res.render('sites/summary', { site: site })
+  // Check activation/forecast status from session — used by the task list
+  // on the Overview tab to show Completed vs Not started
+  var isActivated = req.session.data['site-' + site.siteId + '-activated'] === 'true'
+  var isForecastCompleted = req.session.data['site-' + site.siteId + '-forecast-completed'] === 'true'
+  var enrichedSite = Object.assign({}, site, {
+    activated: isActivated,
+    forecastCompleted: isForecastCompleted
+  })
+
+  res.render('sites/summary', { site: enrichedSite })
 })
 
 /**
