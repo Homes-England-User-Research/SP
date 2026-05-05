@@ -2108,8 +2108,8 @@ router.get('/components/year-tabs', function (req, res) {
 var forecastVersions = {
   1: { status: 'Submitted', createdBy: 'Sarah Johnson', reviewedBy: 'Michael Chen', reviewedDate: '15/03/2026' },
   2: { status: 'Approved', createdBy: 'Sarah Johnson', reviewedBy: 'Michael Chen', reviewedDate: '20/06/2026' },
-  3: { status: 'Submitted', createdBy: 'Oscar Swanson', reviewedBy: 'Natasha Wilson', reviewedDate: '18/09/2026' },
-  4: { status: 'Approved', createdBy: 'Oscar Swanson', reviewedBy: 'Natasha Wilson', reviewedDate: '05/01/2026' }
+  3: { status: 'Submitted', createdBy: 'User One', reviewedBy: 'Natasha Wilson', reviewedDate: '18/09/2026' },
+  4: { status: 'Approved', createdBy: 'User One', reviewedBy: 'Natasha Wilson', reviewedDate: '05/01/2026' }
 }
 
 /**
@@ -2128,7 +2128,7 @@ var forecastData2026 = {
  */
 var forecastComments = [
   { quarter: 2, dateTime: '05/01/2026 14:30', actionedBy: 'Natasha Wilson', comments: 'Reviewed and approved. Figures align with site reports.', status: 'Approved', version: 4 },
-  { quarter: 2, dateTime: '18/09/2026 09:15', actionedBy: 'Oscar Swanson', comments: 'Q3 forecast updated to reflect revised site programme.', status: 'Submitted', version: 3 },
+  { quarter: 2, dateTime: '18/09/2026 09:15', actionedBy: 'User One', comments: 'Q3 forecast updated to reflect revised site programme.', status: 'Submitted', version: 3 },
   { quarter: 2, dateTime: '20/06/2026 16:45', actionedBy: 'Michael Chen', comments: 'Approved with no changes required.', status: 'Approved', version: 2 },
   { quarter: 2, dateTime: '15/03/2026 11:20', actionedBy: 'Sarah Johnson', comments: 'Initial Q1 forecast based on contractor programme.', status: 'Submitted', version: 1 }
 ]
@@ -2174,7 +2174,7 @@ router.get('/forecasting/grant-funded-delivery', function (req, res) {
   submittedVersions.forEach(function (sv) {
     versions[sv.version] = {
       status: 'Submitted',
-      createdBy: 'Oscar Swanson',
+      createdBy: 'User One',
       reviewedBy: 'Natasha Wilson',
       reviewedDate: sv.date
     }
@@ -2192,7 +2192,7 @@ router.get('/forecasting/grant-funded-delivery', function (req, res) {
     comments.unshift({
       quarter: 2,
       dateTime: sv.date + ' ' + sv.time,
-      actionedBy: 'Oscar Swanson',
+      actionedBy: 'User One',
       comments: sv.comments || 'Forecast submitted.',
       status: 'Submitted',
       version: sv.version
@@ -2308,7 +2308,7 @@ router.get('/forecasting/grant-funded-delivery-v2', function (req, res) {
   submittedVersions.forEach(function (sv) {
     versions[sv.version] = {
       status: 'Submitted',
-      createdBy: 'Oscar Swanson',
+      createdBy: 'User One',
       reviewedBy: 'Natasha Wilson',
       reviewedDate: sv.date
     }
@@ -2324,7 +2324,7 @@ router.get('/forecasting/grant-funded-delivery-v2', function (req, res) {
     comments.unshift({
       quarter: 2,
       dateTime: sv.date + ' ' + sv.time,
-      actionedBy: 'Oscar Swanson',
+      actionedBy: 'User One',
       comments: sv.comments || 'Forecast submitted.',
       status: 'Submitted',
       version: sv.version
