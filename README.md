@@ -55,8 +55,6 @@ The pattern is implemented as a reusable Nunjucks macro (`editableTable`) follow
 - [GOV.UK Frontend](https://frontend.design-system.service.gov.uk/) 6.1.0
 - Nunjucks templating
 - Vanilla JavaScript (no jQuery)
-- Deployed on [Railway](https://railway.app/)
-
 ## Running locally
 
 ```bash
